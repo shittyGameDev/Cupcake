@@ -27,6 +27,15 @@ public:
 	FString ItemDescription;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	bool bIsStackable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Item")
+	int32 Quantity;
+
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Item")
+	int32 ItemTypeId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	UStaticMeshComponent* ItemMeshComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision")

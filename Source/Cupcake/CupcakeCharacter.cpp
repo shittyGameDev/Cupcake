@@ -89,6 +89,8 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::OnInteractPressed);
 
+		PlayerInputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACupcakeCharacter::TestRemoveItem);
+
 		/* Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);
 		*/
@@ -99,31 +101,43 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	}
 }
 
+void ACupcakeCharacter::TestRemoveItem()
+{
+	// Antag att du vill testa att ta bort det första itemet i inventoryt
+	if (InventoryComponent->InventoryItems.Num() > 0)
+	{
+		AItem* ItemToRemove = InventoryComponent->InventoryItems[0];
+		InventoryComponent->RemoveItem(ItemToRemove);
+	}
+}
+
 //Temporary function to Interact with items.
 void ACupcakeCharacter::OnInteractPressed()
 {
-	// Define the interaction radius
-	const float InteractionRadius = 100.f; // Adjust this value as needed
-
-	// Get all actors within the interaction radius
-	TArray<FHitResult> HitResults;
+	// Define raycast
 	FVector Start = GetActorLocation();
-	FVector End = Start + FVector(0, 0, 1); // Just to define a short line trace
+	//Assume we want the raycast to be shot in the direction that the player looks
+	FVector ForwardVector = GetActorForwardVector();
+	FVector End = Start + (ForwardVector * 1000.f); // Justera detta värde för att kontrollera interaktionsavståndet
 
-	FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
-	GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::Identity, ECC_WorldStatic, Sphere);
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this); // Ignore the player
 
-	for (const FHitResult& Hit : HitResults)
+	//Shoot the raycast
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+
+	// Controlling the hit
+	if (bHit && HitResult.GetActor() != nullptr)
 	{
-		AItem* Item = Cast<AItem>(Hit.GetActor());
+		AItem* Item = Cast<AItem>(HitResult.GetActor());
 		if (Item && Item->bIsInteractable)
 		{
-			// Cast the actor to IInteractable and call Interact
-			IInteractable* Interactable = Cast<IInteractable>(Item);
-			if (Interactable)
+			
+			if (IInteractable* Interactable = Cast<IInteractable>(Item))
 			{
 				Interactable->Interact();
-				break; // Assuming you only interact with one item per press
+				UE_LOG(LogTemp, Display, TEXT("Interacted with item"));
 			}
 		}
 	}

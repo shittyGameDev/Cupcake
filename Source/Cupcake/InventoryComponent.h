@@ -25,6 +25,9 @@ public:
 
 	UFUNCTION()
 	void RemoveItem(AItem* Item);
+
+private:
+	AItem* FindItemById(int32 ItemTypeId);
 	
 protected:
 	// Called when the game starts

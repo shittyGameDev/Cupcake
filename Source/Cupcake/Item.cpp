@@ -5,7 +5,7 @@
 
 #include "CupcakeCharacter.h"
 #include "InventoryComponent.h"
-#include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AItem::AItem()
@@ -37,7 +37,6 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-
 }
 
 void AItem::OnInteract()
@@ -64,6 +63,12 @@ void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void AItem::Interact()
 {
-	Destroy();
+	if (ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
+	{
+		if(UInventoryComponent* Inventory = Player->FindComponentByClass<UInventoryComponent>())
+		{
+			Inventory->AddItem(this);
+		}
+	}
 }
 

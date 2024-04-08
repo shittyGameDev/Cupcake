@@ -3,6 +3,9 @@
 
 #include "Item.h"
 
+#include "CupcakeCharacter.h"
+#include "InventoryComponent.h"
+
 // Sets default values
 AItem::AItem()
 {
@@ -44,9 +47,16 @@ void AItem::OnInteract()
 void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor && (OtherActor != this)&& OtherComp)
+	if(OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
-		OnInteract();
+		
+		if(auto const Player = Cast<ACupcakeCharacter>(OtherActor))
+		{
+			if(UInventoryComponent* Inventory = Player->FindComponentByClass<UInventoryComponent>())
+			{
+				Inventory->AddItem(this);
+			}
+		}
 	}
 	
 }

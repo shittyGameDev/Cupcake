@@ -28,9 +28,10 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category="Health")
 	float MaxHealth = 100.f;
-	UPROPERTY(BlueprintReadOnly, Category="Health")
+	UPROPERTY(EditAnywhere, Category="Health")
 	float Health = 0.f;
 
+	float CurrentHealth;
 	float Floating = 200.f; //Nu kan du flyga
 
 	

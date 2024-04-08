@@ -17,6 +17,8 @@ public:
 	// Sets default values for this actor's properties
 	AItem();
 
+
+	//Different variables associated with every of item. 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FString ItemName;
 
@@ -52,6 +54,7 @@ public:
 
 	void OnInteract();
 
+	//Function to handle the overlap event. 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,

@@ -87,6 +87,8 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 
+		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::OnInteractPressed);
+
 		/* Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);
 		*/
@@ -94,6 +96,36 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+}
+
+//Temporary function to Interact with items.
+void ACupcakeCharacter::OnInteractPressed()
+{
+	// Define the interaction radius
+	const float InteractionRadius = 100.f; // Adjust this value as needed
+
+	// Get all actors within the interaction radius
+	TArray<FHitResult> HitResults;
+	FVector Start = GetActorLocation();
+	FVector End = Start + FVector(0, 0, 1); // Just to define a short line trace
+
+	FCollisionShape Sphere = FCollisionShape::MakeSphere(InteractionRadius);
+	GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::Identity, ECC_WorldStatic, Sphere);
+
+	for (const FHitResult& Hit : HitResults)
+	{
+		AItem* Item = Cast<AItem>(Hit.GetActor());
+		if (Item && Item->bIsInteractable)
+		{
+			// Cast the actor to IInteractable and call Interact
+			IInteractable* Interactable = Cast<IInteractable>(Item);
+			if (Interactable)
+			{
+				Interactable->Interact();
+				break; // Assuming you only interact with one item per press
+			}
+		}
 	}
 }
 

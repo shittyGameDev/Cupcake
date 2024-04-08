@@ -14,6 +14,11 @@ UWorldEvent::UWorldEvent()
 }
 
 
+void UWorldEvent::Run()
+{
+	OnRunTriggered();
+}
+
 // Called when the game starts
 void UWorldEvent::BeginPlay()
 {

@@ -12,7 +12,12 @@
   <component name="ChangeListManager">
     <list default="true" id="1563a07f-5782-46f1-bb3e-6179f1a9ed5d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_DayCycleManager.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_DayCycleManager.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/HealthComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/HealthComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/WorldEvent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/WorldEvent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/WorldEvent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/WorldEvent.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,7 +191,7 @@
       <workItem from="1712317555483" duration="1168000" />
       <workItem from="1712318779538" duration="2941000" />
       <workItem from="1712580921899" duration="1695000" />
-      <workItem from="1712582660946" duration="353000" />
+      <workItem from="1712582660946" duration="2886000" />
     </task>
     <servers />
   </component>

@@ -34,7 +34,6 @@ public:
 
 	// Functions
 	void ShiftTime(float Time);
-	
 
 private:
 	char DayCycle = 0;

@@ -15,7 +15,7 @@ class CUPCAKE_API UWorldEvent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UWorldEvent();
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Event Time Trigger")
 	int Day;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Event Time Trigger")
@@ -24,7 +24,10 @@ public:
 	int Minutes;
 
 	UFUNCTION(BlueprintCallable, Category="World Event")
-	virtual void Run();
+	void Run();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="World Event")
+	void OnRunTriggered();
 		
 protected:
 	// Called when the game starts

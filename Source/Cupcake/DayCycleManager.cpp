@@ -29,7 +29,6 @@ void ADayCycleManager::Tick(float DeltaTime)
 	{
 		DayCycle++;
 		ElapsedTime = 0;
-		//NewDay()
 	}
 }
 
@@ -57,4 +56,15 @@ void ADayCycleManager::ShiftTime(float Time)
 	DayCycle += daysPassed;
 	
 	ElapsedTime -= daysPassed * SECONDS_IN_A_DAY;
+}
+
+void ADayCycleManager::SetDayAndTime(int Day, int Hour, int Minute)
+{
+	// Example implementation - adjust your logic as needed
+	DayCycle = Day;
+	// Convert hours and minutes to seconds and set ElapsedTime accordingly
+	ElapsedTime = Hour * 3600.f + Minute * 60.f;
+
+	// Call the Blueprint-implementable event
+	OnDayAndTimeSet(Day, Hour, Minute);
 }

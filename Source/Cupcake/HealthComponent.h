@@ -35,7 +35,5 @@ public:
 	bool TakeDamage(float DamageAmount);
 
 	virtual bool OnDeath();
-	
-private:
 
 };

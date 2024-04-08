@@ -5,6 +5,7 @@
 
 #include "CupcakeCharacter.h"
 #include "InventoryComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AItem::AItem()
@@ -21,7 +22,7 @@ AItem::AItem()
 	CollisionComponent->SetupAttachment(RootComponent);
 
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnOverlapBegin);
-
+	
 }
 
 // Called when the game starts or when spawned
@@ -59,5 +60,10 @@ void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		}
 	}
 	
+}
+
+void AItem::Interact()
+{
+	Destroy();
 }
 

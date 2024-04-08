@@ -12,7 +12,11 @@
   <component name="ChangeListManager">
     <list default="true" id="1563a07f-5782-46f1-bb3e-6179f1a9ed5d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/InventoryComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/InventoryComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultInput.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultInput.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/ItemFolder/BP_ItemTwo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/ItemFolder/BP_ItemTwo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/CupcakeCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/CupcakeCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/CupcakeCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/CupcakeCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/Item.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Item.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Cupcake/Item.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Item.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -182,7 +186,7 @@
       <workItem from="1712317555483" duration="1168000" />
       <workItem from="1712318779538" duration="2941000" />
       <workItem from="1712568055875" duration="8215000" />
-      <workItem from="1712580340596" duration="2103000" />
+      <workItem from="1712580340596" duration="5036000" />
     </task>
     <servers />
   </component>

@@ -62,6 +62,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	// Handler for when "Interact" is pressed
+	void OnInteractPressed();
 			
 
 protected:

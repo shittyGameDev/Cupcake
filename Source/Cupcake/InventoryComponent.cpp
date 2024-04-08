@@ -10,6 +10,7 @@ UInventoryComponent::UInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	
 	// ...
 }
 
@@ -18,53 +19,73 @@ void UInventoryComponent::AddItem(AItem* Item)
 {
 	if(Item != nullptr)
 	{
-		//If item is stackable we handle the logic to stack the items.
-		if(Item->bIsStackable)
-		{
-			//Variable to hold existing items.
-			AItem* ExistingItem = nullptr;
-			//Goes through every Item in InventoryItems and checks ItemTypeId (specified for each item)
-			for(AItem* InventoryItem : InventoryItems)
-			{
-				if (InventoryItem->ItemTypeId == Item->ItemTypeId)
-				{
-					ExistingItem = InventoryItem;
-					break;
-				}
-			}
+		// Tries to find an existing item in the inventory with the same type ID
+		AItem* ExistingItem = FindItemById(Item->ItemTypeId);
 
-			//If item exists in the Inventory array we add to the quantity of existing item with the amount specified in the item blueprint
-			//We can use ExistingItem to show the player the amount through UI.
-			if(ExistingItem)
-			{
-				ExistingItem->Quantity += Item->Quantity;
-				UE_LOG(LogTemp, Warning, TEXT("Stacked item of type: %d, new quantity: %d"), Item->ItemTypeId, ExistingItem->Quantity);
-				Item->OnInteract();
-			}
-			else
-			{
-				//If the item does not exist in the array we add it as a new item instead.
-				InventoryItems.Add(Item);
-				UE_LOG(LogTemp, Warning, TEXT("Added new stackable item of type: %d, quantity: %d"), Item->ItemTypeId, Item->Quantity);
-			}
+		// If the item is stackable and an item of the same type already exists in the inventory
+		if(Item->bIsStackable && ExistingItem)
+		{
+			// Add the quantity of the new item to the existing items quantity
+			ExistingItem->Quantity += Item->Quantity;
+			UE_LOG(LogTemp, Warning, TEXT("Stacked item of type: %d, new quantity: %d"), Item->ItemTypeId, ExistingItem->Quantity);
+			// Atm kind of useless to call this as it is the same as "Item->Destroy()".
+			Item->OnInteract();
 		}
 		else
 		{
-			//If item is not stackable we make sure to add it anyways but we do not need to handle the stacking of the item.
+			// If no existing item is found or the item is not stackable add it as a new item to the inventory.
 			InventoryItems.Add(Item);
-			UE_LOG(LogTemp, Warning, TEXT("Added non-stackable item: %s, quantity: %d"), *Item->ItemDescription, Item->Quantity);
+			UE_LOG(LogTemp, Warning, TEXT("Added item: %s, quantity: %d"), *Item->ItemDescription, Item->Quantity);
 		}
+		// Atm kind of useless to call this as it is the same as "Item->Destroy()".
 		Item->OnInteract();
 	}
-	
 }
 
-//TODO: Add RemoveItem logic.
+//Temporary function
 void UInventoryComponent::RemoveItem(AItem* Item)
 {
-	//Method should check the ItemTypeId and remove from list.
+	if(Item != nullptr)
+	{
+		// Tries to find an existing item in the inventory with the same type ID
+		AItem* ExistingItem = FindItemById(Item->ItemTypeId);
+		
+		// If the item is stackable, exists, and has more than one quantity
+		if(Item->bIsStackable && ExistingItem && ExistingItem->Quantity > 1)
+		{
+			// Decrease the quantity of the existing item
+			ExistingItem->Quantity--;
+			UE_LOG(LogTemp, Warning, TEXT("Decreased quantity of item type: %d, new quantity: %d"), ExistingItem->ItemTypeId, ExistingItem->Quantity);
+		}
+		else
+		{
+			// If the item is not stackable or only one quantity exists, remove the item from the inventory
+			InventoryItems.Remove(ExistingItem ? ExistingItem : Item);
+			/*
+			if(ExistingItem)
+			{
+				ExistingItem->Destroy();
+			}
+			else
+			{
+				Item->Destroy();
+			}
+			*/
+			UE_LOG(LogTemp, Warning, TEXT("Removed item: %d"), Item->ItemTypeId);
+		}
+	}
+}
 
-	//If the item is stackable maybe we should handle the amount being Removed.
+AItem* UInventoryComponent::FindItemById(int32 ItemTypeId)
+{
+	for(AItem* InventoryItem : InventoryItems)
+	{
+		if(InventoryItem && InventoryItem->ItemTypeId == ItemTypeId)
+		{
+			return InventoryItem;
+		}
+	}
+	return nullptr;
 }
 
 // Called when the game starts
@@ -82,6 +103,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	
 	// ...
 }
 

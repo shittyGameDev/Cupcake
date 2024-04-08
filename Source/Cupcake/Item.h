@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Interactable.h"
-#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Item.generated.h"
 
+
+class ACupcakeCharacter;
 
 UCLASS()
 class CUPCAKE_API AItem : public AActor, public IInteractable

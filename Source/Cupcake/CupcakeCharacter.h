@@ -65,6 +65,8 @@ protected:
 
 	// Handler for when "Interact" is pressed
 	void OnInteractPressed();
+
+	void TestRemoveItem();
 			
 
 protected:

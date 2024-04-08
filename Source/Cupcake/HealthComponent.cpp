@@ -18,7 +18,7 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentHealth = MaxHealth;
+	Health = MaxHealth;
 	
 }
 
@@ -30,7 +30,28 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
+bool UHealthComponent::RegenerateHealth(float HealthAmount)
 {
-	return 0.f;
+	if (MaxHealth == Health) return false;
+	Health += HealthAmount;
+	Health = FMath::Clamp(Health, 0.f, MaxHealth);
+	return true;
+}
+
+bool UHealthComponent::TakeDamage(float DamageAmount)
+{
+	Health -= DamageAmount;
+	Health = FMath::Clamp(Health, 0.f, MaxHealth);
+
+	if (Health <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Took damage: %f"), Health);
+		return true;
+	}
+	return false;
+}
+
+bool UHealthComponent::OnDeath()
+{
+	return false;
 }

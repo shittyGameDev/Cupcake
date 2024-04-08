@@ -12,8 +12,8 @@
   <component name="ChangeListManager">
     <list default="true" id="1563a07f-5782-46f1-bb3e-6179f1a9ed5d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/HealthComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/HealthComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/HealthComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/HealthComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +22,10 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Source/Cupcake/DayCycleManager.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Cupcake/DayCycleManager.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />

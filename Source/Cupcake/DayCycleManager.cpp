@@ -23,5 +23,38 @@ void ADayCycleManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	ElapsedTime += DeltaTime;
+
+	if (ElapsedTime >= SECONDS_IN_A_DAY)
+	{
+		DayCycle++;
+		ElapsedTime = 0;
+		//NewDay()
+	}
 }
 
+int ADayCycleManager::GetCurrentDayNumber()
+{
+	return DayCycle;
+}
+
+int ADayCycleManager::GetHour()
+{
+	return ElapsedTime / 60 / 60;
+}
+
+int ADayCycleManager::GetMinutes()
+{
+	return static_cast<int>(ElapsedTime) % 60;
+}
+
+void ADayCycleManager::ShiftTime(float Time)
+{
+	ElapsedTime += Time;
+	
+	int daysPassed = static_cast<int>(ElapsedTime / SECONDS_IN_A_DAY);
+	
+	DayCycle += daysPassed;
+	
+	ElapsedTime -= daysPassed * SECONDS_IN_A_DAY;
+}

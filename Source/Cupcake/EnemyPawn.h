@@ -3,25 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "Actors/HealthComponent.h"
-#include "EnemyCharacter.generated.h"
+#include "GameFramework/Pawn.h"
+#include "EnemyPawn.generated.h"
 
 UCLASS()
-class CUPCAKE_API AEnemyCharacter : public ACharacter
+class CUPCAKE_API AEnemyPawn : public APawn
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
-	AEnemyCharacter();
+	// Sets default values for this pawn's properties
+	AEnemyPawn();
+
+	UHealthComponent* HealthComponent;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere)
-	UHealthComponent* HealthComponent;
 
 public:	
 	// Called every frame

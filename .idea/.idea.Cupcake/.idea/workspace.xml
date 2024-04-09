@@ -12,7 +12,9 @@
   <component name="ChangeListManager">
     <list default="true" id="1563a07f-5782-46f1-bb3e-6179f1a9ed5d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/EnemyCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/EnemyCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/BP_CupcakeGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/BP_CupcakeGameMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/Cupcake.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Cupcake.Build.cs" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +45,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "William",
+    "git-widget-placeholder": "Victor",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

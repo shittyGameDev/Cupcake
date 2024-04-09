@@ -3,9 +3,10 @@
 
 #include "Item.h"
 
-#include "CupcakeCharacter.h"
-#include "InventoryComponent.h"
+#include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Kismet/GameplayStatics.h"
+
+class UInventoryComponent;
 
 // Sets default values
 AItem::AItem()

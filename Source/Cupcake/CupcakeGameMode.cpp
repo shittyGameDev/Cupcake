@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CupcakeGameMode.h"
-#include "CupcakeCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 ACupcakeGameMode::ACupcakeGameMode()

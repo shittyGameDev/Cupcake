@@ -10,6 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Cupcake/Items/Interactable.h"
+#include "Cupcake/Items/Item.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 

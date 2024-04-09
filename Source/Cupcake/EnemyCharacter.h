@@ -15,9 +15,6 @@ public:
 	// Sets default values for this character's properties
 	AEnemyCharacter();
 
-	UPROPERTY(EditAnywhere, Category="AI Controller")
-	AAIController* Controller;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

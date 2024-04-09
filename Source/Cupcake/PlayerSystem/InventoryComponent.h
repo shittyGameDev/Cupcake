@@ -28,6 +28,13 @@ public:
 private:
 	UFUNCTION()
 	AItem* FindItemById(int32 ItemTypeId);
+
+		
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> InventoryHUDClass;
+
+	UPROPERTY()
+	UUserWidget* InventoryHUD;
 	
 protected:
 	// Called when the game starts

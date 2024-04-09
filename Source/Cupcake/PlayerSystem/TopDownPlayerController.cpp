@@ -9,9 +9,5 @@ void ATopDownPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HUD = CreateWidget(this, HUDClass);
-	if(HUD != nullptr)
-	{
-		HUD->AddToViewport();
-	}
+
 }

@@ -48,7 +48,7 @@ void ADayCycleManager::Tick(float DeltaTime)
 	if (SkyLight && SkyLight->GetLightComponent() && DirectionalLight && DirectionalLight->GetLightComponent())
 	{
 		// Uppdatera rotation
-		FRotator NewRotation = FRotator(0.f, Rotation, 0.f);
+		FRotator NewRotation = FRotator(-30.f, Rotation, 0.f);
 		DirectionalLight->SetActorRotation(NewRotation);
 
 		// Uppdatera färg

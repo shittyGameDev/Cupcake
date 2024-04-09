@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WeaponBase.h"
 #include "GameFramework/Character.h"
 #include "Actors/HealthComponent.h"
 #include "EnemyCharacter.generated.h"
@@ -23,11 +24,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UHealthComponent* HealthComponent;
 
+	UPROPERTY(EditAnywhere)
+	AWeaponBase* WeaponComponent;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

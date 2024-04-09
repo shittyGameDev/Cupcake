@@ -3,6 +3,8 @@
 
 #include "InventoryComponent.h"
 
+#include "Blueprint/UserWidget.h"
+
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -93,7 +95,21 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn)
+	{
+		// Hämta spelarkontrollern från ägarpawnen
+		APlayerController* PlayerController = Cast<APlayerController>(OwnerPawn->GetController());
+		if (PlayerController)
+		{
+			// Skapa widgeten med hjälp av spelarkontrollern
+			InventoryHUD = CreateWidget(PlayerController, InventoryHUDClass);
+			if (InventoryHUD != nullptr)
+			{
+				InventoryHUD->AddToViewport();
+			}
+		}
+	}
 	
 }
 

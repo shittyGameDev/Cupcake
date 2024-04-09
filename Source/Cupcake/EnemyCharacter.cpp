@@ -3,6 +3,7 @@
 
 #include "EnemyCharacter.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 
 // Sets default values
@@ -25,13 +26,5 @@ void AEnemyCharacter::BeginPlay()
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
-
-// Called to bind functionality to input
-void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-

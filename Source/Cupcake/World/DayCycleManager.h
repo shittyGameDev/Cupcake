@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DirectionalLight.h"
 #include "GameFramework/Actor.h"
-#include "WorldEvent.h"
+#include "Engine/SkyLight.h"
 #include "DayCycleManager.generated.h"
 
 
@@ -52,8 +53,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
-	USkyLightComponent* SkyLightComponent;
+	ASkyLight* SkyLight;
 
+	UPROPERTY(EditAnywhere)
+	ADirectionalLight* DirectionalLight;
 	// Get methods
 	int GetCurrentDayNumber();
 	int GetHour();

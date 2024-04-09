@@ -52,6 +52,8 @@ ACupcakeCharacter::ACupcakeCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void ACupcakeCharacter::BeginPlay()
@@ -85,6 +87,10 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 
+		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::OnInteractPressed);
+
+		PlayerInputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACupcakeCharacter::TestRemoveItem);
+
 		/* Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);
 		*/
@@ -92,6 +98,48 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+}
+
+void ACupcakeCharacter::TestRemoveItem()
+{
+	// Antag att du vill testa att ta bort det första itemet i inventoryt
+	if (InventoryComponent->InventoryItems.Num() > 0)
+	{
+		AItem* ItemToRemove = InventoryComponent->InventoryItems[0];
+		InventoryComponent->RemoveItem(ItemToRemove);
+	}
+}
+
+//Temporary function to Interact with items.
+void ACupcakeCharacter::OnInteractPressed()
+{
+	// Define raycast
+	FVector Start = GetActorLocation();
+	//Assume we want the raycast to be shot in the direction that the player looks
+	FVector ForwardVector = GetActorForwardVector();
+	FVector End = Start + (ForwardVector * 1000.f); // Justera detta värde för att kontrollera interaktionsavståndet
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this); // Ignore the player
+
+	//Shoot the raycast
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+
+	// Controlling the hit
+	if (bHit && HitResult.GetActor() != nullptr)
+	{
+		AItem* Item = Cast<AItem>(HitResult.GetActor());
+		if (Item && Item->bIsInteractable)
+		{
+			
+			if (IInteractable* Interactable = Cast<IInteractable>(Item))
+			{
+				Interactable->Interact();
+				UE_LOG(LogTemp, Display, TEXT("Interacted with item"));
+			}
+		}
 	}
 }
 

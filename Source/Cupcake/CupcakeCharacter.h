@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InventoryComponent.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
@@ -41,6 +42,10 @@ class ACupcakeCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
+	UPROPERTY(VisibleAnywhere, Category = "Inventory")
+	UInventoryComponent* InventoryComponent;
+
+
 	/** Look Input Action 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
@@ -57,6 +62,11 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	// Handler for when "Interact" is pressed
+	void OnInteractPressed();
+
+	void TestRemoveItem();
 			
 
 protected:

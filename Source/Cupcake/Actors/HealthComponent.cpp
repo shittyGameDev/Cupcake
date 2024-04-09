@@ -42,7 +42,7 @@ bool UHealthComponent::TakeDamage(float DamageAmount)
 {
 	Health -= DamageAmount;
 	Health = FMath::Clamp(Health, 0.f, MaxHealth);
-
+	UE_LOG(LogTemp, Warning, TEXT("Took damage: %f"), Health);
 	if (Health <= 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Took damage: %f"), Health);

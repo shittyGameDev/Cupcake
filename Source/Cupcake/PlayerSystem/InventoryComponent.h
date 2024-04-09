@@ -16,16 +16,17 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
-	UPROPERTY(EditAnywhere, Category= "Item")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Item")
 	TArray<AItem*> InventoryItems;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void AddItem(AItem* Item);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void RemoveItem(AItem* Item);
 
 private:
+	UFUNCTION()
 	AItem* FindItemById(int32 ItemTypeId);
 	
 protected:

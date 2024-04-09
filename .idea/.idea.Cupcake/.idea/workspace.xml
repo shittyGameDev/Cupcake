@@ -12,22 +12,8 @@
   <component name="ChangeListManager">
     <list default="true" id="1563a07f-5782-46f1-bb3e-6179f1a9ed5d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/CombatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Actors/CombatComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/CombatComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Actors/CombatComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/CupcakeCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/PlayerSystem/CupcakeCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/CupcakeCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/PlayerSystem/CupcakeCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/World/DayCycleManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/DayCycleManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/World/DayCycleManager.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/HealthComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Actors/HealthComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/HealthComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Actors/HealthComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/Interactable.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Items/Interactable.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/Interactable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Items/Interactable.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/InventoryComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/PlayerSystem/InventoryComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/InventoryComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/PlayerSystem/InventoryComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/Item.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Items/Item.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/Item.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Items/Item.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/WorldEvent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/World/WorldEvent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Cupcake/WorldEvent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/World/WorldEvent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/BP_CupcakeGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/BP_CupcakeGameMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/Cupcake.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Cupcake.Build.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +44,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "William",
+    "git-widget-placeholder": "Victor",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

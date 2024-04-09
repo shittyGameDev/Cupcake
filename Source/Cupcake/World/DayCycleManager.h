@@ -7,6 +7,27 @@
 #include "WorldEvent.h"
 #include "DayCycleManager.generated.h"
 
+
+DECLARE_DYNAMIC_DELEGATE(FTimeSpecificEvent);
+
+USTRUCT()
+struct FTimeEvent
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY()
+	int Day;
+
+	UPROPERTY()
+	int Hour;
+
+	UPROPERTY()
+	int Minute;
+
+	FTimeSpecificEvent EventDelegate;
+};
+
+
 UCLASS()
 class CUPCAKE_API ADayCycleManager : public AActor
 {
@@ -19,12 +40,18 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* CubeMesh;
+	UPROPERTY(EditAnywhere)
+	FVector SpawnLocation;
+	UPROPERTY(EditAnywhere)
+	FRotator SpawnRotation;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	USkyLightComponent* SkyLightComponent;
 
 	// Get methods
@@ -35,8 +62,14 @@ public:
 	// Functions
 	void ShiftTime(float Time);
 
+	void RegisterTimeEvent(const FTimeEvent& NewEvent);
+	UFUNCTION()
+	void SpawnTreeEvent();
+
 private:
 	char DayCycle = 0;
-	float ElapsedTime = 0;
-	float const SECONDS_IN_A_DAY = 84000.f; 
+	float ElapsedTime = 0.f;
+	float const SECONDS_IN_A_DAY = 100.f;
+
+	TArray<FTimeEvent> TimeEvents;
 };

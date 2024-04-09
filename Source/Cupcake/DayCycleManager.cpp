@@ -3,6 +3,8 @@
 
 #include "DayCycleManager.h"
 
+#include "Components/SkyLightComponent.h"
+
 // Sets default values
 ADayCycleManager::ADayCycleManager()
 {
@@ -30,6 +32,16 @@ void ADayCycleManager::Tick(float DeltaTime)
 		DayCycle++;
 		ElapsedTime = 0;
 	}
+	float DayProgress = ElapsedTime / SECONDS_IN_A_DAY;
+	float Rotation = 360.f * DayProgress;
+
+	//FRotator NewRotation = FRotator(0.f, Rotation, 0.f);
+	//SkyLightComponent->SetWorldRotation(NewRotation);
+
+	FLinearColor Color = FLinearColor::LerpUsingHSV(FLinearColor(0.25f, 0.1f, 1.0f), FLinearColor(1.0f, 0.9f, 0.6f), FMath::Abs(FMath::Sin(DayProgress * 2 * PI)));
+	SkyLightComponent->SetLightColor(Color);
+	float Intensity = FMath::Abs(FMath::Sin(FMath::DegreesToRadians(Rotation)));
+	SkyLightComponent->SetIntensity(Intensity);
 }
 
 int ADayCycleManager::GetCurrentDayNumber()

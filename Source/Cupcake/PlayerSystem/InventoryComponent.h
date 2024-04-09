@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Item.h"
+#include "Cupcake/Items/Item.h"
 #include "InventoryComponent.generated.h"
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CUPCAKE_API UInventoryComponent : public UActorComponent

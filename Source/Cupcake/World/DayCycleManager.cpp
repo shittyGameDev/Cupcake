@@ -4,6 +4,9 @@
 #include "DayCycleManager.h"
 
 #include "Components/SkyLightComponent.h"
+#include "Engine/StaticMeshActor.h"
+#include "EntitySystem/MovieSceneEntitySystemRunner.h"
+#include "Math/UnitConversion.h"
 
 // Sets default values
 ADayCycleManager::ADayCycleManager()
@@ -17,6 +20,10 @@ ADayCycleManager::ADayCycleManager()
 void ADayCycleManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FTimeEvent TreeSpawnEvent;
+	TreeSpawnEvent.Day = 1;
+	TreeSpawnEvent.Hour = 1;
 	
 }
 
@@ -42,6 +49,21 @@ void ADayCycleManager::Tick(float DeltaTime)
 	SkyLightComponent->SetLightColor(Color);
 	float Intensity = FMath::Abs(FMath::Sin(FMath::DegreesToRadians(Rotation)));
 	SkyLightComponent->SetIntensity(Intensity);
+
+	//check för om ett event ska ske nu
+	int CurrentDay = GetCurrentDayNumber();
+	int CurrentHour = GetHour();
+	int CurrentMinute = GetMinutes();
+	for(int i = TimeEvents.Num() - 1; i >= 0; i--)
+	{
+		if(TimeEvents[i].Day == CurrentDay && TimeEvents[i].Hour == CurrentHour && TimeEvents[i].Minute == CurrentMinute)
+		{
+			//trigga det unika eventet
+			TimeEvents[i].EventDelegate.ExecuteIfBound();
+
+			TimeEvents.RemoveAt(i);
+		}
+	} 
 }
 
 int ADayCycleManager::GetCurrentDayNumber()
@@ -63,9 +85,28 @@ void ADayCycleManager::ShiftTime(float Time)
 {
 	ElapsedTime += Time;
 	
-	int daysPassed = static_cast<int>(ElapsedTime / SECONDS_IN_A_DAY);
+	int daysPassed = FMath::FloorToInt(ElapsedTime / SECONDS_IN_A_DAY);
 	
 	DayCycle += daysPassed;
 	
 	ElapsedTime -= daysPassed * SECONDS_IN_A_DAY;
+}
+
+void ADayCycleManager::RegisterTimeEvent(const FTimeEvent& NewEvent)
+{
+	TimeEvents.Add(NewEvent);
+}
+
+void ADayCycleManager::SpawnTreeEvent()
+{
+	FVector Location(100.0f, 100.0f, 100.0f);
+	FRotator Rotation(0.0f, 0.0f, 0.0f);
+	
+	AStaticMeshActor* CubeActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnLocation, SpawnRotation);
+	if(CubeActor != nullptr)
+	{
+		CubeActor->GetStaticMeshComponent()->SetStaticMesh(CubeMesh);
+		CubeActor->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
+		CubeActor->SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
+	}
 }

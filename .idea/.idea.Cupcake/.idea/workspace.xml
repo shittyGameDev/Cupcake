@@ -12,6 +12,10 @@
   <component name="ChangeListManager">
     <list default="true" id="1563a07f-5782-46f1-bb3e-6179f1a9ed5d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_AxeWeapom.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_AxeWeapom.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cupcake.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Cupcake.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/WeaponBase.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/WeaponBase.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Cupcake/WeaponBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/WeaponBase.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

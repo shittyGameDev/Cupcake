@@ -12,13 +12,18 @@ AWeaponBase::AWeaponBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	WeaponMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
-	RootComponent = WeaponMeshComponent;
+	// Set origo position
+	USphereComponent* OrigoPosition = CreateDefaultSubobject<USphereComponent>(TEXT("Origo"));
+	OrigoPosition->InitSphereRadius(10.f);
+	RootComponent = OrigoPosition;
 
+	// Collision component
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
+	CollisionComponent->SetupAttachment(RootComponent);
 	CollisionComponent->InitSphereRadius(50.0f);
 	CollisionComponent->SetCollisionProfileName(TEXT("Trigger"));
-	CollisionComponent->SetupAttachment(RootComponent);
+
+	CollisionComponent->SetVisibility(true); // Set visibility to true
 
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnOverlapBegin);
 }
@@ -44,8 +49,7 @@ void AWeaponBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	{
 		if (UHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHealthComponent>())
 		{
-			HealthComponent->TakeDamage(DamageAmount);
+			HealthComponent->DoDamage(DamageAmount);
 		}
 	}
-	
 }

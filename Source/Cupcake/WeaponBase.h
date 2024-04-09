@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "WeaponBase.generated.h"
@@ -16,12 +17,9 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponBase();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Weapon Stats")
 	float DamageAmount;
-
-	UPROPERTY(EditAnywhere, Category="Weapon Mesh")
-	UStaticMeshComponent* WeaponMeshComponent;
-
+	
 	UPROPERTY(EditAnywhere, Category="Collision")
 	USphereComponent* CollisionComponent;
 

@@ -38,17 +38,17 @@ bool UHealthComponent::RegenerateHealth(float HealthAmount)
 	return true;
 }
 
-bool UHealthComponent::TakeDamage(float DamageAmount)
+void UHealthComponent::DoDamage(float DamageAmount)
 {
 	Health -= DamageAmount;
 	Health = FMath::Clamp(Health, 0.f, MaxHealth);
-	UE_LOG(LogTemp, Warning, TEXT("Took damage: %f"), Health);
+	
+	UE_LOG(LogTemp, Warning, TEXT("New Health: %f"), Health);
+
 	if (Health <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Took damage: %f"), Health);
-		return true;
+		OnDeath();
 	}
-	return false;
 }
 
 bool UHealthComponent::OnDeath()

@@ -44,7 +44,7 @@ void AWeaponBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 	{
 		if (UHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHealthComponent>())
 		{
-			HealthComponent->TakeDamage(DamageAmount);
+			HealthComponent->DoDamage(DamageAmount);
 		}
 	}
 	

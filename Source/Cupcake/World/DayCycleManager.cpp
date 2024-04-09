@@ -22,8 +22,11 @@ void ADayCycleManager::BeginPlay()
 	Super::BeginPlay();
 
 	FTimeEvent TreeSpawnEvent;
-	TreeSpawnEvent.Day = 1;
-	TreeSpawnEvent.Hour = 1;
+	TreeSpawnEvent.Day = 0;
+	TreeSpawnEvent.Hour = 0;
+	TreeSpawnEvent.Minute = 1;
+	TreeSpawnEvent.EventDelegate.BindUFunction(this, FName("SpawnTreeEvent"));
+	RegisterTimeEvent(TreeSpawnEvent);
 	
 }
 
@@ -33,7 +36,7 @@ void ADayCycleManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ElapsedTime += DeltaTime;
-
+	UE_LOG(LogTemp, Warning, TEXT("Time: %f"), ElapsedTime);
 	if (ElapsedTime >= SECONDS_IN_A_DAY)
 	{
 		DayCycle++;
@@ -42,8 +45,8 @@ void ADayCycleManager::Tick(float DeltaTime)
 	float DayProgress = ElapsedTime / SECONDS_IN_A_DAY;
 	float Rotation = 360.f * DayProgress;
 
-	//FRotator NewRotation = FRotator(0.f, Rotation, 0.f);
-	//SkyLightComponent->SetWorldRotation(NewRotation);
+	FRotator NewRotation = FRotator(0.f, Rotation, 0.f);
+	SkyLightComponent->SetWorldRotation(NewRotation);
 
 	FLinearColor Color = FLinearColor::LerpUsingHSV(FLinearColor(0.25f, 0.1f, 1.0f), FLinearColor(1.0f, 0.9f, 0.6f), FMath::Abs(FMath::Sin(DayProgress * 2 * PI)));
 	SkyLightComponent->SetLightColor(Color);
@@ -52,8 +55,11 @@ void ADayCycleManager::Tick(float DeltaTime)
 
 	//check för om ett event ska ske nu
 	int CurrentDay = GetCurrentDayNumber();
+	//UE_LOG(LogTemp, Warning, TEXT("Day: %f"), CurrentDay);
 	int CurrentHour = GetHour();
+	//UE_LOG(LogTemp, Warning, TEXT("Hour: %f"), CurrentHour);
 	int CurrentMinute = GetMinutes();
+	//UE_LOG(LogTemp, Warning, TEXT("Minute: %f"), CurrentMinute);
 	for(int i = TimeEvents.Num() - 1; i >= 0; i--)
 	{
 		if(TimeEvents[i].Day == CurrentDay && TimeEvents[i].Hour == CurrentHour && TimeEvents[i].Minute == CurrentMinute)
@@ -73,12 +79,12 @@ int ADayCycleManager::GetCurrentDayNumber()
 
 int ADayCycleManager::GetHour()
 {
-	return ElapsedTime / 60 / 60;
+	return static_cast<int>((ElapsedTime / 3600)) % 24;
 }
 
 int ADayCycleManager::GetMinutes()
 {
-	return static_cast<int>(ElapsedTime) % 60;
+	return static_cast<int>((ElapsedTime / 60)) % 60;
 }
 
 void ADayCycleManager::ShiftTime(float Time)
@@ -99,14 +105,18 @@ void ADayCycleManager::RegisterTimeEvent(const FTimeEvent& NewEvent)
 
 void ADayCycleManager::SpawnTreeEvent()
 {
-	FVector Location(100.0f, 100.0f, 100.0f);
-	FRotator Rotation(0.0f, 0.0f, 0.0f);
-	
-	AStaticMeshActor* CubeActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnLocation, SpawnRotation);
-	if(CubeActor != nullptr)
+	UE_LOG(LogTemp, Warning, TEXT("Spawned Cube!"));
+	if(CubeMesh)
 	{
-		CubeActor->GetStaticMeshComponent()->SetStaticMesh(CubeMesh);
-		CubeActor->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
-		CubeActor->SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
+		AStaticMeshActor* CubeActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnLocation, SpawnRotation);
+		if(CubeActor)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Ran inner function"));
+			CubeActor->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
+			CubeActor->GetStaticMeshComponent()->SetStaticMesh(CubeMesh);
+			
+			CubeActor->SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
+		}
 	}
+
 }

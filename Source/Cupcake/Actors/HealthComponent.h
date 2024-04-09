@@ -32,7 +32,7 @@ public:
 
 	bool RegenerateHealth(float HealthAmount);
 
-	bool TakeDamage(float DamageAmount);
+	void DoDamage(float DamageAmount);
 
 	virtual bool OnDeath();
 

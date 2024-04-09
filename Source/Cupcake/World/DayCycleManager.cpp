@@ -13,7 +13,7 @@ ADayCycleManager::ADayCycleManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 }
 
 // Called when the game starts or when spawned
@@ -45,13 +45,20 @@ void ADayCycleManager::Tick(float DeltaTime)
 	float DayProgress = ElapsedTime / SECONDS_IN_A_DAY;
 	float Rotation = 360.f * DayProgress;
 
-	FRotator NewRotation = FRotator(0.f, Rotation, 0.f);
-	SkyLightComponent->SetWorldRotation(NewRotation);
+	if (SkyLight && SkyLight->GetLightComponent() && DirectionalLight && DirectionalLight->GetLightComponent())
+	{
+		// Uppdatera rotation
+		FRotator NewRotation = FRotator(0.f, Rotation, 0.f);
+		DirectionalLight->SetActorRotation(NewRotation);
 
-	FLinearColor Color = FLinearColor::LerpUsingHSV(FLinearColor(0.25f, 0.1f, 1.0f), FLinearColor(1.0f, 0.9f, 0.6f), FMath::Abs(FMath::Sin(DayProgress * 2 * PI)));
-	SkyLightComponent->SetLightColor(Color);
-	float Intensity = FMath::Abs(FMath::Sin(FMath::DegreesToRadians(Rotation)));
-	SkyLightComponent->SetIntensity(Intensity);
+		// Uppdatera färg
+		FLinearColor Color = FLinearColor::LerpUsingHSV(FLinearColor(0.25f, 0.1f, 1.0f), FLinearColor(1.0f, 0.9f, 0.6f), FMath::Abs(FMath::Sin(DayProgress * 2 * PI)));
+		SkyLight->GetLightComponent()->SetLightColor(Color);
+
+		// Uppdatera intensitet
+		float Intensity = FMath::Abs(FMath::Sin(FMath::DegreesToRadians(Rotation)));
+		SkyLight->GetLightComponent()->SetIntensity(Intensity);
+	}
 
 	//check för om ett event ska ske nu
 	int CurrentDay = GetCurrentDayNumber();

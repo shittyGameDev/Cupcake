@@ -14,6 +14,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Cupcake/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/BP_CupcakeGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/BP_CupcakeGameMode.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Cupcake/Cupcake.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Cupcake/Cupcake.Build.cs" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,9 +56,9 @@
   },
   "keyToStringList": {
     "rider.external.source.directories": [
-      "C:\\Users\\lile6018\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
-      "C:\\Users\\lile6018\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
-      "C:\\Users\\lile6018\\AppData\\Local\\Symbols\\src"
+      "C:\\Users\\wija4116\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
+      "C:\\Users\\wija4116\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
+      "C:\\Users\\wija4116\\AppData\\Local\\Symbols\\src"
     ]
   }
 }]]></component>
@@ -189,6 +190,7 @@
       <workItem from="1712580921899" duration="1695000" />
       <workItem from="1712582660946" duration="3500000" />
       <workItem from="1712646531381" duration="3490000" />
+      <workItem from="1712666531688" duration="92000" />
     </task>
     <servers />
   </component>

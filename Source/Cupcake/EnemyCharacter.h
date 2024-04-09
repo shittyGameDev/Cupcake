@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Actors/HealthComponent.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
@@ -18,6 +19,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere)
+	UHealthComponent* HealthComponent;
 
 public:	
 	// Called every frame

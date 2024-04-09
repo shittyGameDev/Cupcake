@@ -4,36 +4,36 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "HealthComponent.generated.h"
+#include "WorldEvent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CUPCAKE_API UHealthComponent : public UActorComponent
+class CUPCAKE_API UWorldEvent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UHealthComponent();
+	UWorldEvent();
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Event Time Trigger")
+	int Day;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Event Time Trigger")
+	int Hour;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Event Time Trigger")
+	int Minutes;
 
+	UFUNCTION(BlueprintCallable, Category="World Event")
+	void Run();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="World Event")
+	void OnRunTriggered();
+		
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Health")
-	float MaxHealth = 100.f;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Health")
-	float Health = 0.f;
-
+	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	bool RegenerateHealth(float HealthAmount);
-
-	bool TakeDamage(float DamageAmount);
-
-	virtual bool OnDeath();
-
 };

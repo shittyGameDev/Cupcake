@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Cupcake/Items/Item.h"
+#include "Cupcake/UI/HotbarWidget.h"
 #include "InventoryComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -31,7 +32,13 @@ private:
 
 		
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UUserWidget> InventoryHUDClass;
+	TSubclassOf<UUserWidget> InventoryHUDClass;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> HotbarWidgetClass;
+
+	UPROPERTY()
+	UHotbarWidget* HotbarWidget;
 
 	UPROPERTY()
 	UUserWidget* InventoryHUD;

@@ -16,17 +16,6 @@ void AMapTriggerBoxSpecificActor::BeginPlay()
 	bIsOverlapping = false;
 	bPlayerOverlapped = false;
 	
-	AActor* ParentActor = GetOwner();
-	if (ParentActor != nullptr)
-	{
-		FString ParentActorName = ParentActor->GetName();
-		UE_LOG(LogTemp, Warning, TEXT("Parent actor name: %s"), *ParentActorName);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("This actor has no owner"));
-	}
-	
 }
 
 void AMapTriggerBoxSpecificActor::OnOverlapBegin(class AActor* OverlappedActor, class AActor* OtherActor)

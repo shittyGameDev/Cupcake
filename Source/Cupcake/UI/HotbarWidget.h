@@ -8,6 +8,7 @@
 #include "Cupcake/Items/Item.h"
 #include "HotbarWidget.generated.h"
 
+
 class UInventoryComponent;
 /**
  * 
@@ -22,10 +23,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UImage*> UIImages;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UImage*> Quantity;
+
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
 	
 	UFUNCTION(BlueprintCallable)
 	void UpdateHotbar(const TArray<AItem*>& Items);
+	
+	// Setter function for UIImages
+	UFUNCTION(BlueprintCallable)
+	void SetUIImages(TArray<UImage*> NewUIImages);
 	
 };

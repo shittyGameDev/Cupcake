@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Interactable.h"
+#include "Components/Image.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Item.generated.h"
@@ -26,7 +27,7 @@ public:
 	FString ItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	UTexture2D* ItemThumbnail;
+	UImage* ItemThumbnail;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FString ItemDescription;

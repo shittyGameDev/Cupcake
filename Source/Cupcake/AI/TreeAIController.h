@@ -19,7 +19,7 @@ public:
 	virtual void BeginPlay() override; // Override BeginPlay function
 
 private:
-	APlayerController* PlayerController; // Pointer to PlayerController
+	APawn* PlayerPawn; // Pointer to PlayerController
 
 	void LookAtPlayer(); // Function to make AI look at the player
 };

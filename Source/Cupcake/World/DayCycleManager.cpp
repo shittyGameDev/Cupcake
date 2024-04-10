@@ -3,9 +3,13 @@
 
 #include "DayCycleManager.h"
 
+#include "FunctionalUIScreenshotTest.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/SkyLightComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "EntitySystem/MovieSceneEntitySystemRunner.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 #include "Math/UnitConversion.h"
 
 // Sets default values
@@ -35,12 +39,19 @@ void ADayCycleManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ElapsedTime += DeltaTime;
-	UE_LOG(LogTemp, Warning, TEXT("Time: %f"), ElapsedTime);
+	ElapsedTime += DeltaTime * AccelerateTime;
+	
+	/*if (!bHasSlept && ElapsedTime > 5 * AccelerateTime)
+	{
+		Sleep();
+		bHasSlept = true;
+	}*/
+	//UE_LOG(LogTemp, Warning, TEXT("Time: %f"), ElapsedTime);
 	if (ElapsedTime >= SECONDS_IN_A_DAY)
 	{
 		DayCycle++;
 		ElapsedTime = 0;
+		UE_LOG(LogTemp, Display, TEXT("New Day %i, Time: %f"), GetCurrentDayNumber(), ElapsedTime);
 	}
 	float DayProgress = ElapsedTime / SECONDS_IN_A_DAY;
 	float Rotation = 360.f * DayProgress;
@@ -96,13 +107,61 @@ int ADayCycleManager::GetMinutes()
 
 void ADayCycleManager::ShiftTime(float Time)
 {
+	float OldElapsedTime = ElapsedTime; // Spara det gamla värdet för att jämföra
 	ElapsedTime += Time;
-	
+    
 	int daysPassed = FMath::FloorToInt(ElapsedTime / SECONDS_IN_A_DAY);
-	
 	DayCycle += daysPassed;
-	
+    
 	ElapsedTime -= daysPassed * SECONDS_IN_A_DAY;
+
+	UE_LOG(LogTemp, Warning, TEXT("ShiftTime called. Old Time: %f, New Time: %f, Days Passed: %d"), OldElapsedTime, ElapsedTime, DayCycle);
+}
+
+void ADayCycleManager::Sleep()
+{
+	UE_LOG(LogTemp, Display, TEXT("Hour before: %i"), GetHour());
+	ShiftTime(SleepDurationInHours * 60 * 60);
+	UE_LOG(LogTemp, Display, TEXT("Hour after: %i"), GetHour());
+	
+	if (BlackScreenWidget)
+	{
+		BlackScreenWidget->RemoveFromParent();
+		BlackScreenWidget = nullptr; 
+	}
+	
+	if (BlackScreenWidgetClass != nullptr)
+	{
+		
+		BlackScreenWidget = CreateWidget<UUserWidget>(GetWorld(), BlackScreenWidgetClass);
+		if (BlackScreenWidget != nullptr)
+		{
+			BlackScreenWidget->AddToViewport(1000);
+			
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+			{
+				if (BlackScreenWidget)
+				{
+					BlackScreenWidget->RemoveFromParent();
+					BlackScreenWidget = nullptr; 
+				}
+			}, 3.0f, false);
+		}
+	}
+}
+
+
+
+void ADayCycleManager::Interact_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Fuck off you think you can sleep idiot?"));
+	if (CanSleep())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("I guess you can sleep now :)"));
+		Sleep();
+		LastSleepDay = GetCurrentDayNumber();
+	}
 }
 
 void ADayCycleManager::RegisterTimeEvent(const FTimeEvent& NewEvent)
@@ -110,12 +169,17 @@ void ADayCycleManager::RegisterTimeEvent(const FTimeEvent& NewEvent)
 	TimeEvents.Add(NewEvent);
 }
 
+bool ADayCycleManager::CanSleep()
+{
+	return GetCurrentDayNumber() > LastSleepDay;
+}
+
 void ADayCycleManager::SpawnTreeEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Spawned Cube!"));
 	if(CubeMesh)
 	{
-		AStaticMeshActor* CubeActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnLocation, SpawnRotation);
+		AStaticMeshActor* CubeActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnTreeLocation, SpawnRotation);
 		if(CubeActor)
 		{
 			UE_LOG(LogTemp, Display, TEXT("Ran inner function"));

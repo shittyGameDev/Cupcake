@@ -31,7 +31,7 @@ void UInventoryComponent::AddItem(AItem* Item)
 			ExistingItem->Quantity += Item->Quantity;
 			UE_LOG(LogTemp, Warning, TEXT("Stacked item of type: %d, new quantity: %d"), Item->ItemTypeId, ExistingItem->Quantity);
 			// Atm kind of useless to call this as it is the same as "Item->Destroy()".
-			Item->OnInteract();
+			Item->Destroy();
 		}
 		else
 		{
@@ -40,7 +40,7 @@ void UInventoryComponent::AddItem(AItem* Item)
 			UE_LOG(LogTemp, Warning, TEXT("Added item: %s, quantity: %d"), *Item->ItemDescription, Item->Quantity);
 		}
 		// Atm kind of useless to call this as it is the same as "Item->Destroy()".
-		Item->OnInteract();
+		Item->Destroy();
 	}
 }
 

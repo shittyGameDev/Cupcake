@@ -2,7 +2,6 @@
 
 
 #include "InventoryComponent.h"
-
 #include "Blueprint/UserWidget.h"
 
 // Sets default values for this component's properties
@@ -30,17 +29,15 @@ void UInventoryComponent::AddItem(AItem* Item)
 			// Add the quantity of the new item to the existing items quantity
 			ExistingItem->Quantity += Item->Quantity;
 			UE_LOG(LogTemp, Warning, TEXT("Stacked item of type: %d, new quantity: %d"), Item->ItemTypeId, ExistingItem->Quantity);
-			// Atm kind of useless to call this as it is the same as "Item->Destroy()".
-			Item->Destroy();
 		}
 		else
 		{
 			// If no existing item is found or the item is not stackable add it as a new item to the inventory.
-			InventoryItems.Add(Item);
 			UE_LOG(LogTemp, Warning, TEXT("Added item: %s, quantity: %d"), *Item->ItemDescription, Item->Quantity);
 		}
 		// Atm kind of useless to call this as it is the same as "Item->Destroy()".
 		Item->Destroy();
+		HotbarWidget->UpdateHotbar(InventoryItems);
 	}
 }
 
@@ -63,16 +60,6 @@ void UInventoryComponent::RemoveItem(AItem* Item)
 		{
 			// If the item is not stackable or only one quantity exists, remove the item from the inventory
 			InventoryItems.Remove(ExistingItem ? ExistingItem : Item);
-			/*
-			if(ExistingItem)
-			{
-				ExistingItem->Destroy();
-			}
-			else
-			{
-				Item->Destroy();
-			}
-			*/
 			UE_LOG(LogTemp, Warning, TEXT("Removed item: %d"), Item->ItemTypeId);
 		}
 	}
@@ -103,14 +90,22 @@ void UInventoryComponent::BeginPlay()
 		if (PlayerController)
 		{
 			// Skapa widgeten med hjälp av spelarkontrollern
+			/*
 			InventoryHUD = CreateWidget(PlayerController, InventoryHUDClass);
 			if (InventoryHUD != nullptr)
 			{
 				InventoryHUD->AddToViewport();
 			}
+			*/
+
+			HotbarWidget = CreateWidget<UHotbarWidget>(PlayerController, HotbarWidgetClass);
+			if(HotbarWidget != nullptr)
+			{
+				HotbarWidget->AddToViewport();
+			}
+			
 		}
 	}
-	
 }
 
 

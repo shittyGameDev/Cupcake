@@ -53,7 +53,9 @@ class ACupcakeCharacter : public ACharacter
 
 public:
 	ACupcakeCharacter();
-	
+
+	void DisableMovement();
+	void EnableMovement();
 
 protected:
 

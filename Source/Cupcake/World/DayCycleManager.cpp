@@ -6,6 +6,7 @@
 #include "FunctionalUIScreenshotTest.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/SkyLightComponent.h"
+#include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Engine/StaticMeshActor.h"
 #include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "GameFramework/Character.h"
@@ -25,12 +26,16 @@ void ADayCycleManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PlayerController = GetWorld()->GetFirstPlayerController();
+	
 	FTimeEvent TreeSpawnEvent;
 	TreeSpawnEvent.Day = 0;
 	TreeSpawnEvent.Hour = 0;
 	TreeSpawnEvent.Minute = 1;
 	TreeSpawnEvent.EventDelegate.BindUFunction(this, FName("SpawnTreeEvent"));
 	RegisterTimeEvent(TreeSpawnEvent);
+
+	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	
 }
 
@@ -120,6 +125,13 @@ void ADayCycleManager::ShiftTime(float Time)
 
 void ADayCycleManager::Sleep()
 {
+	ACupcakeCharacter* PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
+	if (PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Movement disabled"));
+		PlayerCharacter->DisableMovement();
+	}
+	
 	UE_LOG(LogTemp, Display, TEXT("Hour before: %i"), GetHour());
 	ShiftTime(SleepDurationInHours * 60 * 60);
 	UE_LOG(LogTemp, Display, TEXT("Hour after: %i"), GetHour());
@@ -144,7 +156,13 @@ void ADayCycleManager::Sleep()
 				if (BlackScreenWidget)
 				{
 					BlackScreenWidget->RemoveFromParent();
-					BlackScreenWidget = nullptr; 
+					BlackScreenWidget = nullptr;
+					ACupcakeCharacter* LocalPlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
+					if (LocalPlayerCharacter)
+					{
+						UE_LOG(LogTemp, Warning, TEXT("Enable Movement"));
+						LocalPlayerCharacter->EnableMovement();
+					}
 				}
 			}, 3.0f, false);
 		}

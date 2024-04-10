@@ -58,6 +58,19 @@ ACupcakeCharacter::ACupcakeCharacter()
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
+void ACupcakeCharacter::DisableMovement()
+{
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	bUseControllerRotationYaw = false;
+}
+
+void ACupcakeCharacter::EnableMovement()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	bUseControllerRotationYaw = true;
+}
+
 void ACupcakeCharacter::BeginPlay()
 {
 	// Call the base class  

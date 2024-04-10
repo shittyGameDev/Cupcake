@@ -51,7 +51,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float SleepDurationInHours = 7.f;
-	
+
 	UPROPERTY(EditAnywhere)
 	float AccelerateTime = 72.f;
 
@@ -59,6 +59,7 @@ protected:
 	UUserWidget* BlackScreenWidget = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> BlackScreenWidgetClass;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -90,6 +91,8 @@ private:
 	float const SECONDS_IN_A_DAY = 86400.f;
 	int LastSleepDay = -1;
 	bool bHasSlept = false;
+	APlayerController* PlayerController;
+	APawn* PlayerPawn;
 	
 	TArray<FTimeEvent> TimeEvents;
 };

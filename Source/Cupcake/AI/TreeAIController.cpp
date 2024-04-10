@@ -11,9 +11,22 @@ void ATreeAIController::BeginPlay()
 
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	LookAtPlayer();
+}
 
-	
-	MoveToActor(PlayerPawn);
+void ATreeAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (LineOfSightTo(PlayerPawn))
+	{
+		SetFocus(PlayerPawn);
+		MoveToActor(PlayerPawn, AcceptanceRadius);
+	}
+	else
+	{
+		ClearFocus(EAIFocusPriority::Gameplay);
+		StopMovement();
+	}
 }
 
 void ATreeAIController::LookAtPlayer()

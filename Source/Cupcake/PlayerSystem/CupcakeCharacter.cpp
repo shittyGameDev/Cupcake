@@ -132,15 +132,9 @@ void ACupcakeCharacter::OnInteractPressed()
 	// Controlling the hit
 	if (bHit && HitResult.GetActor() != nullptr)
 	{
-		AItem* Item = Cast<AItem>(HitResult.GetActor());
-		if (Item && Item->bIsInteractable)
+		if (HitResult.GetActor()->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
 		{
-			
-			if (IInteractable* Interactable = Cast<IInteractable>(Item))
-			{
-				Interactable->Interact();
-				UE_LOG(LogTemp, Display, TEXT("Interacted with item"));
-			}
+			IInteractable::Execute_Interact(HitResult.GetActor());
 		}
 	}
 }

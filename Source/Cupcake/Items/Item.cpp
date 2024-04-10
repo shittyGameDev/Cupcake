@@ -3,6 +3,7 @@
 
 #include "Item.h"
 
+#include "IDetailTreeNode.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -40,11 +41,6 @@ void AItem::Tick(float DeltaTime)
 	
 }
 
-void AItem::OnInteract()
-{
-	Destroy();
-}
-
 void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -62,13 +58,15 @@ void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	
 }
 
-void AItem::Interact()
+void AItem::Interact_Implementation()
 {
+	//IInteractable::Interact_Implementation();
 	if (ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
 	{
 		if(UInventoryComponent* Inventory = Player->FindComponentByClass<UInventoryComponent>())
 		{
 			Inventory->AddItem(this);
+			
 		}
 	}
 }

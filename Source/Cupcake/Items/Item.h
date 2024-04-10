@@ -61,13 +61,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void OnInteract();
-
 	//Function to handle the overlap event. 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
 
-	virtual void Interact() override;
+	virtual void Interact_Implementation();
 };

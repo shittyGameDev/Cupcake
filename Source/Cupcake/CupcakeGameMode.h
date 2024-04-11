@@ -27,4 +27,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LogTriggerBoxes() const;
+	
+	virtual void BeginPlay() override;
 };

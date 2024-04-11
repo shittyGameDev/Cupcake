@@ -2,6 +2,8 @@
 // MapTriggerBoxSpecificActor.cpp
 
 #include "MapTriggerBoxSpecificActor.h"
+
+#include "MapUI.h"
 #include "GameFramework/Character.h" // Include this header for character class
 
 void AMapTriggerBoxSpecificActor::BeginPlay()
@@ -25,19 +27,26 @@ void AMapTriggerBoxSpecificActor::OnOverlapBegin(class AActor* OverlappedActor, 
 	if (PlayerCharacter != nullptr && !bPlayerOverlapped)
 	{
 		// Set the bool to true when the player overlaps
-		
 		bIsOverlapping = true;
 
 
 		// Log the player's name that is overlapping
 		FString PlayerName = PlayerCharacter->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("%s is overlapping"), *PlayerName);
+
+		// Access the UMapUI instance
+		UMapUI* MapUI = Cast<UMapUI>(this);
+		if (MapUI)
+		{
+			// Call the function to show images with the same trigger box name
+			MapUI->ShowImagesOnTrigger(TriggerBoxName);
+		}
 	}
 
 	ACupcakeGameMode* GameMode = GetWorld()->GetAuthGameMode<ACupcakeGameMode>();
 	if (GameMode && !bPlayerOverlapped)
 	{
-		GameMode->AddTriggerBox(bIsOverlapping, TriggerBoxName);
+		GameMode->AddTriggerBox(bIsOverlapping, TriggerBoxName); // Add triggerboxname and bool to array
 		GameMode->LogTriggerBoxes(); // Call the logging function
 	}
 	bPlayerOverlapped = true; // Set the flag to true to prevent further setting

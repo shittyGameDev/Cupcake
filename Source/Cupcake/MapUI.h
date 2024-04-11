@@ -14,16 +14,17 @@ UCLASS()
 class CUPCAKE_API UMapUI : public UUserWidgetBlueprint
 {
 	GENERATED_BODY()
-	
 
 public:
-
-	UMapUI(const FObjectInitializer& ObjectInitializer);
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UFUNCTION(BlueprintCallable)
+	void ShowImagesOnTrigger(const FName& TriggerBoxName);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TArray<UImage*> Images;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	class UImage* Image;
+	
 	
 };

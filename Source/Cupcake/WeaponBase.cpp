@@ -43,7 +43,7 @@ void AWeaponBase::Tick(float DeltaTime)
 }
 
 void AWeaponBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-						   int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                 int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
@@ -52,4 +52,16 @@ void AWeaponBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 			HealthComponent->DoDamage(DamageAmount);
 		}
 	}
+}
+
+void AWeaponBase::EnableWeapon()
+{
+	SetActorHiddenInGame(false);
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void AWeaponBase::DisableWeapon()
+{
+	SetActorHiddenInGame(true);
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

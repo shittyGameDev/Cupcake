@@ -58,6 +58,33 @@ ACupcakeCharacter::ACupcakeCharacter()
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
+void ACupcakeCharacter::Attack_Implementation()
+{
+	ICombat::Attack_Implementation();
+
+	if (!Weapon) return;
+    
+	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
+	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
+	{
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+	}
+
+	Weapon->EnableWeapon(); // Enable the weapon
+
+	// Set a timer to disable the weapon after a short duration, simulating an attack duration
+	// Assuming an attack takes 1 second; adjust this duration as needed
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 1.0f, false);
+}
+
+void ACupcakeCharacter::OnAttackFinished()
+{
+	if (Weapon)
+	{
+		Weapon->DisableWeapon(); // Disable the weapon after the attack is complete
+	}
+}
+
 void ACupcakeCharacter::BeginPlay()
 {
 	// Call the base class  

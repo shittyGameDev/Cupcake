@@ -6,6 +6,7 @@
 #include "FunctionalUIScreenshotTest.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/SkyLightComponent.h"
+#include "Components/TextBlock.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Engine/StaticMeshActor.h"
 #include "EntitySystem/MovieSceneEntitySystemRunner.h"
@@ -57,6 +58,7 @@ void ADayCycleManager::Tick(float DeltaTime)
 		DayCycle++;
 		ElapsedTime = 0;
 		UE_LOG(LogTemp, Display, TEXT("New Day %i, Time: %f"), GetCurrentDayNumber(), ElapsedTime);
+		DayTransistion();
 	}
 	float DayProgress = ElapsedTime / SECONDS_IN_A_DAY;
 	float Rotation = 360.f * DayProgress;
@@ -190,6 +192,28 @@ void ADayCycleManager::RegisterTimeEvent(const FTimeEvent& NewEvent)
 bool ADayCycleManager::CanSleep()
 {
 	return GetCurrentDayNumber() > LastSleepDay;
+}
+
+void ADayCycleManager::DayTransistion()
+{
+	if (DayTransitionWidgetClass != nullptr)
+	{
+		UUserWidget* DayTranistionWidget = CreateWidget<UUserWidget>(GetWorld(), DayTransitionWidgetClass);
+		if (DayTranistionWidget != nullptr)
+		{
+			DayTranistionWidget->AddToViewport(1000);
+			if(UTextBlock* DayText = Cast<UTextBlock>(DayTranistionWidget->GetWidgetFromName(TEXT("DayText"))))
+			{
+				DayText->SetText(FText::Format(NSLOCTEXT("Game", "DayText", "Day {0}"), FText::AsNumber(GetCurrentDayNumber())));
+			}
+
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [DayTranistionWidget]()
+			{
+				DayTranistionWidget->RemoveFromParent();
+			}, 3.0f, false);
+		}
+	}
 }
 
 void ADayCycleManager::SpawnTreeEvent()

@@ -59,6 +59,8 @@ protected:
 	UUserWidget* BlackScreenWidget = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> BlackScreenWidgetClass;
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> DayTransitionWidgetClass;
 	
 public:	
 	// Called every frame
@@ -80,6 +82,7 @@ public:
 	virtual void Interact_Implementation();
 
 	bool CanSleep();
+	void DayTransistion();
 
 	void RegisterTimeEvent(const FTimeEvent& NewEvent);
 	UFUNCTION()

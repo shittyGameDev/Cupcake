@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "DayCycleManager.h"
 
 #include "FunctionalUIScreenshotTest.h"
@@ -37,7 +34,7 @@ void ADayCycleManager::BeginPlay()
 	RegisterTimeEvent(TreeSpawnEvent);
 
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	
+	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
 }
 
 // Called every frame
@@ -127,7 +124,7 @@ void ADayCycleManager::ShiftTime(float Time)
 
 void ADayCycleManager::Sleep()
 {
-	ACupcakeCharacter* PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
+	
 	if (PlayerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Movement disabled"));
@@ -159,11 +156,11 @@ void ADayCycleManager::Sleep()
 				{
 					BlackScreenWidget->RemoveFromParent();
 					BlackScreenWidget = nullptr;
-					ACupcakeCharacter* LocalPlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
-					if (LocalPlayerCharacter)
+					
+					if (PlayerCharacter)
 					{
 						UE_LOG(LogTemp, Warning, TEXT("Enable Movement"));
-						LocalPlayerCharacter->EnableMovement();
+						PlayerCharacter->EnableMovement();
 					}
 				}
 			}, 3.0f, false);
@@ -201,6 +198,7 @@ void ADayCycleManager::DayTransistion()
 		UUserWidget* DayTranistionWidget = CreateWidget<UUserWidget>(GetWorld(), DayTransitionWidgetClass);
 		if (DayTranistionWidget != nullptr)
 		{
+			PlayerCharacter->DisableMovement();
 			DayTranistionWidget->AddToViewport(1000);
 			if(UTextBlock* DayText = Cast<UTextBlock>(DayTranistionWidget->GetWidgetFromName(TEXT("DayText"))))
 			{
@@ -208,9 +206,10 @@ void ADayCycleManager::DayTransistion()
 			}
 
 			FTimerHandle TimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [DayTranistionWidget]()
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, DayTranistionWidget]()
 			{
 				DayTranistionWidget->RemoveFromParent();
+				PlayerCharacter->EnableMovement();
 			}, 3.0f, false);
 		}
 	}

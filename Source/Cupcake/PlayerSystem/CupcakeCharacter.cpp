@@ -62,13 +62,13 @@ void ACupcakeCharacter::DisableMovement()
 {
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	bUseControllerRotationYaw = false;
+	//bUseControllerRotationYaw = false;
 }
 
 void ACupcakeCharacter::EnableMovement()
 {
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-	bUseControllerRotationYaw = true;
+	//bUseControllerRotationYaw = true;
 }
 
 void ACupcakeCharacter::BeginPlay()

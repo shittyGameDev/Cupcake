@@ -9,6 +9,8 @@
 #include "Engine/SkyLight.h"
 #include "DayCycleManager.generated.h"
 
+class ACupcakeCharacter;
+
 
 DECLARE_DYNAMIC_DELEGATE(FTimeSpecificEvent);
 
@@ -33,6 +35,7 @@ public:
 UCLASS()
 class CUPCAKE_API ADayCycleManager : public AActor, public IInteractable
 {
+	
 	GENERATED_BODY()
 	
 public:	
@@ -94,8 +97,11 @@ private:
 	float const SECONDS_IN_A_DAY = 86400.f;
 	int LastSleepDay = -1;
 	bool bHasSlept = false;
+	bool bSleepWidgetActive = false;
+	bool bDayTransistionScheduled = false;
+	bool bIsReactivationScheduled = false;
 	APlayerController* PlayerController;
 	APawn* PlayerPawn;
-	
+	ACupcakeCharacter* PlayerCharacter;
 	TArray<FTimeEvent> TimeEvents;
 };

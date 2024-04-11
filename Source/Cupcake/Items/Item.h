@@ -27,7 +27,7 @@ public:
 	FString ItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	UImage* ItemThumbnail;
+	UTexture2D* ItemThumbnail;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	FString ItemDescription;

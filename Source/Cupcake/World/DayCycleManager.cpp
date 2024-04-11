@@ -124,7 +124,7 @@ void ADayCycleManager::ShiftTime(float Time)
 
 void ADayCycleManager::Sleep()
 {
-	
+	int DayBeforeSleep = GetCurrentDayNumber();
 	if (PlayerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Movement disabled"));
@@ -150,7 +150,7 @@ void ADayCycleManager::Sleep()
 			BlackScreenWidget->AddToViewport(1000);
 			
 			FTimerHandle TimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, DayBeforeSleep]()
 			{
 				if (BlackScreenWidget)
 				{
@@ -161,6 +161,11 @@ void ADayCycleManager::Sleep()
 					{
 						UE_LOG(LogTemp, Warning, TEXT("Enable Movement"));
 						PlayerCharacter->EnableMovement();
+					}
+					int DayAfterSleep = GetCurrentDayNumber();
+					if (DayAfterSleep > DayBeforeSleep)
+					{
+						DayTransistion();
 					}
 				}
 			}, 3.0f, false);

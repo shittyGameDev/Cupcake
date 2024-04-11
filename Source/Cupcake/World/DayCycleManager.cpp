@@ -1,10 +1,11 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
 #include "DayCycleManager.h"
 
 #include "FunctionalUIScreenshotTest.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/SkyLightComponent.h"
-#include "Components/TextBlock.h"
-#include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Engine/StaticMeshActor.h"
 #include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "GameFramework/Character.h"
@@ -24,17 +25,13 @@ void ADayCycleManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerController = GetWorld()->GetFirstPlayerController();
-	
 	FTimeEvent TreeSpawnEvent;
 	TreeSpawnEvent.Day = 0;
 	TreeSpawnEvent.Hour = 0;
 	TreeSpawnEvent.Minute = 1;
 	TreeSpawnEvent.EventDelegate.BindUFunction(this, FName("SpawnTreeEvent"));
 	RegisterTimeEvent(TreeSpawnEvent);
-
-	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
+	
 }
 
 // Called every frame
@@ -55,7 +52,6 @@ void ADayCycleManager::Tick(float DeltaTime)
 		DayCycle++;
 		ElapsedTime = 0;
 		UE_LOG(LogTemp, Display, TEXT("New Day %i, Time: %f"), GetCurrentDayNumber(), ElapsedTime);
-		DayTransistion();
 	}
 	float DayProgress = ElapsedTime / SECONDS_IN_A_DAY;
 	float Rotation = 360.f * DayProgress;
@@ -124,13 +120,6 @@ void ADayCycleManager::ShiftTime(float Time)
 
 void ADayCycleManager::Sleep()
 {
-	
-	if (PlayerCharacter)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Movement disabled"));
-		PlayerCharacter->DisableMovement();
-	}
-	
 	UE_LOG(LogTemp, Display, TEXT("Hour before: %i"), GetHour());
 	ShiftTime(SleepDurationInHours * 60 * 60);
 	UE_LOG(LogTemp, Display, TEXT("Hour after: %i"), GetHour());
@@ -155,13 +144,7 @@ void ADayCycleManager::Sleep()
 				if (BlackScreenWidget)
 				{
 					BlackScreenWidget->RemoveFromParent();
-					BlackScreenWidget = nullptr;
-					
-					if (PlayerCharacter)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Enable Movement"));
-						PlayerCharacter->EnableMovement();
-					}
+					BlackScreenWidget = nullptr; 
 				}
 			}, 3.0f, false);
 		}
@@ -189,30 +172,6 @@ void ADayCycleManager::RegisterTimeEvent(const FTimeEvent& NewEvent)
 bool ADayCycleManager::CanSleep()
 {
 	return GetCurrentDayNumber() > LastSleepDay;
-}
-
-void ADayCycleManager::DayTransistion()
-{
-	if (DayTransitionWidgetClass != nullptr)
-	{
-		UUserWidget* DayTranistionWidget = CreateWidget<UUserWidget>(GetWorld(), DayTransitionWidgetClass);
-		if (DayTranistionWidget != nullptr)
-		{
-			PlayerCharacter->DisableMovement();
-			DayTranistionWidget->AddToViewport(1000);
-			if(UTextBlock* DayText = Cast<UTextBlock>(DayTranistionWidget->GetWidgetFromName(TEXT("DayText"))))
-			{
-				DayText->SetText(FText::Format(NSLOCTEXT("Game", "DayText", "Day {0}"), FText::AsNumber(GetCurrentDayNumber())));
-			}
-
-			FTimerHandle TimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, DayTranistionWidget]()
-			{
-				DayTranistionWidget->RemoveFromParent();
-				PlayerCharacter->EnableMovement();
-			}, 3.0f, false);
-		}
-	}
 }
 
 void ADayCycleManager::SpawnTreeEvent()

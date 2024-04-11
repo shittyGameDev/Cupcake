@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Cupcake/Actors/HealthComponent.h"
 #include "Cupcake/Items/Interactable.h"
 #include "Cupcake/Items/Item.h"
 
@@ -56,25 +57,33 @@ ACupcakeCharacter::ACupcakeCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+
+	// Add Health Component
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+}
+
+void ACupcakeCharacter::OnDeath_Implementation()
+{
+	Destroy();
 }
 
 void ACupcakeCharacter::Attack_Implementation()
 {
-	ICombat::Attack_Implementation();
-
+	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
 	if (!Weapon) return;
     
 	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
 	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
 	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
+		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
 
 	Weapon->EnableWeapon(); // Enable the weapon
 
 	// Set a timer to disable the weapon after a short duration, simulating an attack duration
 	// Assuming an attack takes 1 second; adjust this duration as needed
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 1.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 0.2f, false);
 }
 
 void ACupcakeCharacter::OnAttackFinished()
@@ -89,6 +98,18 @@ void ACupcakeCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
+	// Create Weapon
+	if (WeaponBlueprint)
+	{
+		// Spawn the weapon
+		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
+
+		// Optionally, attach the weapon to the character
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+
+		Weapon->DisableWeapon();
+	}
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -123,6 +144,9 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		/* Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);
 		*/
+
+		// Combat
+		PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACupcakeCharacter::Attack_Implementation);
 	}
 	else
 	{

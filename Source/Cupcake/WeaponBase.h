@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "WeaponBase.generated.h"

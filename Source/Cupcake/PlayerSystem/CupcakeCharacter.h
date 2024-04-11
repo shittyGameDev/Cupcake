@@ -63,6 +63,9 @@ public:
 
 	void OnAttackFinished();
 
+	void EnableMovement();
+	void DisableMovement();
+
 	UHealthComponent* HealthComponent;
 	AWeaponBase* Weapon;
 	UPROPERTY(EditAnywhere, Category="Weapon")

@@ -154,6 +154,19 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	}
 }
 
+void ACupcakeCharacter::DisableMovement()
+{
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	//bUseControllerRotationYaw = false;
+}
+
+void ACupcakeCharacter::EnableMovement()
+{
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	//bUseControllerRotationYaw = true;
+}
+
 void ACupcakeCharacter::TestRemoveItem()
 {
 	// Antag att du vill testa att ta bort det första itemet i inventoryt

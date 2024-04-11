@@ -33,7 +33,4 @@ public:
 	bool RegenerateHealth(float HealthAmount);
 
 	void DoDamage(float DamageAmount);
-
-	virtual bool OnDeath();
-
 };

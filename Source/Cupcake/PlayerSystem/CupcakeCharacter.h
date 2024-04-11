@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "InventoryComponent.h"
+#include "Cupcake/WeaponBase.h"
+#include "Cupcake/Actors/Combat.h"
+#include "Cupcake/Actors/Health.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
@@ -17,7 +20,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ACupcakeCharacter : public ACharacter
+class ACupcakeCharacter : public ACharacter, public ICombat, public IHealth
 {
 	GENERATED_BODY()
 
@@ -53,7 +56,19 @@ class ACupcakeCharacter : public ACharacter
 
 public:
 	ACupcakeCharacter();
+
+	virtual void OnDeath_Implementation();
+
+	virtual void Attack_Implementation();
+
+	void OnAttackFinished();
+
+	UHealthComponent* HealthComponent;
+	AWeaponBase* Weapon;
+	UPROPERTY(EditAnywhere, Category="Weapon")
+	TSubclassOf<AWeaponBase> WeaponBlueprint;
 	
+	FTimerHandle TimerHandle_AttackFinished;
 
 protected:
 
@@ -67,7 +82,6 @@ protected:
 	void OnInteractPressed();
 
 	void TestRemoveItem();
-			
 
 protected:
 	// APawn interface

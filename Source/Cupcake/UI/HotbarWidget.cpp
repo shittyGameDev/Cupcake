@@ -2,48 +2,34 @@
 
 
 #include "HotbarWidget.h"
-
-#include "Components/HorizontalBox.h"
-#include "Components/HorizontalBoxSlot.h"
 #include "Components/Image.h"
+#include "Styling/SlateBrush.h"
 
 
 void UHotbarWidget::UpdateHotbar(const TArray<AItem*>& Items)
 {
-
-	UWidget* FoundWidget = GetWidgetFromName(TEXT("ItemsContainer"));
-	if (FoundWidget == nullptr)
+	int NumItemsToUpdate = FMath::Clamp(Items.Num(), 0, UIImages.Num());
+	UE_LOG(LogTemp, Display, TEXT("NumItemsToUpdate: %d"), NumItemsToUpdate);
+	for(int i = 0; i < NumItemsToUpdate; i++)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("GetWidgetFromName returned nullptr. 'ItemsContainer' not found."));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Display, TEXT("GetWidgetFromName succeeded. Found 'ItemsContainer'."));
-	}
-	
-	UE_LOG(LogTemp, Display, TEXT("Updating: "))
-	UHorizontalBox* ItemsContainer = Cast<UHorizontalBox>(GetWidgetFromName(TEXT("ItemsContainer")));
-	
-
-	if(!ItemsContainer)
-	{
-		UE_LOG(LogTemp, Display, TEXT("No name"));
-		return;
-	}
-
-	UE_LOG(LogTemp, Display, TEXT("Name found"));
-
-	ItemsContainer->ClearChildren();
-
-	for(const AItem* Item : Items)
-	{
-		UImage* ItemImage = NewObject<UImage>(ItemsContainer);
-		if(Item->ItemThumbnail)
+		if(Items[i] != nullptr)
 		{
-			ItemImage->SetBrushFromTexture(Item->ItemThumbnail);
+			FSlateBrush Brush;
+			Brush.SetResourceObject(Items[i]->ItemThumbnail);
+			Brush.ImageSize = FVector2D(Items[i]->ItemThumbnail->GetSizeX(), Items[i]->ItemThumbnail->GetSizeY());
+			UIImages[i]->SetBrush(Brush);
+			UE_LOG(LogTemp, Display, TEXT("Added Image"));
 		}
+	}
+}
 
-		UHorizontalBoxSlot* ItemSlot = ItemsContainer->AddChildToHorizontalBox(ItemImage);
-		ItemSlot->SetPadding(FMargin(5.0f));
+void UHotbarWidget::SetUIImages(TArray<UImage*> NewUIImages)
+{
+	for(UImage* UImage : NewUIImages)
+	{
+		UIImages.Add(UImage);
+		UE_LOG(LogTemp, Display, TEXT("Added Image"));
+		int ImageArraySize = UIImages.Max();
+		UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), ImageArraySize);
 	}
 }

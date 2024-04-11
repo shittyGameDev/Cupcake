@@ -33,9 +33,11 @@ void UInventoryComponent::AddItem(AItem* Item)
 		else
 		{
 			// If no existing item is found or the item is not stackable add it as a new item to the inventory.
+			InventoryItems.Add(Item);
 			UE_LOG(LogTemp, Warning, TEXT("Added item: %s, quantity: %d"), *Item->ItemDescription, Item->Quantity);
 		}
 		// Atm kind of useless to call this as it is the same as "Item->Destroy()".
+		UE_LOG(LogTemp, Warning, TEXT("Added item: %p"), ExistingItem);
 		Item->Destroy();
 		HotbarWidget->UpdateHotbar(InventoryItems);
 	}
@@ -62,6 +64,7 @@ void UInventoryComponent::RemoveItem(AItem* Item)
 			InventoryItems.Remove(ExistingItem ? ExistingItem : Item);
 			UE_LOG(LogTemp, Warning, TEXT("Removed item: %d"), Item->ItemTypeId);
 		}
+		HotbarWidget->UpdateHotbar(InventoryItems);
 	}
 }
 

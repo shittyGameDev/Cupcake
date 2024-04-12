@@ -31,7 +31,8 @@ AItem::AItem()
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	ItemName = ItemName.ToLower();
 }
 
 // Called every frame

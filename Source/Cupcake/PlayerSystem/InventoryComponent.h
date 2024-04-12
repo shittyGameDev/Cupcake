@@ -28,7 +28,7 @@ public:
 
 private:
 	UFUNCTION()
-	AItem* FindItemById(int32 ItemTypeId);
+	AItem* FindItemByName(FString ItemName);
 
 		
 	UPROPERTY(EditAnywhere)

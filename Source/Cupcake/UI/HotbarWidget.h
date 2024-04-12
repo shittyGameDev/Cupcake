@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Cupcake/Items/Item.h"
 #include "HotbarWidget.generated.h"
 
@@ -24,7 +25,10 @@ public:
 	TArray<UImage*> UIImages;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UImage*> Quantity;
+	TArray<UTextBlock*> Quantity;
+
+	UFUNCTION(BlueprintCallable)
+	void SetQuantity(TArray<UTextBlock*> NewQuantity);
 
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;

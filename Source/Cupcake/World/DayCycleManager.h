@@ -9,6 +9,8 @@
 #include "Engine/SkyLight.h"
 #include "DayCycleManager.generated.h"
 
+class ACupcakeCharacter;
+
 
 DECLARE_DYNAMIC_DELEGATE(FTimeSpecificEvent);
 
@@ -33,6 +35,7 @@ public:
 UCLASS()
 class CUPCAKE_API ADayCycleManager : public AActor, public IInteractable
 {
+	
 	GENERATED_BODY()
 	
 public:	
@@ -51,7 +54,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float SleepDurationInHours = 7.f;
-	
+
 	UPROPERTY(EditAnywhere)
 	float AccelerateTime = 72.f;
 
@@ -59,6 +62,9 @@ protected:
 	UUserWidget* BlackScreenWidget = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> BlackScreenWidgetClass;
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> DayTransitionWidgetClass;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -79,6 +85,7 @@ public:
 	virtual void Interact_Implementation();
 
 	bool CanSleep();
+	void DayTransistion();
 
 	void RegisterTimeEvent(const FTimeEvent& NewEvent);
 	UFUNCTION()
@@ -90,6 +97,11 @@ private:
 	float const SECONDS_IN_A_DAY = 86400.f;
 	int LastSleepDay = -1;
 	bool bHasSlept = false;
-	
+	bool bSleepWidgetActive = false;
+	bool bDayTransistionScheduled = false;
+	bool bIsReactivationScheduled = false;
+	APlayerController* PlayerController;
+	APawn* PlayerPawn;
+	ACupcakeCharacter* PlayerCharacter;
 	TArray<FTimeEvent> TimeEvents;
 };

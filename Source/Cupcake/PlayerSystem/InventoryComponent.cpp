@@ -10,7 +10,6 @@ UInventoryComponent::UInventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 	
 	// ...
 }
@@ -18,17 +17,18 @@ UInventoryComponent::UInventoryComponent()
 //
 void UInventoryComponent::AddItem(AItem* Item)
 {
+	UE_LOG(LogTemp, Warning, TEXT("AddItem, before null check. Item ptr %s"), *Item->ItemName);
 	if(Item != nullptr)
 	{
 		// Tries to find an existing item in the inventory with the same type ID
-		AItem* ExistingItem = FindItemById(Item->ItemTypeId);
+		AItem* ExistingItem = FindItemByName(Item->ItemName);
 
 		// If the item is stackable and an item of the same type already exists in the inventory
 		if(Item->bIsStackable && ExistingItem)
 		{
 			// Add the quantity of the new item to the existing items quantity
 			ExistingItem->Quantity += Item->Quantity;
-			UE_LOG(LogTemp, Warning, TEXT("Stacked item of type: %d, new quantity: %d"), Item->ItemTypeId, ExistingItem->Quantity);
+			UE_LOG(LogTemp, Warning, TEXT("Stacked item of type: %s, new quantity: %d"), *Item->ItemName, ExistingItem->Quantity);
 		}
 		else
 		{
@@ -49,30 +49,33 @@ void UInventoryComponent::RemoveItem(AItem* Item)
 	if(Item != nullptr)
 	{
 		// Tries to find an existing item in the inventory with the same type ID
-		AItem* ExistingItem = FindItemById(Item->ItemTypeId);
+		AItem* ExistingItem = FindItemByName(Item->ItemName);
 		
 		// If the item is stackable, exists, and has more than one quantity
 		if(Item->bIsStackable && ExistingItem && ExistingItem->Quantity > 1)
 		{
 			// Decrease the quantity of the existing item
 			ExistingItem->Quantity--;
-			UE_LOG(LogTemp, Warning, TEXT("Decreased quantity of item type: %d, new quantity: %d"), ExistingItem->ItemTypeId, ExistingItem->Quantity);
+			UE_LOG(LogTemp, Warning, TEXT("Decreased quantity of item type: %s, new quantity: %d"), *ExistingItem->ItemName, ExistingItem->Quantity);
 		}
 		else
 		{
 			// If the item is not stackable or only one quantity exists, remove the item from the inventory
 			InventoryItems.Remove(ExistingItem ? ExistingItem : Item);
-			UE_LOG(LogTemp, Warning, TEXT("Removed item: %d"), Item->ItemTypeId);
+			UE_LOG(LogTemp, Warning, TEXT("Removed item: %s"), *Item->ItemName);
 		}
 		HotbarWidget->UpdateHotbar(InventoryItems);
 	}
 }
 
-AItem* UInventoryComponent::FindItemById(int32 ItemTypeId)
+AItem* UInventoryComponent::FindItemByName(FString ItemName)
 {
+	UE_LOG(LogTemp, Warning, TEXT("InvItems: %p"), &InventoryItems);
 	for(AItem* InventoryItem : InventoryItems)
 	{
-		if(InventoryItem && InventoryItem->ItemTypeId == ItemTypeId)
+		UE_LOG(LogTemp, Warning, TEXT("Item ptr: %p"), InventoryItem);
+		UE_LOG(LogTemp, Warning, TEXT("InvItems Size: %d"), InventoryItems.Num());
+		if(InventoryItem && InventoryItem->ItemName.ToLower().Equals(ItemName.ToLower()))
 		{
 			return InventoryItem;
 		}
@@ -84,6 +87,8 @@ AItem* UInventoryComponent::FindItemById(int32 ItemTypeId)
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Warning, TEXT("Created new INV COMP"));
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn)

@@ -73,6 +73,8 @@ void AItem::Interact_Implementation()
 		if(UInventoryComponent* Inventory = Player->FindComponentByClass<UInventoryComponent>())
 		{
 			Inventory->AddItem(this);
+			SetActorEnableCollision(false);
+			SetActorHiddenInGame(true);
 		}
 	}
 }

@@ -33,7 +33,4 @@ public:
 	bool RegenerateHealth(float HealthAmount);
 	
 	void DoDamage(float DamageAmount);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Damage")
-	void OnDamage();
 };

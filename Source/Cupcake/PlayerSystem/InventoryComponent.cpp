@@ -86,8 +86,12 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("Created new INV COMP"));
-
+	if (!HotbarWidgetClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("HotbarWidgetClass is not assigned."));
+		return;
+	}
+	
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn)
 	{
@@ -98,9 +102,9 @@ void UInventoryComponent::BeginPlay()
 			HotbarWidget = CreateWidget<UHotbarWidget>(PlayerController, HotbarWidgetClass);
 			if(HotbarWidget != nullptr)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Hotbar Created"));
 				HotbarWidget->AddToViewport();
 			}
-			
 		}
 	}
 }

@@ -183,15 +183,7 @@ void ACupcakeCharacter::OnRemoveItem()
 
 void ACupcakeCharacter::HighlightItem(FKey KeyPressed)
 {
-	if (HotbarWidget && HotbarWidget->IsValidLowLevel())
-	{
-		HotbarWidget->HighLightUIItem(KeyPressed);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Widget is invalid or not yet created."));
-	}
-	
+	InventoryComponent->HotbarWidget->HighLightUIItem(KeyPressed);
 }
 
 

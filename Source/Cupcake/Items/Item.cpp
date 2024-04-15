@@ -3,7 +3,6 @@
 
 #include "Item.h"
 
-#include "IDetailTreeNode.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Kismet/GameplayStatics.h"
 

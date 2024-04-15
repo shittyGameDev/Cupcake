@@ -40,7 +40,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetUIImages(TArray<UImage*> NewUIImages);
 
+	UFUNCTION()
+	void HighlightImage(int32 ImageIndex);
+
+	UFUNCTION()
+	void ResetHighlight(int32 ImageIndex);
+
 	UFUNCTION(BlueprintCallable)
 	void HighLightUIItem(FKey KeyPressed);
+
+	UPROPERTY()
+	TMap<FKey, int32> KeyBindings = {
+		{EKeys::One, 0},
+		{EKeys::Two, 1},
+		{EKeys::Three, 2},
+		// Add more key bindings as needed
+	};
 	
 };

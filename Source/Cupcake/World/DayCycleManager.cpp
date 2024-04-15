@@ -43,7 +43,7 @@ void ADayCycleManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ElapsedTime += DeltaTime * AccelerateTime;
-	
+	UE_LOG(LogTemp, Warning, TEXT("Time in hours: %i"), GetHour());
 	/*if (!bHasSlept && ElapsedTime > 5 * AccelerateTime)
 	{
 		Sleep();
@@ -133,6 +133,11 @@ void ADayCycleManager::Sleep()
 	
 	UE_LOG(LogTemp, Display, TEXT("Hour before: %i"), GetHour());
 	ShiftTime(SleepDurationInHours * 60 * 60);
+	int DayAfterSleep = GetCurrentDayNumber(); //fortsätta här imornS
+	if (DayAfterSleep > DayBeforeSleep)
+	{
+		DayTransistion();
+	}
 	UE_LOG(LogTemp, Display, TEXT("Hour after: %i"), GetHour());
 	
 	if (BlackScreenWidget)
@@ -162,11 +167,7 @@ void ADayCycleManager::Sleep()
 						UE_LOG(LogTemp, Warning, TEXT("Enable Movement"));
 						PlayerCharacter->EnableMovement();
 					}
-					int DayAfterSleep = GetCurrentDayNumber();
-					if (DayAfterSleep > DayBeforeSleep)
-					{
-						DayTransistion();
-					}
+
 				}
 			}, 3.0f, false);
 		}

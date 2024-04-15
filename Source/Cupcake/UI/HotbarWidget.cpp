@@ -6,6 +6,51 @@
 #include "Styling/SlateBrush.h"
 
 
+void UHotbarWidget::SetUIImages(TArray<UImage*> NewUIImages)
+{
+	for (UImage* Image : NewUIImages)
+	{
+		if (Image != nullptr)
+		{
+			// Set the color and opacity of the image
+			Image->SetColorAndOpacity(FLinearColor(0.2f, 0.2f, 0.2f, 0.6f));  // Dark grey with 60% opacity
+
+			// Add the image to the array
+			UIImages.Add(Image);
+			UE_LOG(LogTemp, Display, TEXT("Added Image with dark grey color"));
+		}
+	}
+	int ImageArraySize = UIImages.Max();
+	UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), ImageArraySize);
+}
+
+
+
+void UHotbarWidget::SetUIBorders(TArray<UBorder*> NewUIBorder)
+{
+	for(UBorder* UBorder : NewUIBorder)
+	{
+		if(UBorder != nullptr)
+		{
+			UIBorder.Add(UBorder);
+			UE_LOG(LogTemp, Display, TEXT("Added Border"));
+			UBorder->SetBrushColor(FLinearColor(0.2f, 0.2f, 0.2f, 0.6f)); // Dark grey with 60% opacity
+		}
+	}
+	UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), UIBorder.Num());
+}
+
+void UHotbarWidget::SetQuantity(TArray<UTextBlock*> NewQuantity)
+{
+	for(UTextBlock* TextBlock : NewQuantity)
+	{
+		Quantity.Add(TextBlock);
+	}
+	int TextBlockArray = Quantity.Max();
+	UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), TextBlockArray);
+}
+
+
 
 void UHotbarWidget::UpdateHotbar(const TArray<AItem*>& Items)
 {
@@ -22,6 +67,9 @@ void UHotbarWidget::UpdateHotbar(const TArray<AItem*>& Items)
 				Brush.SetResourceObject(Items[i]->ItemThumbnail);
 				Brush.ImageSize = FVector2D(Items[i]->ItemThumbnail->GetSizeX(), Items[i]->ItemThumbnail->GetSizeY());
 				UIImages[i]->SetBrush(Brush);
+
+				// Reset color and opacity to white and fully opaque
+				UIImages[i]->SetColorAndOpacity(FLinearColor(1.0, 1.0, 1.0, 1.0));
 			} else
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Invalid Index for set image"));
@@ -43,41 +91,23 @@ void UHotbarWidget::UpdateHotbar(const TArray<AItem*>& Items)
 
 }
 
-void UHotbarWidget::SetUIImages(TArray<UImage*> NewUIImages)
-{
-	for(UImage* UImage : NewUIImages)
-	{
-		UIImages.Add(UImage);
-		UE_LOG(LogTemp, Display, TEXT("Added Image"));
-		
-	}
-	int ImageArraySize = UIImages.Max();
-	UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), ImageArraySize);
-}
-
 void UHotbarWidget::HighlightImage(int32 ImageIndex)
 {
-	if (UIImages.IsValidIndex(ImageIndex) && UIImages[ImageIndex] != nullptr)
+	if (UIBorder.IsValidIndex(ImageIndex) && UIBorder[ImageIndex] != nullptr)
 	{
-		// Apply a highlight effect, e.g., change tint color
-		FSlateBrush NewBrush = UIImages[ImageIndex]->Brush;
-		NewBrush.TintColor = FSlateColor(FLinearColor(1.0, 0.0, 0.0, 1.0)); // Red tint
-		UIImages[ImageIndex]->SetBrush(NewBrush);
+		UIBorder[ImageIndex]->SetBrushColor(FLinearColor(HighlightColor)); // Dark grey with 60% opacity
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid or null UIImage at index %d"), ImageIndex);
+		UE_LOG(LogTemp, Warning, TEXT("Invalid or null UBorder at index %d"), ImageIndex);
 	}
 }
 
 void UHotbarWidget::ResetHighlight(int32 ImageIndex)
 {
-	if (UIImages.IsValidIndex(ImageIndex) && UIImages[ImageIndex] != nullptr)
+	if (UIBorder.IsValidIndex(ImageIndex) && UIBorder[ImageIndex] != nullptr)
 	{
-		// Reset the tint color or brush to default
-		FSlateBrush DefaultBrush = UIImages[ImageIndex]->Brush;
-		DefaultBrush.TintColor = FSlateColor(FLinearColor(1.0, 1.0, 1.0, 1.0)); // Default white
-		UIImages[ImageIndex]->SetBrush(DefaultBrush);
+		UIBorder[ImageIndex]->SetBrushColor(FLinearColor(0.2f, 0.2f, 0.2f, 0.6f)); // Reset to white
 	}
 }
 
@@ -94,7 +124,7 @@ void UHotbarWidget::HighLightUIItem(FKey KeyPressed)
 		ResetHighlight(LastHighlightedIndex);
 	}
 	
-	if (UIImages.IsValidIndex(ImageIndex))
+	if (UIBorder.IsValidIndex(ImageIndex))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Valid index: %d"), ImageIndex);
 		HighlightImage(ImageIndex);
@@ -107,12 +137,4 @@ void UHotbarWidget::HighLightUIItem(FKey KeyPressed)
 }
 
 
-void UHotbarWidget::SetQuantity(TArray<UTextBlock*> NewQuantity)
-{
-	for(UTextBlock* TextBlock : NewQuantity)
-	{
-		Quantity.Add(TextBlock);
-	}
-	int TextBlockArray = Quantity.Max();
-	UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), TextBlockArray);
-}
+

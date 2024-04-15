@@ -31,7 +31,8 @@ AItem::AItem()
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	ItemName = ItemName.ToLower();
 }
 
 // Called every frame
@@ -51,7 +52,13 @@ void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		{
 			if(UInventoryComponent* Inventory = Player->FindComponentByClass<UInventoryComponent>())
 			{
-				Inventory->AddItem(this);
+				if(this != nullptr)
+				{
+					Inventory->AddItem(this);
+
+					SetActorEnableCollision(false);
+					SetActorHiddenInGame(true);
+				}
 			}
 		}
 	}
@@ -66,6 +73,8 @@ void AItem::Interact_Implementation()
 		if(UInventoryComponent* Inventory = Player->FindComponentByClass<UInventoryComponent>())
 		{
 			Inventory->AddItem(this);
+			SetActorEnableCollision(false);
+			SetActorHiddenInGame(true);
 		}
 	}
 }

@@ -139,7 +139,7 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::OnInteractPressed);
 
-		PlayerInputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACupcakeCharacter::TestRemoveItem);
+		//PlayerInputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACupcakeCharacter::TestRemoveItem);
 
 		/* Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);

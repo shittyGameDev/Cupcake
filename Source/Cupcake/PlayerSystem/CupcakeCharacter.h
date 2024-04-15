@@ -57,19 +57,30 @@ class ACupcakeCharacter : public ACharacter, public ICombat, public IHealth
 public:
 	ACupcakeCharacter();
 
+	UFUNCTION()
 	virtual void OnDeath_Implementation();
 
+	UFUNCTION()
 	virtual void Attack_Implementation();
 
+	UFUNCTION()
 	void OnAttackFinished();
 
+	UFUNCTION()
 	void EnableMovement();
+
+	UFUNCTION()
 	void DisableMovement();
 
+	UPROPERTY()
 	UHealthComponent* HealthComponent;
+	UPROPERTY()
 	AWeaponBase* Weapon;
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
+
+	UPROPERTY()
+	UHotbarWidget* HotbarWidget;
 	
 	FTimerHandle TimerHandle_AttackFinished;
 
@@ -82,9 +93,14 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	// Handler for when "Interact" is pressed
+	UFUNCTION()
 	void OnInteractPressed();
 
-	void TestRemoveItem();
+	UFUNCTION()
+	void OnRemoveItem();
+
+	UFUNCTION()
+	void HighlightItem(const FKey KeyPressed);
 
 protected:
 	// APawn interface

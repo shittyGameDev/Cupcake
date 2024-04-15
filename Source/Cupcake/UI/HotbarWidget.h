@@ -39,5 +39,8 @@ public:
 	// Setter function for UIImages
 	UFUNCTION(BlueprintCallable)
 	void SetUIImages(TArray<UImage*> NewUIImages);
+
+	UFUNCTION(BlueprintCallable)
+	void HighLightUIItem(FKey KeyPressed);
 	
 };

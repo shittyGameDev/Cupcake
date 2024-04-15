@@ -40,6 +40,7 @@ void UHotbarWidget::UpdateHotbar(const TArray<AItem*>& Items)
 			}
 		}
 	}
+
 }
 
 void UHotbarWidget::SetUIImages(TArray<UImage*> NewUIImages)
@@ -52,7 +53,21 @@ void UHotbarWidget::SetUIImages(TArray<UImage*> NewUIImages)
 	}
 	int ImageArraySize = UIImages.Max();
 	UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), ImageArraySize);
+	
 }
+
+void UHotbarWidget::HighLightUIItem(FKey KeyPressed)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Key Pressed: %s"), *KeyPressed.ToString());
+
+	TMap<FKey, int32> KeyBindings = {
+		{EKeys::One, 0},
+		{EKeys::Two, 1},
+		{EKeys::Three, 2},
+		// Add more key bindings as needed
+	};
+}
+
 
 void UHotbarWidget::SetQuantity(TArray<UTextBlock*> NewQuantity)
 {

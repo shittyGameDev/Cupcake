@@ -44,6 +44,7 @@ bool UHealthComponent::RegenerateHealth(float HealthAmount)
 
 void UHealthComponent::DoDamage(float DamageAmount)
 {
+	OnDamage();
 	Health -= DamageAmount;
 	Health = FMath::Clamp(Health, 0.f, MaxHealth);
 	

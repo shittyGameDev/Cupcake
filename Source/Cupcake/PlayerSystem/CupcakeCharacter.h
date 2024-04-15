@@ -78,9 +78,6 @@ public:
 	AWeaponBase* Weapon;
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
-
-	UPROPERTY()
-	UHotbarWidget* HotbarWidget;
 	
 	FTimerHandle TimerHandle_AttackFinished;
 

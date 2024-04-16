@@ -128,7 +128,9 @@ void UHotbarWidget::HighLightUIItem(FKey KeyPressed)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Valid index: %d"), ImageIndex);
 		HighlightImage(ImageIndex);
+
 		EquippedItemID = InventoryComponent->InventoryItems[ImageIndex];
+		
 		UE_LOG(LogTemp, Warning, TEXT("Equipped item: %s"), *EquippedItemID->ItemName);
 		LastHighlightedIndex = ImageIndex;
 	}

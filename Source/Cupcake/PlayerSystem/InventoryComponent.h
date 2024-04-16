@@ -9,6 +9,7 @@
 #include "Cupcake/UI/HotbarWidget.h"
 #include "InventoryComponent.generated.h"
 
+/*
 struct InventorySlot
 {
 	INewItem* Item;
@@ -53,6 +54,7 @@ struct InventorySlot
 		}
 	}
 };
+*/
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CUPCAKE_API UInventoryComponent : public UActorComponent

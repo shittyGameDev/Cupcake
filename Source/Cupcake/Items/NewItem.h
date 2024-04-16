@@ -29,9 +29,7 @@ private:
 	
 public:
 	FString GetID();
-
 	UImage* GetImage();
-
-	UFUNCTION(BlueprintCallable, Category = "Item")
-	virtual void Use() = 0;
+	
+	void Use();
 };

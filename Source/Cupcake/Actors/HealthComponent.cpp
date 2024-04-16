@@ -44,6 +44,13 @@ bool UHealthComponent::RegenerateHealth(float HealthAmount)
 
 void UHealthComponent::DoDamage(float DamageAmount)
 {
+	AActor* Actor = Cast<AActor>(GetOwner());
+	
+	if (Actor && Actor->GetClass()->ImplementsInterface(UHealth::StaticClass()))
+	{
+		IHealth::Execute_OnDamage(Actor);
+	}
+	
 	Health -= DamageAmount;
 	Health = FMath::Clamp(Health, 0.f, MaxHealth);
 	
@@ -51,7 +58,6 @@ void UHealthComponent::DoDamage(float DamageAmount)
 
 	if (Health <= 0)
 	{
-		AActor* Actor = Cast<AActor>(GetOwner());
 		IHealth::Execute_OnDeath(Actor);
 	}
 }

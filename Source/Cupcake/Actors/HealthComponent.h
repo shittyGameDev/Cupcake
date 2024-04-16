@@ -31,6 +31,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	bool RegenerateHealth(float HealthAmount);
-
+	
 	void DoDamage(float DamageAmount);
 };

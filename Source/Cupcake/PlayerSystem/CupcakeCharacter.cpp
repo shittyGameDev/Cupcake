@@ -139,7 +139,11 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::OnInteractPressed);
 
-		PlayerInputComponent->BindKey(EKeys::T, IE_Pressed, this, &ACupcakeCharacter::TestRemoveItem);
+		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
+
+
+		
+
 
 		/* Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);
@@ -167,7 +171,7 @@ void ACupcakeCharacter::EnableMovement()
 	//bUseControllerRotationYaw = true;
 }
 
-void ACupcakeCharacter::TestRemoveItem()
+void ACupcakeCharacter::OnRemoveItem()
 {
 	// Antag att du vill testa att ta bort det första itemet i inventoryt
 	if (InventoryComponent->InventoryItems.Num() > 0)
@@ -176,6 +180,12 @@ void ACupcakeCharacter::TestRemoveItem()
 		InventoryComponent->RemoveItem(ItemToRemove);
 	}
 }
+
+void ACupcakeCharacter::HighlightItem(FKey KeyPressed)
+{
+	InventoryComponent->HotbarWidget->HighLightUIItem(KeyPressed);
+}
+
 
 //Temporary function to Interact with items.
 void ACupcakeCharacter::OnInteractPressed()

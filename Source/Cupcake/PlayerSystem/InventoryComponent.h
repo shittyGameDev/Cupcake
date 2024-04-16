@@ -26,6 +26,12 @@ public:
 	UFUNCTION()
 	void RemoveItem(AItem* Item);
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> HotbarWidgetClass;
+
+	UPROPERTY()
+	UHotbarWidget* HotbarWidget;
+
 private:
 	UFUNCTION()
 	AItem* FindItemByName(FString ItemName);
@@ -36,12 +42,7 @@ private:
 		
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> InventoryHUDClass;
-
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UUserWidget> HotbarWidgetClass;
-
-	UPROPERTY()
-	UHotbarWidget* HotbarWidget;
+	
 
 	UPROPERTY()
 	UUserWidget* InventoryHUD;

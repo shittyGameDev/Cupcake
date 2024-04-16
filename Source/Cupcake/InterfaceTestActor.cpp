@@ -9,13 +9,19 @@ AInterfaceTestActor::AInterfaceTestActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
+
+	SetRootComponent(Mesh);
+	
+
 }
 
 // Called when the game starts or when spawned
 void AInterfaceTestActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	InteractableData = InstanceInteractableData;
 }
 
 // Called every frame
@@ -27,26 +33,32 @@ void AInterfaceTestActor::Tick(float DeltaTime)
 
 void AInterfaceTestActor::BeginFocus()
 {
-
+	if(Mesh)
+	{
+		Mesh->SetRenderCustomDepth(true);
+	}
 }
 
 void AInterfaceTestActor::EndFocus()
 {
-
+	if(Mesh)
+	{
+		Mesh->SetRenderCustomDepth(false);
+	}
 }
 
 void AInterfaceTestActor::BeginInteract()
 {
-
+	UE_LOG(LogTemp, Warning, TEXT("Calling BeginInteract on Interface test actor"));
 }
 
 void AInterfaceTestActor::EndInteract()
 {
-
+	UE_LOG(LogTemp, Warning, TEXT("Calling EndInteract on Interface test actor"));
 }
 
-void AInterfaceTestActor::Interact()
+void AInterfaceTestActor::Interact(ACupcakeCharacter* PlayerCharacter)
 {
-
+	UE_LOG(LogTemp, Warning, TEXT("Calling Interact on Interface test actor"));
 }
 

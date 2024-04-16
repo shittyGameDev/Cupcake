@@ -17,23 +17,28 @@ class CUPCAKE_API UBaseItem : public UObject
 	
 public:
 
-	UPROPERTY()
+	//UPROPERTY()
 	//UInventoryComponent* OwningInventory;
-	//UPROPERTY(VisibleAnywhere, Category = "Item Data", meta = (UIMin=1, UIMax=64))
+	
+	UPROPERTY(VisibleAnywhere, Category = "Item")
 	int32 Quantity;
 	
-	UPROPERTY(EditAnywhere, Category= "Item ID")
+	UPROPERTY(VisibleAnywhere, Category= "Item ID")
 	FName ID;
 	
-	UPROPERTY(EditAnywhere, Category= "Item Type")
+	UPROPERTY(VisibleAnywhere, Category= "Item Type")
 	EItemType ItemType;
-	UPROPERTY(EditAnywhere, Category= "Item Text Data")
+	
+	UPROPERTY(VisibleAnywhere, Category= "Item Text")
 	FItemTextData TextData;
-	UPROPERTY(EditAnywhere, Category= "Item Numeric Data")
+	
+	UPROPERTY(VisibleAnywhere, Category= "Item Numeric")
 	FItemNumericData NumericData;
-	UPROPERTY(EditAnywhere, Category= "Item Asset Data")
+	
+	UPROPERTY(EditAnywhere, Category= "Item Asset")
 	FItemAssetData AssetData;
 
+	
 	UBaseItem();
 
 	UBaseItem* CreateItemCopy() const;
@@ -43,11 +48,13 @@ public:
 
 	UFUNCTION(Category="Item")
 	void SetQuantity(const int32 NewQuantity);
+	
 	UFUNCTION(Category="Item")
 	virtual void Use(ACupcakeCharacter* Character);
+	
 protected:
 	bool operator==(const FName& OtherID) const
 	{
-		return ID == OtherID;
+		return this->ID == OtherID;
 	} 
 };

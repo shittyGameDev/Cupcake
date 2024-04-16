@@ -1,0 +1,79 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "BaseHUD.h"
+#include "MainMenu.h"
+#include "InteractionWidget.h"
+
+
+ABaseHUD::ABaseHUD()
+{
+}
+
+void ABaseHUD::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if(MainMenuClass)
+	{
+		MainMenuWidget = CreateWidget<UMainMenu>(GetWorld(), MainMenuClass);
+		MainMenuWidget->AddToViewport(5);
+		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed); //Tydligen har Collapsed en bättre påverkan på performance än Hidden
+	}
+
+	if(InteractionWidgetClass)
+	{
+		InteractionWidget = CreateWidget<UInteractionWidget>(GetWorld(), InteractionWidgetClass);
+		InteractionWidget->AddToViewport(-1);
+		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed); //Tydligen har Collapsed en bättre påverkan på performance än Hidden
+	}
+}
+
+void ABaseHUD::DisplayMenu()
+{
+	if(MainMenuWidget)
+	{
+		bIsMenuVisible = true;
+		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void ABaseHUD::HideMenu()
+{
+	if(MainMenuWidget)
+	{
+		bIsMenuVisible = false;
+		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void ABaseHUD::ShowInteractionWidget()
+{
+	if(InteractionWidget)
+	{
+		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void ABaseHUD::HideInteractionWidget()
+{
+	if(InteractionWidget)
+	{
+		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
+{
+	if(InteractionWidget)
+	{
+		if(InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
+		{
+			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+
+		//InteractionWidget->UpdateWidget(InteractableData);
+	}
+}
+
+

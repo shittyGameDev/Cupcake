@@ -139,6 +139,8 @@ void ACupcakeCharacter::PerformInteractionCheck()
 {
 	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
 
+	//Anledningen till att vi använder oss av initialisering via {} är för att det garanterar typen som vi använder blir
+	//Initialiserade korrekt. Annars är koden väldigt basic linetrace skapande. (Victor)
 	FVector TraceStart{GetPawnViewLocation()};
 	FVector TraceEnd{TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance)};
 
@@ -157,9 +159,7 @@ void ACupcakeCharacter::PerformInteractionCheck()
 		{
 			if(TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 			{
-				const float Distance =  (TraceStart - TraceHit.ImpactPoint).Size();
-
-				if(TraceHit.GetActor() != InteractionData.CurrentInteractable && Distance <= InteractionCheckDistance)
+				if(TraceHit.GetActor() != InteractionData.CurrentInteractable)
 				{
 					FoundInteractable(TraceHit.GetActor());
 					return;
@@ -204,8 +204,6 @@ void ACupcakeCharacter::NoInteractableFound()
 		{
 			TargetInteractable->EndFocus();
 		}
-
-		// hide interaction widget on the HUD
 
 		InteractionData.CurrentInteractable = nullptr;
 		TargetInteractable = nullptr;
@@ -253,7 +251,7 @@ void ACupcakeCharacter::Interact()
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
 	if(IsValid(TargetInteractable.GetObject()))
 	{
-		TargetInteractable->Interact();
+		TargetInteractable->Interact(this);
 	}
 }
 
@@ -275,7 +273,8 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 
-		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::OnInteractPressed);
+		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
+		PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
 
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
 

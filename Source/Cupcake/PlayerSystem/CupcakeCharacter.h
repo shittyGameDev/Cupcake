@@ -7,6 +7,7 @@
 #include "Cupcake/WeaponBase.h"
 #include "Cupcake/Actors/Combat.h"
 #include "Cupcake/Actors/Health.h"
+#include "Cupcake/Items/InteractionInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
@@ -16,6 +17,20 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+
+USTRUCT()
+struct FInteractionData
+{
+	GENERATED_BODY()
+	FInteractionData() : CurrentInteractable(nullptr), LastInteractionCheckTime(0.0f)
+	{
+		
+	};
+	UPROPERTY()
+	AActor* CurrentInteractable;
+	UPROPERTY()
+	float LastInteractionCheckTime;
+};
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -72,6 +87,11 @@ public:
 	UFUNCTION()
 	void DisableMovement();
 
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
 	UPROPERTY()
 	UHealthComponent* HealthComponent;
 	UPROPERTY()
@@ -99,17 +119,33 @@ protected:
 	UFUNCTION()
 	void HighlightItem(const FKey KeyPressed);
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	// To add mapping context
 	virtual void BeginPlay();
 
+	UPROPERTY(VisibleAnywhere, Category="Interaction")
+	TScriptInterface<IInteractionInterface> TargetInteractable;
+
+	float InteractionCheckFrequency;
+
+	float InteractionCheckDistance;
+
+	FTimerHandle TimerHandle_Interaction;
+
+	FInteractionData InteractionData;
+
+	void PerformInteractionCheck();
+	void FoundInteractable(AActor* NewInteractable);
+	void NoInteractableFound();
+	void BeginInteract();
+	void EndInteract();
+	void Interact();
+
 public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	virtual void Tick(float DeltaSeconds) override;
+
+	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
 };
 

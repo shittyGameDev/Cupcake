@@ -14,19 +14,22 @@ class ACupcakeCharacter;
 
 DECLARE_DYNAMIC_DELEGATE(FTimeSpecificEvent);
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FTimeEvent
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
 	int Day;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
 	int Hour;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
 	int Minute;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
+	FString FunctionName;
 
 	FTimeSpecificEvent EventDelegate;
 };
@@ -64,6 +67,9 @@ protected:
 	TSubclassOf<UUserWidget> BlackScreenWidgetClass;
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> DayTransitionWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Management")
+	TArray<FTimeEvent> TimeEvents;
 	
 public:	
 	// Called every frame
@@ -86,10 +92,13 @@ public:
 
 	bool CanSleep();
 	void DayTransistion();
+	void BindTimeEvent(FTimeEvent& Event);
 
-	void RegisterTimeEvent(const FTimeEvent& NewEvent);
+	void RegisterTimeEvent(FTimeEvent& NewEvent);
 	UFUNCTION()
 	void SpawnTreeEvent();
+	UFUNCTION()
+	void ApplyInsanity();
 
 private:
 	char DayCycle = 0;
@@ -103,5 +112,6 @@ private:
 	APlayerController* PlayerController;
 	APawn* PlayerPawn;
 	ACupcakeCharacter* PlayerCharacter;
-	TArray<FTimeEvent> TimeEvents;
+	
+	
 };

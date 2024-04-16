@@ -27,4 +27,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Health")
 	void OnDeath();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Health")
+	void OnDamage();
 };

@@ -12,6 +12,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class ABaseHUD;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
@@ -102,6 +103,8 @@ public:
 	FTimerHandle TimerHandle_AttackFinished;
 
 protected:
+	UPROPERTY()
+	ABaseHUD* HUD;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);

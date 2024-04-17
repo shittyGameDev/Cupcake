@@ -47,7 +47,7 @@ void ABaseHUD::HideMenu()
 	}
 }
 
-void ABaseHUD::ShowInteractionWidget()
+void ABaseHUD::ShowInteractionWidget() const
 {
 	if(InteractionWidget)
 	{
@@ -55,7 +55,7 @@ void ABaseHUD::ShowInteractionWidget()
 	}
 }
 
-void ABaseHUD::HideInteractionWidget()
+void ABaseHUD::HideInteractionWidget() const
 {
 	if(InteractionWidget)
 	{
@@ -63,7 +63,7 @@ void ABaseHUD::HideInteractionWidget()
 	}
 }
 
-void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
+void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData) const
 {
 	if(InteractionWidget)
 	{
@@ -72,7 +72,7 @@ void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData
 			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 
-		//InteractionWidget->UpdateWidget(InteractableData);
+		InteractionWidget->UpdateWidget(InteractableData);
 	}
 }
 

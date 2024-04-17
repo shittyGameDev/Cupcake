@@ -14,6 +14,7 @@
 #include "Cupcake/Items/Interactable.h"
 #include "Cupcake/Items/Item.h"
 #include "DrawDebugHelpers.h"
+#include "Cupcake/UI/BaseHUD.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -103,6 +104,8 @@ void ACupcakeCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	HUD = Cast<ABaseHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
 	// Create Weapon
 	if (WeaponBlueprint)
 	{
@@ -189,6 +192,8 @@ void ACupcakeCharacter::FoundInteractable(AActor* NewInteractable)
 	InteractionData.CurrentInteractable = NewInteractable;
 	TargetInteractable = NewInteractable;
 
+	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+
 	TargetInteractable->BeginFocus();
 }
 
@@ -204,6 +209,8 @@ void ACupcakeCharacter::NoInteractableFound()
 		{
 			TargetInteractable->EndFocus();
 		}
+
+		HUD->HideInteractionWidget();
 
 		InteractionData.CurrentInteractable = nullptr;
 		TargetInteractable = nullptr;

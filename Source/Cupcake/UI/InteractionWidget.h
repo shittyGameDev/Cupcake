@@ -25,6 +25,7 @@ public:
 	void UpdateWidget(const FInteractableData* InteractableData) const;
 
 protected:
+	
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
 	UTextBlock* NameText;
 

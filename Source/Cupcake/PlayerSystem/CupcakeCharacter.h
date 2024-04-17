@@ -12,6 +12,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UNewInventoryComponent;
 class ABaseHUD;
 class USpringArmComponent;
 class UCameraComponent;
@@ -93,6 +94,10 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	FORCEINLINE UNewInventoryComponent* GetInventory() const { return PlayerInventory; }
+
+	void UpdateInteractionWidget() const;
+
 	UPROPERTY()
 	UHealthComponent* HealthComponent;
 	UPROPERTY()
@@ -130,6 +135,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="Interaction")
 	TScriptInterface<IInteractionInterface> TargetInteractable;
+
+	UPROPERTY(VisibleAnywhere, Category="Character | Inventory")
+	UNewInventoryComponent* PlayerInventory;
 
 	float InteractionCheckFrequency;
 

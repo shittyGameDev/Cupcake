@@ -3,8 +3,16 @@
 
 #include "BaseItem.h"
 
-UBaseItem::UBaseItem()
+#include "Cupcake/PlayerSystem/NewInventoryComponent.h"
+
+UBaseItem::UBaseItem() : bIsCopy(false), bIsPickup(false)
 {
+}
+
+void UBaseItem::ResetItemFlags()
+{
+	bIsCopy = false;
+	bIsPickup = false;
 }
 
 UBaseItem* UBaseItem::CreateItemCopy() const
@@ -17,6 +25,7 @@ UBaseItem* UBaseItem::CreateItemCopy() const
 	ItemCopy->TextData = this->TextData;
 	ItemCopy->NumericData = this->NumericData;
 	ItemCopy->AssetData = this->AssetData;
+	ItemCopy->bIsCopy = true;
 
 	return ItemCopy;
 }
@@ -27,13 +36,13 @@ void UBaseItem::SetQuantity(const int32 NewQuantity)
 	{
 		Quantity = FMath::Clamp(NewQuantity, 0, NumericData.bIsStackable ? NumericData.MaxStackSize : 1);
 
-		//if(OwningInventory)
-		//{
-		//	if(Quantity <= 0)
-		//	{
-		//		OwningInventory->RemoveItem(this);
-		//	}
-		//}
+		if(OwningInventory)
+		{
+			if(Quantity <= 0)
+			{
+				OwningInventory->RemoveSingleInstanceOfItem(this);
+			}
+		}
 	}
 }
 

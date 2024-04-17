@@ -14,6 +14,7 @@
 #include "Cupcake/Items/Interactable.h"
 #include "Cupcake/Items/Item.h"
 #include "DrawDebugHelpers.h"
+#include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -49,6 +50,9 @@ ACupcakeCharacter::ACupcakeCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
+	PlayerInventory = CreateDefaultSubobject<UNewInventoryComponent>("PlayerInventory");
+	PlayerInventory->SetSlotsCapacity(20);
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -104,6 +108,7 @@ void ACupcakeCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());
 	HUD = Cast<ABaseHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
 	// Create Weapon
@@ -144,14 +149,11 @@ void ACupcakeCharacter::PerformInteractionCheck()
 
 	//Anledningen till att vi använder oss av initialisering via {} är för att det garanterar typen som vi använder blir
 	//Initialiserade korrekt. Annars är koden väldigt basic linetrace skapande. (Victor)
-	FVector TraceStart{GetPawnViewLocation()};
-	FVector TraceEnd{TraceStart + (GetViewRotation().Vector() * InteractionCheckDistance)};
-
-	float LookDirection = FVector::DotProduct(GetActorForwardVector(), GetViewRotation().Vector());
-
-	if(LookDirection > 0)
-	{
-		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 2.0f);
+	FVector TraceStart{GetActorLocation()};
+	FVector ForwardVector = GetActorForwardVector();
+	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
+	
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 10.0f);
 	
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(this);
@@ -174,7 +176,6 @@ void ACupcakeCharacter::PerformInteractionCheck()
 				}
 			}
 		}
-	}
 	NoInteractableFound();
 }
 
@@ -262,6 +263,15 @@ void ACupcakeCharacter::Interact()
 	}
 }
 
+void ACupcakeCharacter::UpdateInteractionWidget() const
+{
+	if(IsValid(TargetInteractable.GetObject()))
+	{
+		// Whatever interactable object ur looking at, update the HUD
+		HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	}
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -308,6 +318,7 @@ void ACupcakeCharacter::DisableMovement()
 	GetCharacterMovement()->StopMovementImmediately();
 	//bUseControllerRotationYaw = false;
 }
+
 
 void ACupcakeCharacter::EnableMovement()
 {

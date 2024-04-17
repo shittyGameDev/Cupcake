@@ -7,6 +7,7 @@
 #include "Data/ItemDataStructs.h"
 #include "BaseItem.generated.h"
 
+class UNewInventoryComponent;
 /**
  * 
  */
@@ -17,8 +18,8 @@ class CUPCAKE_API UBaseItem : public UObject
 	
 public:
 
-	//UPROPERTY()
-	//UInventoryComponent* OwningInventory;
+	UPROPERTY()
+	UNewInventoryComponent* OwningInventory;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Item")
 	int32 Quantity;
@@ -38,8 +39,13 @@ public:
 	UPROPERTY(EditAnywhere, Category= "Item Asset")
 	FItemAssetData AssetData;
 
+	bool bIsCopy;
+	bool bIsPickup;
+
 	
 	UBaseItem();
+
+	void ResetItemFlags();
 
 	UBaseItem* CreateItemCopy() const;
 

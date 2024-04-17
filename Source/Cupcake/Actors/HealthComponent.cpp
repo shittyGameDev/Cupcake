@@ -3,6 +3,10 @@
 
 #include "HealthComponent.h"
 
+#include "Health.h"
+#include "Cupcake/PlayerSystem/CupcakeCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
@@ -47,11 +51,7 @@ void UHealthComponent::DoDamage(float DamageAmount)
 
 	if (Health <= 0)
 	{
-		OnDeath();
+		AActor* Actor = Cast<AActor>(GetOwner());
+		IHealth::Execute_OnDeath(Actor);
 	}
-}
-
-bool UHealthComponent::OnDeath()
-{
-	return false;
 }

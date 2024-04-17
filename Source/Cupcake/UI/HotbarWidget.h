@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Cupcake/Items/Item.h"
 #include "HotbarWidget.generated.h"
+
 
 class UInventoryComponent;
 /**
@@ -22,10 +24,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UImage*> UIImages;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UTextBlock*> Quantity;
+
+	UFUNCTION(BlueprintCallable)
+	void SetQuantity(TArray<UTextBlock*> NewQuantity);
+
 	UPROPERTY()
 	UInventoryComponent* InventoryComponent;
 	
 	UFUNCTION(BlueprintCallable)
 	void UpdateHotbar(const TArray<AItem*>& Items);
+	
+	// Setter function for UIImages
+	UFUNCTION(BlueprintCallable)
+	void SetUIImages(TArray<UImage*> NewUIImages);
 	
 };

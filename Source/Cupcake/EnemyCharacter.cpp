@@ -3,8 +3,7 @@
 
 #include "EnemyCharacter.h"
 
-#include "Kismet/GameplayStatics.h"
-#include "Runtime/AIModule/Classes/AIController.h"
+#include "Actors/HealthComponent.h"
 
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
@@ -15,11 +14,15 @@ AEnemyCharacter::AEnemyCharacter()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
+void AEnemyCharacter::OnDeath_Implementation()
+{
+	Destroy();
+}
+
 // Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

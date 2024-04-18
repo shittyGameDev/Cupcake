@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "WeaponBase.h"
-#include "Actors/Combat.h"
 #include "Actors/Health.h"
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
-class CUPCAKE_API AEnemyCharacter : public ACharacter, public ICombat, public IHealth
+class CUPCAKE_API AEnemyCharacter : public ACharacter, public IHealth
 {
 	GENERATED_BODY()
 
@@ -19,7 +18,7 @@ public:
 	AEnemyCharacter();
 
 	UHealthComponent* HealthComponent;
-	virtual void OnDeath_Implementation();
+	virtual void OnDeath_Implementation() override;
 
 protected:
 	// Called when the game starts or when spawned

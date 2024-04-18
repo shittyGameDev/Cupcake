@@ -31,18 +31,18 @@ protected:
 	TSubclassOf<UDragItemVisual> DragItemVisualClass;
 
 	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
-	TSubclassOf<UInventoryTooltip> ToolTipClass;;
+	TSubclassOf<UInventoryTooltip> ToolTipClass;
 	
 	UPROPERTY(VisibleAnywhere, Category="Inventory Slot")
 	UBaseItem* ItemReference;
 
-	UPROPERTY(VisibleAnywhere, Category="Inventory Slot")
+	UPROPERTY(VisibleAnywhere, Category="Inventory Slot", meta=(BindWidget))
 	UBorder* ItemBorder;
 
-	UPROPERTY(VisibleAnywhere, Category="Inventory Slot")
+	UPROPERTY(VisibleAnywhere, Category="Inventory Slot",meta=(BindWidget))
 	UImage* ItemIcon;
 
-	UPROPERTY(VisibleAnywhere, Category="Inventory Slot")
+	UPROPERTY(VisibleAnywhere, Category="Inventory Slot",meta=(BindWidget))
 	UTextBlock* ItemQuantity;
 
 	virtual void NativeOnInitialized() override;

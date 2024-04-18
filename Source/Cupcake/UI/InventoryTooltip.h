@@ -24,6 +24,9 @@ public:
 	UTextBlock* ItemType;
 
 	UPROPERTY(meta=(BindWidget))
+	UTextBlock* ItemName;
+
+	UPROPERTY(meta=(BindWidget))
 	UTextBlock* UsageText;
 
 	UPROPERTY(meta=(BindWidget))

@@ -79,6 +79,12 @@ public:
 	
 	FTimerHandle TimerHandle_AttackFinished;
 
+	//UPROPERTY(EditDefaultsOnly, Category = "UI")
+	//TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category = "UI")
+	UUserWidget* PlayerHUDWidget;
+
+
 protected:
 
 	/** Called for movement input */
@@ -96,6 +102,7 @@ protected:
 
 	UFUNCTION()
 	void HighlightItem(const FKey KeyPressed);
+
 
 protected:
 	// APawn interface

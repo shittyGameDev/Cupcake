@@ -122,6 +122,21 @@ void ACupcakeCharacter::BeginPlay()
 			
 		}
 	}
+	
+	// Only try to create the widget if we are on the client and the class has been set
+	if (IsLocallyControlled() && PlayerHUDWidget != nullptr)
+	{
+		// Create the HUD widget with the PlayerController as the owner
+		if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		{
+			PlayerHUDWidget = CreateWidget<UUserWidget>(PC, PlayerHUDWidgetClass);
+			if (PlayerHUDWidget != nullptr)
+			{
+				// Add it to the viewport
+				PlayerHUDWidget->AddToViewport();
+			}
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

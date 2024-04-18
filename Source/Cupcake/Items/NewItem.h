@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Combat.generated.h"
+#include "NewItem.generated.h"
 
+class UImage;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UCombat : public UInterface
+class UNewItem : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,12 +17,19 @@ class UCombat : public UInterface
 /**
  * 
  */
-class CUPCAKE_API ICombat
+class CUPCAKE_API INewItem
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+private:
+	FString ID;
+	FString Description;
+	UImage* Image;
+	
 public:
-	UFUNCTION(BlueprintNativeEvent, Category = "Combat")
-	void Attack();
+	FString GetID();
+	UImage* GetImage();
+	
+	void Use();
 };

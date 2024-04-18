@@ -3,17 +3,21 @@
 
 #include "HotbarWidget.h"
 #include "Components/Image.h"
+#include "Cupcake/PlayerSystem/InventoryComponent.h"
 #include "Styling/SlateBrush.h"
 
 
 void UHotbarWidget::SetUIImages(TArray<UImage*> NewUIImages)
 {
+	InventoryComponent = GetOwningPlayerPawn()->GetComponentByClass<UInventoryComponent>();
+	
+	UE_LOG(LogTemp, Warning, TEXT("Component: %p"), InventoryComponent);
 	for (UImage* Image : NewUIImages)
 	{
 		if (Image != nullptr)
 		{
 			// Set the color and opacity of the image
-			Image->SetColorAndOpacity(FLinearColor(0.2f, 0.2f, 0.2f, 0.6f));  // Dark grey with 60% opacity
+			Image->SetColorAndOpacity(FLinearColor(0.2f, 0.2f, 0.2f, 0.0f));  // Dark grey with 100% opacity
 
 			// Add the image to the array
 			UIImages.Add(Image);
@@ -23,8 +27,6 @@ void UHotbarWidget::SetUIImages(TArray<UImage*> NewUIImages)
 	int ImageArraySize = UIImages.Max();
 	UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), ImageArraySize);
 }
-
-
 
 void UHotbarWidget::SetUIBorders(TArray<UBorder*> NewUIBorder)
 {
@@ -49,8 +51,6 @@ void UHotbarWidget::SetQuantity(TArray<UTextBlock*> NewQuantity)
 	int TextBlockArray = Quantity.Max();
 	UE_LOG(LogTemp, Display, TEXT("ImageArraySize: %d"), TextBlockArray);
 }
-
-
 
 void UHotbarWidget::UpdateHotbar(const TArray<AItem*>& Items)
 {
@@ -128,6 +128,10 @@ void UHotbarWidget::HighLightUIItem(FKey KeyPressed)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Valid index: %d"), ImageIndex);
 		HighlightImage(ImageIndex);
+
+		EquippedItemID = InventoryComponent->InventoryItems[ImageIndex];
+		
+		UE_LOG(LogTemp, Warning, TEXT("Equipped item: %s"), *EquippedItemID->ItemName);
 		LastHighlightedIndex = ImageIndex;
 	}
 	else

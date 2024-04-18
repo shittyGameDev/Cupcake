@@ -19,8 +19,10 @@ UCLASS()
 class CUPCAKE_API UHotbarWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
-public:
+	
+public:	
+	// Active item
+	AItem* EquippedItemID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UImage*> UIImages;

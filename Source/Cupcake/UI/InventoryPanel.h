@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryPanel.generated.h"
 
+class UInventoryItemSlot;
 class UNewInventoryComponent;
 class UWrapBox;
 class ACupcakeCharacter;
@@ -35,7 +36,7 @@ public:
 	UNewInventoryComponent* InventoryReference;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UNewInventoryComponent> InventorySlotClass;
+	TSubclassOf<UInventoryItemSlot> InventorySlotClass;
 	
 protected:
 

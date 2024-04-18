@@ -1,0 +1,198 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "NewInventoryComponent.h"
+
+#include "Cupcake/Items/BaseItem.h"
+
+// Sets default values for this component's properties
+UNewInventoryComponent::UNewInventoryComponent()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = true;
+
+	// ...
+}
+
+// Called when the game starts
+void UNewInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	
+}
+
+UBaseItem* UNewInventoryComponent::FindMatchingItem(UBaseItem* ItemIn) const
+{
+	if(ItemIn)
+	{
+		if(InventoryContents.Contains(ItemIn))
+		{
+			return ItemIn;
+		}
+	}
+	return nullptr;
+}
+
+UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
+{
+	if(ItemIn)
+	{
+		if(const TArray<TObjectPtr<UBaseItem>>::ElementType* Result = InventoryContents.FindByKey(ItemIn))
+		{
+			return *Result;
+		}
+	}
+	return nullptr;
+}
+
+UBaseItem* UNewInventoryComponent::FindNextPartialStack(UBaseItem* ItemIn) const
+{
+	// Lambda
+	if(const TArray<TObjectPtr<UBaseItem>>::ElementType* Result =
+		InventoryContents.FindByPredicate([&ItemIn](const UBaseItem* InventoryItem)
+		{
+			return InventoryItem->ID == ItemIn->ID && InventoryItem->IsFullItemStack();
+		}
+		))
+	{
+		return *Result;
+	}
+	return nullptr;
+}
+
+int32 UNewInventoryComponent::CalculateNumberForFullStack(UBaseItem* StackableItem, int32 InitialRequestedAddAmount)
+{
+	const int32 AddAmountToMakeFullStack = StackableItem->NumericData.MaxStackSize - StackableItem->Quantity;
+
+	return FMath::Min(InitialRequestedAddAmount, AddAmountToMakeFullStack);
+}
+
+void UNewInventoryComponent::RemoveSingleInstanceOfItem(UBaseItem* ItemToRemove)
+{
+	InventoryContents.RemoveSingle(ItemToRemove);
+	//Delegate that UI listens to.
+	OnInventoryUpdated.Broadcast();
+}
+
+int32 UNewInventoryComponent::RemoveAmountOfItem(UBaseItem* ItemIn, int32 DesiredAmountToRemove)
+{
+	const int32 ActualAmountToRemove = FMath::Min(DesiredAmountToRemove, ItemIn->Quantity);
+
+	ItemIn->SetQuantity(ItemIn->Quantity - ActualAmountToRemove);
+
+	OnInventoryUpdated.Broadcast();
+
+	return ActualAmountToRemove;
+}
+
+void UNewInventoryComponent::SplitExistingStack(UBaseItem* ItemIn, const int32 AmountToSplit)
+{
+	// If one more thing will not overflow the inventory --> (Victor)
+	if(!(InventoryContents.Num() + 1 <= InventorySlotsCapacity))
+	{
+		//We remove the amount to split and add it as a new entry to the inventory (Victor)
+		RemoveAmountOfItem(ItemIn, AmountToSplit);
+		AddNewItem(ItemIn, AmountToSplit);
+	}
+}
+
+FItemAddResult UNewInventoryComponent::HandleNonStackableItems(UBaseItem* InputItem, int32 RequestedAddAmount)
+{
+	//If adding 1 more item to the inventory would overflow slot capacity
+	if(InventoryContents.Num() + 1 > InventorySlotsCapacity)
+	{
+		//Return added none
+		return FItemAddResult::AddedNone(FText::Format(
+			FText::FromString("Could not add {0} to the inventory. All inventory slots are full."),
+			InputItem->TextData.Name));
+	}
+
+	AddNewItem(InputItem, RequestedAddAmount);
+	// return added all result
+	return FItemAddResult::AddedAll(RequestedAddAmount,FText::Format(
+			FText::FromString("Successfully added {0} {1} to the inventory."),
+			RequestedAddAmount,
+			InputItem->TextData.Name));
+}
+
+int32 UNewInventoryComponent::HandleStackableItems(UBaseItem* InputItem, int32 RequestedAddAmount)
+{
+	return 0;
+}
+
+FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
+{
+	// Check for valid owner (Victor)
+	if(GetOwner())
+	{
+		const int32 InitialRequestedAddAmount = InputItem->Quantity;
+
+		// Handle non-stackable items (Victor)
+		if(!InputItem->NumericData.bIsStackable)
+		{
+			return HandleNonStackableItems(InputItem, InitialRequestedAddAmount);
+		}
+
+		// Handle stackable items (Victor)
+		const int32 StackableAmountAdded = HandleStackableItems(InputItem, InitialRequestedAddAmount);
+
+		if(StackableAmountAdded == InitialRequestedAddAmount)
+		{
+			return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(
+				FText::FromString("Successfully added {0} {1}(s) to the inventory."),
+				InitialRequestedAddAmount,
+				InputItem->TextData.Name));
+		}
+
+		if(StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
+		{
+			return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
+				FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
+				InputItem->TextData.Name,
+				StackableAmountAdded));
+		}
+
+		if(StackableAmountAdded <= 0)
+		{
+			return FItemAddResult::AddedNone(FText::Format(
+				FText::FromString("Couldn't add {0} to the inventory. Inventory is full"),
+				InputItem->TextData.Name));
+		}
+	}
+
+	check(false);
+	return FItemAddResult::AddedNone(FText::FromString("TryAddItem fallthrough error. GetOwner() check somehow failed"));
+}
+
+void UNewInventoryComponent::AddNewItem(UBaseItem* Item, const int32 AmountToAdd)
+{
+	UBaseItem* NewItem;
+
+	if(Item->bIsCopy|| Item->bIsPickup)
+	{
+		//If the item is already a copy, or is a world pickup
+		NewItem = Item;
+		NewItem->ResetItemFlags();
+	}
+	else
+	{
+		// Used when splitting or dragging to/from another inventory
+		NewItem = Item->CreateItemCopy();
+	}
+
+	NewItem->OwningInventory = this;
+	NewItem->SetQuantity(AmountToAdd);
+
+	InventoryContents.Add(NewItem);
+	OnInventoryUpdated.Broadcast();
+}
+
+
+
+
+
+
+

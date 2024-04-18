@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "InventoryComponent.h"
 #include "Cupcake/WeaponBase.h"
-#include "Cupcake/Actors/Combat.h"
 #include "Cupcake/Actors/Health.h"
 #include "Cupcake/Items/InteractionInterface.h"
 #include "GameFramework/Character.h"
@@ -37,7 +36,7 @@ struct FInteractionData
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ACupcakeCharacter : public ACharacter, public ICombat, public IHealth
+class ACupcakeCharacter : public ACharacter, public IHealth
 {
 	GENERATED_BODY()
 
@@ -77,8 +76,7 @@ public:
 	UFUNCTION()
 	virtual void OnDeath_Implementation();
 
-	UFUNCTION()
-	virtual void Attack_Implementation();
+	void Attack();
 
 	UFUNCTION()
 	void OnAttackFinished();

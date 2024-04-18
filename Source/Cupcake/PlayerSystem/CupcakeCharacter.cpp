@@ -76,7 +76,8 @@ void ACupcakeCharacter::OnDeath_Implementation()
 	Destroy();
 }
 
-void ACupcakeCharacter::Attack_Implementation()
+
+void ACupcakeCharacter::Attack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
 	if (!Weapon) return;
@@ -94,6 +95,7 @@ void ACupcakeCharacter::Attack_Implementation()
 	// Assuming an attack takes 1 second; adjust this duration as needed
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 0.2f, false);
 }
+
 
 void ACupcakeCharacter::OnAttackFinished()
 {
@@ -306,7 +308,7 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		*/
 
 		// Combat
-		PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACupcakeCharacter::Attack_Implementation);
+		PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACupcakeCharacter::Attack);
 	}
 	else
 	{

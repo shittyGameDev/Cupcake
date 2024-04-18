@@ -47,6 +47,25 @@ void ABaseHUD::HideMenu()
 	}
 }
 
+void ABaseHUD::ToggleMenu()
+{
+	if(bIsMenuVisible)
+	{
+		HideMenu();
+
+		const FInputModeGameOnly InputMode;
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		GetOwningPlayerController()->SetShowMouseCursor(false);
+	}
+	else
+	{
+		DisplayMenu();
+		const FInputModeGameAndUI InputMode;
+		GetOwningPlayerController()->SetInputMode(InputMode);
+		GetOwningPlayerController()->SetShowMouseCursor(true);
+	}
+}
+
 void ABaseHUD::ShowInteractionWidget() const
 {
 	if(InteractionWidget)

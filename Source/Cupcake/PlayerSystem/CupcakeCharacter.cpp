@@ -143,6 +143,7 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 	}
 }
 
+
 void ACupcakeCharacter::PerformInteractionCheck()
 {
 	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
@@ -294,6 +295,7 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
 
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
+		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
 
 
 		
@@ -366,6 +368,11 @@ void ACupcakeCharacter::OnInteractPressed()
 			IInteractable::Execute_Interact(HitResult.GetActor());
 		}
 	}
+}
+
+void ACupcakeCharacter::ToggleMenu()
+{
+	HUD->ToggleMenu();
 }
 
 void ACupcakeCharacter::Move(const FInputActionValue& Value)

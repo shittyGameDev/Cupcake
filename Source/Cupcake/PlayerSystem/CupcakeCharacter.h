@@ -158,5 +158,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
+
+	void ToggleMenu();
 };
 

@@ -6,6 +6,10 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryPanel.generated.h"
 
+class UNewInventoryComponent;
+class UWrapBox;
+class ACupcakeCharacter;
+class UTextBlock;
 /**
  * 
  */
@@ -13,5 +17,30 @@ UCLASS()
 class CUPCAKE_API UInventoryPanel : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION()
+	void RefreshInventory();
+
+	UPROPERTY(meta=(BindWidget))
+	UWrapBox* InventoryPanel;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* CapacityInfo;
+
+	UPROPERTY()
+	ACupcakeCharacter* PlayerCharacter;
+
+	UPROPERTY()
+	UNewInventoryComponent* InventoryReference;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UNewInventoryComponent> InventorySlotClass;
 	
+protected:
+
+	void SetInfoText() const;
+	virtual void NativeOnInitialized() override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+		UDragDropOperation* InOperation) override;
 };

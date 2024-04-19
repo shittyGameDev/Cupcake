@@ -21,16 +21,19 @@ void UInventoryPanel::NativeOnInitialized()
 		if(InventoryReference)
 		{
 			InventoryReference->OnInventoryUpdated.AddUObject(this, &UInventoryPanel::RefreshInventory);
-			//SetInfoText();
+			SetInfoText();
 		}
 	}
 }
 
 void UInventoryPanel::SetInfoText() const
 {
-	CapacityInfo->SetText(FText::Format(FText::FromString("{0}/{1}"),
-		InventoryReference->GetInventoryContents().Num(),
-		InventoryReference->GetSlotsCapacity()));
+	const FString CapacityInfoValue{
+	FString::FromInt(InventoryReference->GetInventoryContents().Num()) + "/"
+		+ FString::FromInt(InventoryReference->GetSlotsCapacity())
+	};
+
+	CapacityInfo->SetText(FText::FromString(CapacityInfoValue));
 }
 
 void UInventoryPanel::RefreshInventory()
@@ -46,6 +49,7 @@ void UInventoryPanel::RefreshInventory()
 
 			InventoryPanel->AddChildToWrapBox(ItemSlot);
 		}
+		SetInfoText();
 	}
 }
 

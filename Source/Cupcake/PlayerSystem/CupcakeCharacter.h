@@ -11,6 +11,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UBaseItem;
 class UNewInventoryComponent;
 class ABaseHUD;
 class USpringArmComponent;
@@ -158,5 +159,7 @@ public:
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
 
 	void ToggleMenu();
+
+	void DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop);
 };
 

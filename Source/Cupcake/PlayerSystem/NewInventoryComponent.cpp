@@ -50,18 +50,17 @@ UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
 
 UBaseItem* UNewInventoryComponent::FindNextPartialStack(UBaseItem* ItemIn) const
 {
-	// Lambda
-	if(const TArray<TObjectPtr<UBaseItem>>::ElementType* Result =
+	if (const TArray<TObjectPtr<UBaseItem>>::ElementType* Result =
 		InventoryContents.FindByPredicate([&ItemIn](const UBaseItem* InventoryItem)
 		{
-			return InventoryItem->ID == ItemIn->ID && InventoryItem->IsFullItemStack();
-		}
-		))
+			return InventoryItem->ID == ItemIn->ID && !InventoryItem->IsFullItemStack();
+		}))
 	{
 		return *Result;
 	}
 	return nullptr;
 }
+
 
 int32 UNewInventoryComponent::CalculateNumberForFullStack(UBaseItem* StackableItem, int32 InitialRequestedAddAmount)
 {
@@ -120,30 +119,47 @@ FItemAddResult UNewInventoryComponent::HandleNonStackableItems(UBaseItem* InputI
 
 int32 UNewInventoryComponent::HandleStackableItems(UBaseItem* InputItem, int32 RequestedAddAmount)
 {
-	if(RequestedAddAmount <= 0)
+	if (RequestedAddAmount <= 0)
 	{
-		// invalid item data
+		// Invalid item data
 		return 0;
 	}
 
 	int32 AmountToDistribute = RequestedAddAmount;
+	UBaseItem* ExistingItemStack = FindNextPartialStack(InputItem);
 
-	UBaseItem* ExistingItem = FindNextPartialStack(InputItem);
-
-	// Distribute item stack over existing stacks
-	while (ExistingItem)
+	// Distribute item stack over existing partial stacks
+	while (ExistingItemStack != nullptr)
 	{
-		const int32 AmountToMakeFullStack = CalculateNumberForFullStack(ExistingItem, AmountToDistribute);
-		
+		const int32 AmountToAdd = CalculateNumberForFullStack(ExistingItemStack, AmountToDistribute);
+
+		if (AmountToAdd > 0)
+		{
+			ExistingItemStack->SetQuantity(ExistingItemStack->Quantity + AmountToAdd);
+			AmountToDistribute -= AmountToAdd;
+
+			if (AmountToDistribute == 0)
+			{
+				OnInventoryUpdated.Broadcast();
+				return RequestedAddAmount;
+			}
+		}
+
+		ExistingItemStack = FindNextPartialStack(InputItem);
 	}
 
-	// No more partial stacks found, checks if a new stack can be added.
-	if(InventoryContents.Num() +1 <= InventorySlotsCapacity)
+	// If there are still items left to distribute and there is an available slot
+	if (AmountToDistribute > 0 && InventoryContents.Num() < InventorySlotsCapacity)
 	{
-		
+		AddNewItem(InputItem, AmountToDistribute);
+		OnInventoryUpdated.Broadcast();
+		return RequestedAddAmount;
 	}
-	
+
+	// If all partial stacks are processed and no new slots are available, but items still need to be distributed
+	return RequestedAddAmount - AmountToDistribute;
 }
+
 
 FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 {

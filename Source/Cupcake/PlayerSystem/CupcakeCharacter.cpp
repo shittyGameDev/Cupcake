@@ -13,6 +13,10 @@
 #include "Cupcake/Actors/HealthComponent.h"
 #include "Cupcake/Items/Interactable.h"
 #include "Cupcake/Items/Item.h"
+#include "DrawDebugHelpers.h"
+#include "NewInventoryComponent.h"
+#include "Cupcake/UI/BaseHUD.h"
+#include "Cupcake/World/Pickup.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -48,10 +52,16 @@ ACupcakeCharacter::ACupcakeCharacter()
 	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 
+	PlayerInventory = CreateDefaultSubobject<UNewInventoryComponent>("PlayerInventory");
+	PlayerInventory->SetSlotsCapacity(20);
+
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	InteractionCheckFrequency = 0.1;
+	InteractionCheckDistance = 225.0f;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -101,6 +111,9 @@ void ACupcakeCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());
+	HUD = Cast<ABaseHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
 	// Create Weapon
 	if (WeaponBlueprint)
 	{
@@ -139,6 +152,148 @@ void ACupcakeCharacter::BeginPlay()
 	}
 }
 
+void ACupcakeCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
+	{
+		PerformInteractionCheck();
+	}
+}
+
+
+void ACupcakeCharacter::PerformInteractionCheck()
+{
+	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
+
+	//Anledningen till att vi använder oss av initialisering via {} är för att det garanterar typen som vi använder blir
+	//Initialiserade korrekt. Annars är koden väldigt basic linetrace skapande. (Victor)
+	FVector TraceStart{GetActorLocation()};
+	FVector ForwardVector = GetActorForwardVector();
+	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
+	
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 10.0f);
+	
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+		FHitResult TraceHit;
+
+	
+		if(GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+		{
+			if(TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+			{
+				if(TraceHit.GetActor() != InteractionData.CurrentInteractable)
+				{
+					FoundInteractable(TraceHit.GetActor());
+					return;
+				}
+
+				if(TraceHit.GetActor() == InteractionData.CurrentInteractable)
+				{
+					return;
+				}
+			}
+		}
+	NoInteractableFound();
+}
+
+void ACupcakeCharacter::FoundInteractable(AActor* NewInteractable)
+{
+	if(IsInteracting())
+	{
+		EndInteract();
+	}
+	if(InteractionData.CurrentInteractable)
+	{
+		TargetInteractable = InteractionData.CurrentInteractable;
+		TargetInteractable->EndFocus();
+	}
+	InteractionData.CurrentInteractable = NewInteractable;
+	TargetInteractable = NewInteractable;
+
+	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+
+	TargetInteractable->BeginFocus();
+}
+
+void ACupcakeCharacter::NoInteractableFound()
+{
+	if(IsInteracting())
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	}
+	if(InteractionData.CurrentInteractable)
+	{
+		if(IsValid(TargetInteractable.GetObject()))
+		{
+			TargetInteractable->EndFocus();
+		}
+
+		HUD->HideInteractionWidget();
+
+		InteractionData.CurrentInteractable = nullptr;
+		TargetInteractable = nullptr;
+	}
+}
+
+void ACupcakeCharacter::BeginInteract()
+{
+	// verify nothing has changed with the interactable state since beginning interaction
+	PerformInteractionCheck();
+
+	if(InteractionData.CurrentInteractable)
+	{
+		if(IsValid(TargetInteractable.GetObject()))
+		{
+			TargetInteractable->BeginInteract();
+
+			if(FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+			{
+				Interact();
+			}
+			else
+			{
+				GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
+					this,
+					&ACupcakeCharacter::Interact,
+					TargetInteractable->InteractableData.InteractionDuration,
+					false);
+			}
+		}
+	}
+}
+
+void ACupcakeCharacter::EndInteract()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	if(IsValid(TargetInteractable.GetObject()))
+	{
+		TargetInteractable->EndInteract();
+	}
+}
+
+void ACupcakeCharacter::Interact()
+{
+	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	if(IsValid(TargetInteractable.GetObject()))
+	{
+		TargetInteractable->Interact(this);
+	}
+}
+
+void ACupcakeCharacter::UpdateInteractionWidget() const
+{
+	if(IsValid(TargetInteractable.GetObject()))
+	{
+		// Whatever interactable object ur looking at, update the HUD
+		HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
+	}
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -155,9 +310,11 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 
-		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::OnInteractPressed);
+		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
+		PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
 
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
+		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
 
 
 		
@@ -182,6 +339,7 @@ void ACupcakeCharacter::DisableMovement()
 	GetCharacterMovement()->StopMovementImmediately();
 	//bUseControllerRotationYaw = false;
 }
+
 
 void ACupcakeCharacter::EnableMovement()
 {
@@ -228,6 +386,36 @@ void ACupcakeCharacter::OnInteractPressed()
 		{
 			IInteractable::Execute_Interact(HitResult.GetActor());
 		}
+	}
+}
+
+void ACupcakeCharacter::ToggleMenu()
+{
+	HUD->ToggleMenu();
+}
+
+void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop)
+{
+	if(PlayerInventory->FindMatchingItem(ItemToDrop))
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = this;
+		SpawnParameters.bNoFail = true;
+		//Kollar om itemet man försöker droppa kolliderar med något och flyttar isåfall itemet lite. (Victor)
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		const FVector SpawnLocation{GetActorLocation() + (GetActorForwardVector() * 50.f)};
+		const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
+
+		const int32 RemovedQuantity = PlayerInventory->RemoveAmountOfItem(ItemToDrop, QuantityToDrop);
+
+		APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParameters);
+
+		Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Item to drop was somehow null!"));
 	}
 }
 

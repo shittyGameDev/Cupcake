@@ -6,15 +6,33 @@
 #include "InventoryComponent.h"
 #include "Cupcake/WeaponBase.h"
 #include "Cupcake/Actors/Health.h"
+#include "Cupcake/Items/InteractionInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UBaseItem;
+class UNewInventoryComponent;
+class ABaseHUD;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+
+USTRUCT()
+struct FInteractionData
+{
+	GENERATED_BODY()
+	FInteractionData() : CurrentInteractable(nullptr), LastInteractionCheckTime(0.0f)
+	{
+		
+	};
+	UPROPERTY()
+	AActor* CurrentInteractable;
+	UPROPERTY()
+	float LastInteractionCheckTime;
+};
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -70,6 +88,15 @@ public:
 	UFUNCTION()
 	void DisableMovement();
 
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	FORCEINLINE UNewInventoryComponent* GetInventory() const { return PlayerInventory; }
+
+	void UpdateInteractionWidget() const;
+
 	UPROPERTY()
 	UHealthComponent* HealthComponent;
 	UPROPERTY()
@@ -79,13 +106,9 @@ public:
 	
 	FTimerHandle TimerHandle_AttackFinished;
 
-	//UPROPERTY(EditDefaultsOnly, Category = "UI")
-	//TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite,Category = "UI")
-	UUserWidget* PlayerHUDWidget;
-
-
 protected:
+	UPROPERTY()
+	ABaseHUD* HUD;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -103,18 +126,40 @@ protected:
 	UFUNCTION()
 	void HighlightItem(const FKey KeyPressed);
 
-
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	// To add mapping context
 	virtual void BeginPlay();
 
+	UPROPERTY(VisibleAnywhere, Category="Interaction")
+	TScriptInterface<IInteractionInterface> TargetInteractable;
+
+	UPROPERTY(VisibleAnywhere, Category="Character | Inventory")
+	UNewInventoryComponent* PlayerInventory;
+
+	float InteractionCheckFrequency;
+
+	float InteractionCheckDistance;
+
+	FTimerHandle TimerHandle_Interaction;
+
+	FInteractionData InteractionData;
+
+	void PerformInteractionCheck();
+	void FoundInteractable(AActor* NewInteractable);
+	void NoInteractableFound();
+	void BeginInteract();
+	void EndInteract();
+	void Interact();
+
 public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	virtual void Tick(float DeltaSeconds) override;
+
+	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
+
+	void ToggleMenu();
+
+	void DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop);
 };
 

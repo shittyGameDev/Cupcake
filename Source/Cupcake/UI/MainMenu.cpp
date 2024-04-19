@@ -3,6 +3,8 @@
 
 #include "MainMenu.h"
 
+#include "ItemDragDropOperation.h"
+#include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 
 void UMainMenu::NativeOnInitialized()
@@ -20,7 +22,12 @@ void UMainMenu::NativeConstruct()
 bool UMainMenu::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 	UDragDropOperation* InOperation)
 {
-	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+	const UItemDragDropOperation* ItemDragDrop = Cast<UItemDragDropOperation>(InOperation);
 
-	
+	if(PlayerCharacter && ItemDragDrop->SourceItem)
+	{
+		PlayerCharacter->DropItem(ItemDragDrop->SourceItem, ItemDragDrop->SourceItem->Quantity);
+		return true;
+	}
+	return false;
 }

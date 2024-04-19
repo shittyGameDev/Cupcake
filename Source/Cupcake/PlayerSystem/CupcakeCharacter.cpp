@@ -16,6 +16,7 @@
 #include "DrawDebugHelpers.h"
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
+#include "Cupcake/World/Pickup.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -375,6 +376,31 @@ void ACupcakeCharacter::OnInteractPressed()
 void ACupcakeCharacter::ToggleMenu()
 {
 	HUD->ToggleMenu();
+}
+
+void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop)
+{
+	if(PlayerInventory->FindMatchingItem(ItemToDrop))
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = this;
+		SpawnParameters.bNoFail = true;
+		//Kollar om itemet man försöker droppa kolliderar med något och flyttar isåfall itemet lite. (Victor)
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+		const FVector SpawnLocation{GetActorLocation() + (GetActorForwardVector() * 50.f)};
+		const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
+
+		const int32 RemovedQuantity = PlayerInventory->RemoveAmountOfItem(ItemToDrop, QuantityToDrop);
+
+		APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParameters);
+
+		Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Item to drop was somehow null!"));
+	}
 }
 
 void ACupcakeCharacter::Move(const FInputActionValue& Value)

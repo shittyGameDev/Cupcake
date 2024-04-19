@@ -120,7 +120,29 @@ FItemAddResult UNewInventoryComponent::HandleNonStackableItems(UBaseItem* InputI
 
 int32 UNewInventoryComponent::HandleStackableItems(UBaseItem* InputItem, int32 RequestedAddAmount)
 {
-	return 0;
+	if(RequestedAddAmount <= 0)
+	{
+		// invalid item data
+		return 0;
+	}
+
+	int32 AmountToDistribute = RequestedAddAmount;
+
+	UBaseItem* ExistingItem = FindNextPartialStack(InputItem);
+
+	// Distribute item stack over existing stacks
+	while (ExistingItem)
+	{
+		const int32 AmountToMakeFullStack = CalculateNumberForFullStack(ExistingItem, AmountToDistribute);
+		
+	}
+
+	// No more partial stacks found, checks if a new stack can be added.
+	if(InventoryContents.Num() +1 <= InventorySlotsCapacity)
+	{
+		
+	}
+	
 }
 
 FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)

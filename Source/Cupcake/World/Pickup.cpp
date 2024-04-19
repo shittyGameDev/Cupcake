@@ -1,4 +1,3 @@
-
 #include "Pickup.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"

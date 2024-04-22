@@ -9,6 +9,7 @@
 #include "Pickup.generated.h"
 
 class UBaseItem;
+class UNiagaraSystem;
 
 UCLASS()
 class CUPCAKE_API APickup : public AActor, public IInteractionInterface

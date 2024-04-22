@@ -3,7 +3,6 @@
 
 #include "Item.h"
 
-#include "IDetailTreeNode.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -73,6 +72,8 @@ void AItem::Interact_Implementation()
 		if(UInventoryComponent* Inventory = Player->FindComponentByClass<UInventoryComponent>())
 		{
 			Inventory->AddItem(this);
+			SetActorEnableCollision(false);
+			SetActorHiddenInGame(true);
 		}
 	}
 }

@@ -1,15 +1,12 @@
 #include "DayCycleManager.h"
 
-#include "FunctionalUIScreenshotTest.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/TextBlock.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Engine/StaticMeshActor.h"
-#include "EntitySystem/MovieSceneEntitySystemRunner.h"
-#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Math/UnitConversion.h"
+
 
 // Sets default values
 ADayCycleManager::ADayCycleManager()
@@ -26,12 +23,10 @@ void ADayCycleManager::BeginPlay()
 
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	
-	FTimeEvent TreeSpawnEvent;
-	TreeSpawnEvent.Day = 0;
-	TreeSpawnEvent.Hour = 0;
-	TreeSpawnEvent.Minute = 1;
-	TreeSpawnEvent.EventDelegate.BindUFunction(this, FName("SpawnTreeEvent"));
-	RegisterTimeEvent(TreeSpawnEvent);
+	for (FTimeEvent& Event : TimeEvents)
+	{
+		BindTimeEvent(Event);
+	}
 
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
@@ -43,7 +38,7 @@ void ADayCycleManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ElapsedTime += DeltaTime * AccelerateTime;
-	
+	UE_LOG(LogTemp, Warning, TEXT("Time in hours: %i"), GetHour());
 	/*if (!bHasSlept && ElapsedTime > 5 * AccelerateTime)
 	{
 		Sleep();
@@ -133,44 +128,48 @@ void ADayCycleManager::Sleep()
 	
 	UE_LOG(LogTemp, Display, TEXT("Hour before: %i"), GetHour());
 	ShiftTime(SleepDurationInHours * 60 * 60);
+	int DayAfterSleep = GetCurrentDayNumber(); //fortsätta här imornS
+	if (DayAfterSleep == DayBeforeSleep)
+	{
+		if (BlackScreenWidget)
+		{
+			BlackScreenWidget->RemoveFromParent();
+			BlackScreenWidget = nullptr; 
+		}
+	
+		if (BlackScreenWidgetClass != nullptr)
+		{
+		
+			BlackScreenWidget = CreateWidget<UUserWidget>(GetWorld(), BlackScreenWidgetClass);
+			if (BlackScreenWidget != nullptr)
+			{
+				BlackScreenWidget->AddToViewport(1000);
+			
+				FTimerHandle TimerHandle;
+				GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, DayBeforeSleep]()
+				{
+					if (BlackScreenWidget)
+					{
+						BlackScreenWidget->RemoveFromParent();
+						BlackScreenWidget = nullptr;
+					
+						if (PlayerCharacter)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Enable Movement"));
+							PlayerCharacter->EnableMovement();
+						}
+
+					}
+				}, 3.0f, false);
+			}
+		}
+	}else
+	{
+		DayTransistion();
+	}
 	UE_LOG(LogTemp, Display, TEXT("Hour after: %i"), GetHour());
 	
-	if (BlackScreenWidget)
-	{
-		BlackScreenWidget->RemoveFromParent();
-		BlackScreenWidget = nullptr; 
-	}
-	
-	if (BlackScreenWidgetClass != nullptr)
-	{
-		
-		BlackScreenWidget = CreateWidget<UUserWidget>(GetWorld(), BlackScreenWidgetClass);
-		if (BlackScreenWidget != nullptr)
-		{
-			BlackScreenWidget->AddToViewport(1000);
-			
-			FTimerHandle TimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, DayBeforeSleep]()
-			{
-				if (BlackScreenWidget)
-				{
-					BlackScreenWidget->RemoveFromParent();
-					BlackScreenWidget = nullptr;
-					
-					if (PlayerCharacter)
-					{
-						UE_LOG(LogTemp, Warning, TEXT("Enable Movement"));
-						PlayerCharacter->EnableMovement();
-					}
-					int DayAfterSleep = GetCurrentDayNumber();
-					if (DayAfterSleep > DayBeforeSleep)
-					{
-						DayTransistion();
-					}
-				}
-			}, 3.0f, false);
-		}
-	}
+
 }
 
 
@@ -186,9 +185,10 @@ void ADayCycleManager::Interact_Implementation()
 	}
 }
 
-void ADayCycleManager::RegisterTimeEvent(const FTimeEvent& NewEvent)
+void ADayCycleManager::RegisterTimeEvent(FTimeEvent& NewEvent)
 {
 	TimeEvents.Add(NewEvent);
+	BindTimeEvent(NewEvent);
 }
 
 bool ADayCycleManager::CanSleep()
@@ -220,6 +220,14 @@ void ADayCycleManager::DayTransistion()
 	}
 }
 
+void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
+{
+	if (!Event.FunctionName.IsEmpty())
+	{
+		Event.EventDelegate.BindUFunction(this, FName(*Event.FunctionName));
+	}
+}
+
 void ADayCycleManager::SpawnTreeEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Spawned Cube!"));
@@ -236,4 +244,33 @@ void ADayCycleManager::SpawnTreeEvent()
 		}
 	}
 
+}
+
+void ADayCycleManager::ApplyInsanity()
+{
+	if (CameraShakeClass && PlayerController && SkyLight && SkyLight->GetLightComponent())
+	{
+		FLinearColor Magenta(255.f, 0.f, 231.f);
+		SkyLight->GetLightComponent()->SetLightColor(Magenta);
+		PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = 50.f;
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(CameraShakeClass);
+
+		bool bIsLightPink = true;
+
+		FTimerHandle FlickerLightTimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(FlickerLightTimerHandle, [this, &bIsLightPink, Magenta]()
+		{
+			FLinearColor NewColor = bIsLightPink ? FLinearColor::White : Magenta;
+			SkyLight->GetLightComponent()->SetLightColor(NewColor);
+			bIsLightPink = !bIsLightPink;
+		}, 0.01f, true);
+
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, FlickerLightTimerHandle]() mutable
+		{
+			PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = 500.f;
+			GetWorld()->GetTimerManager().ClearTimer(FlickerLightTimerHandle);
+			SkyLight->GetLightComponent()->SetLightColor(FLinearColor::White);
+		}, 3.0f, false);
+	}
 }

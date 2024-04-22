@@ -24,7 +24,5 @@ private:
 	APawn* PlayerPawn; // Pointer to PlayerController
 
 	UPROPERTY(EditAnywhere)
-	float AcceptanceRadius = 200.f;
-	
-	void LookAtPlayer(); // Function to make AI look at the player
+	class UBehaviorTree* AIBehavior;
 };

@@ -5,6 +5,5 @@
 
 void UCameraShakeBaseEvent::UCameraShakeEvent()
 {
-
 	
 }

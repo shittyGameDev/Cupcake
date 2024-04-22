@@ -187,10 +187,12 @@ FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 
 		if(StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
 		{
+			OnInventoryUpdated.Broadcast();
 			return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
 				FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
 				InputItem->TextData.Name,
 				StackableAmountAdded));
+			
 		}
 
 		if(StackableAmountAdded <= 0)

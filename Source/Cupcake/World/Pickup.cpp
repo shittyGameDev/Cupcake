@@ -99,6 +99,7 @@ void APickup::TakePickup(const ACupcakeCharacter* Taker)
 				case EItemAddResult::Iar_NoItemAdded:
 					break;
 				case EItemAddResult::Iar_PartialAmountItemAdded:
+					UE_LOG(LogTemp, Warning, TEXT("PartialAmountAdded"));
 					UpdateInteractableData();
 					Taker->UpdateInteractionWidget();
 					break;

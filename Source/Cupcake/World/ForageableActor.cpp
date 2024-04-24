@@ -75,16 +75,41 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Interacting with forageable object"));
 
-	if(!IsPendingKillPending())
+	if (!IsPendingKillPending())
 	{
-		if(ItemReference)
+		if (ItemReference)
 		{
-			FVector SpawnLocation = GetActorLocation() + FMath::VRand() * FMath::RandRange(200.0f, 350.0f);
-			FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-
-			APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnLocation, SpawnRotation);
-
-			Pickup->InitializeDrop(ItemReference, ItemReference->Quantity);
+			FActorSpawnParameters SpawnParameters;
+			SpawnParameters.Owner = this;
+			SpawnParameters.bNoFail = true;
+			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			
+			if (!ItemReference->NumericData.bIsStackable && ItemQuantity > 1)
+			{
+				// Loopa och spawn varje objekt separat inom en cirkel
+				for (int i = 0; i < ItemQuantity; i++)
+				{
+					const float Angle = FMath::RandRange(0.0f, 360.0f);
+					const float Radius = FMath::RandRange(150.0f, 300.0f);
+					const FVector Direction = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0.0f);
+					const FVector SpawnLocation = GetActorLocation() + Direction * Radius;
+					const FTransform SpawnTransform(FRotator(0.0f, Angle, 0.0f), SpawnLocation);
+					APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParameters);
+					Pickup->InitializeDrop(ItemReference, 1);
+					UE_LOG(LogTemp, Warning, TEXT("Dropped non-stackable item #%d"), i+1);
+				}
+			}
+			else
+			{
+				// Hantera stackbara objekt eller enstaka icke-stackbara objekt
+				const float Angle = FMath::RandRange(0.0f, 360.0f);
+				const float Radius = FMath::RandRange(150.0f, 300.0f);
+				const FVector Direction = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0.0f);
+				const FVector SpawnLocation = GetActorLocation() + Direction * Radius;
+				const FTransform SpawnTransform(FRotator(0.0f, Angle, 0.0f), SpawnLocation);
+				APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParameters);
+				Pickup->InitializeDrop(ItemReference, ItemReference->Quantity);
+			}
 		}
 		else
 		{

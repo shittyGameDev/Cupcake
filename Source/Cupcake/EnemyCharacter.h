@@ -9,7 +9,7 @@
 #include "EnemyCharacter.generated.h"
 
 UCLASS()
-class CUPCAKE_API AEnemyCharacter : public ACharacter, public IHealth
+class CUPCAKE_API AEnemyCharacter : public ACharacter, public IDamagableInterface
 {
 	GENERATED_BODY()
 

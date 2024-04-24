@@ -9,12 +9,12 @@
 class UHealthComponent;
 
 UINTERFACE(MinimalAPI)
-class UHealth : public UInterface
+class UDamagableInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class CUPCAKE_API IHealth
+class CUPCAKE_API IDamagableInterface
 {
 	GENERATED_BODY()
 public:

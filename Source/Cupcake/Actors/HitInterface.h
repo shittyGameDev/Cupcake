@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Cupcake/WeaponBase.h"
 #include "UObject/Interface.h"
 #include "HitInterface.generated.h"
 
@@ -13,13 +14,12 @@ class UHitInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class CUPCAKE_API IHitInterface
 {
 	GENERATED_BODY()
-
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+	
 public:
+	AWeaponBase* weapon;
+	
+	virtual void Attack();
 };

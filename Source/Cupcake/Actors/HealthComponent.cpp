@@ -24,14 +24,6 @@ void UHealthComponent::BeginPlay()
 	
 }
 
-// Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	// ...
-}
-
 void UHealthComponent::RegenerateHealth(float HealthAmount)
 {
 	if (MaxHealth == Health) return;
@@ -43,9 +35,9 @@ void UHealthComponent::DoDamage(float DamageAmount)
 {
 	AActor* Actor = Cast<AActor>(GetOwner());
 	
-	if (Actor && Actor->GetClass()->ImplementsInterface(UHealth::StaticClass()))
+	if (Actor && Actor->GetClass()->ImplementsInterface(UDamagableInterface::StaticClass()))
 	{
-		IHealth::Execute_OnDamage(Actor);
+		IDamagableInterface::Execute_OnDamage(Actor);
 	}
 	
 	Health -= DamageAmount;
@@ -55,6 +47,6 @@ void UHealthComponent::DoDamage(float DamageAmount)
 
 	if (Health <= 0)
 	{
-		IHealth::Execute_OnDeath(Actor);
+		IDamagableInterface::Execute_OnDeath(Actor);
 	}
 }

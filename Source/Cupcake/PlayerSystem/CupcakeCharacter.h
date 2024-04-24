@@ -37,7 +37,7 @@ struct FInteractionData
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ACupcakeCharacter : public ACharacter, public IHealth
+class ACupcakeCharacter : public ACharacter, public IDamagableInterface
 {
 	GENERATED_BODY()
 

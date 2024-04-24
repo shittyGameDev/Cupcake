@@ -3,6 +3,7 @@
 
 #include "WeaponBase.h"
 
+#include "Actors/DamagableInterface.h"
 #include "Actors/HealthComponent.h"
 
 
@@ -47,6 +48,10 @@ void AWeaponBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 {
 	if(OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
+		if (OtherActor->Implements<UDamagableInterface>())
+		{
+			return;
+		}
 		if (UHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHealthComponent>())
 		{
 			HealthComponent->DoDamage(DamageAmount);

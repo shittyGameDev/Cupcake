@@ -32,12 +32,11 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-bool UHealthComponent::RegenerateHealth(float HealthAmount)
+void UHealthComponent::RegenerateHealth(float HealthAmount)
 {
-	if (MaxHealth == Health) return false;
+	if (MaxHealth == Health) return;
 	Health += HealthAmount;
 	Health = FMath::Clamp(Health, 0.f, MaxHealth);
-	return true;
 }
 
 void UHealthComponent::DoDamage(float DamageAmount)

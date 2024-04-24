@@ -27,6 +27,4 @@ public:
 	void RegenerateHealth(float HealthAmount);
 	
 	void DoDamage(float DamageAmount);
-
-	
 };

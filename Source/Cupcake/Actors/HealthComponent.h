@@ -15,7 +15,6 @@ class CUPCAKE_API UHealthComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UHealthComponent();
-	
 
 protected:
 	// Called when the game starts
@@ -24,13 +23,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Health")
 	float MaxHealth = 100.f;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Health")
-	float Health = 0.f;
+	float Health = 100.f;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	bool RegenerateHealth(float HealthAmount);
+	void RegenerateHealth(float HealthAmount);
 	
 	void DoDamage(float DamageAmount);
 };

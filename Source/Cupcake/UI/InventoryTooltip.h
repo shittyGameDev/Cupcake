@@ -35,6 +35,9 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* StackSizeText;
 
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* MaxStackSizeText;
+
 protected:
 	virtual void NativeConstruct() override;
 	

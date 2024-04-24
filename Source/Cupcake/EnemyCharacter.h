@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "WeaponBase.h"
-#include "Actors/Health.h"
+#include "Actors\DamagableInterface.h"
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 

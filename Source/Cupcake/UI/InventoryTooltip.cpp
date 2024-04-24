@@ -37,10 +37,13 @@ void UInventoryTooltip::NativeConstruct()
 
 	if(ItemBeingHovered->NumericData.bIsStackable)
 	{
-		StackSizeText->SetText(FText::AsNumber(ItemBeingHovered->NumericData.MaxStackSize));
+		const FString StackInfo =
+			{"Max stack size: "+ FString::FromInt(ItemBeingHovered->NumericData.MaxStackSize)};
+
+		MaxStackSizeText->SetText(FText::FromString(StackInfo));
 	}
 	else
 	{
-		StackSizeText->SetVisibility(ESlateVisibility::Collapsed);
+		MaxStackSizeText->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }

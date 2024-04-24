@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Health.generated.h"
+#include "DamagableInterface.generated.h"
 
 class UHealthComponent;
 // This class does not need to be modified.

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "InventoryComponent.h"
 #include "Cupcake/WeaponBase.h"
-#include "Cupcake/Actors/Health.h"
+#include "..\Actors\DamagableInterface.h"
 #include "Cupcake/Items/InteractionInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"

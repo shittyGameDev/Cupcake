@@ -38,7 +38,7 @@ void ADayCycleManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ElapsedTime += DeltaTime * AccelerateTime;
-	UE_LOG(LogTemp, Warning, TEXT("Time in hours: %i"), GetHour());
+	//UE_LOG(LogTemp, Warning, TEXT("Time in hours: %i"), GetHour());
 	/*if (!bHasSlept && ElapsedTime > 5 * AccelerateTime)
 	{
 		Sleep();

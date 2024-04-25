@@ -11,5 +11,5 @@ float IDamageableInterface::TakeDamage(float DamageAmount, FDamageEvent const& D
 	}
 	Attributes->ReceiveDamage(DamageAmount);
 	Execute_OnDamage(Attributes->GetOwner());
-	return 0.f;
+	return DamageAmount;
 }

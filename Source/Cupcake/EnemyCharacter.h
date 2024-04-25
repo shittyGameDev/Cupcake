@@ -4,24 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "WeaponBase.h"
-#include "Actors\DamagableInterface.h"
+#include "Actors\DamagableComponent.h"
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
+class UAttributeComponent;
+
 UCLASS()
-class CUPCAKE_API AEnemyCharacter : public ACharacter, public IDamagableInterface
+class CUPCAKE_API AEnemyCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AEnemyCharacter();
-
-	UHealthComponent* HealthComponent;
-	virtual void OnDeath_Implementation() override;
+	
+	//virtual void OnDeath_Implementation() override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Category="Combat")
@@ -33,6 +32,9 @@ protected:
 	float Health;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	UAttributeComponent* Attributes;
 };

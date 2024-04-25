@@ -1,5 +1,6 @@
 #include "Pickup.h"
 #include "Cupcake/Items/BaseItem.h"
+#include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 
 // Sets default values

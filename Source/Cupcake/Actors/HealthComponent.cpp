@@ -3,7 +3,7 @@
 
 #include "HealthComponent.h"
 
-#include "Health.h"
+#include "DamagableInterface.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Kismet/GameplayStatics.h"
 

@@ -45,7 +45,7 @@ protected:
 
 	
 
-	FTransform CalculateSpawnPoint();
+	FTransform CalculateSpawnPoint() const;
 
 	UPROPERTY(EditAnywhere, Category="Interaction Data")
 	FInteractableData InstanceInteractableData;

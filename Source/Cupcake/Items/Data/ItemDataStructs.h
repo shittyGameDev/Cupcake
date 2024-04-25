@@ -36,9 +36,9 @@ struct FItemNumericData
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	int32 MaxStackSize;
+	int32 MaxStackSize = 0;
 	UPROPERTY(EditAnywhere)
-	bool bIsStackable;
+	bool bIsStackable = false;
 };
 
 USTRUCT()
@@ -61,7 +61,7 @@ struct FItemData : public FTableRowBase
 	FName ID;
 	
 	UPROPERTY(EditAnywhere, Category= "Item Type")
-	EItemType ItemType;
+	EItemType ItemType = EItemType::Wood;
 	UPROPERTY(EditAnywhere, Category= "Item Text Data")
 	FItemTextData TextData;
 	UPROPERTY(EditAnywhere, Category= "Item Numeric Data")

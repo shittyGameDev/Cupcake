@@ -25,7 +25,6 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void UAttributeComponent::ReceiveDamage(float Damage)
 {
-	UE_LOG(LogTemp, Warning, TEXT("IDK"));
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	
 	UE_LOG(LogTemp, Warning, TEXT("%s Health: %f"), *GetName(), Health);

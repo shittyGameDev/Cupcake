@@ -158,7 +158,7 @@ void ACupcakeCharacter::PerformInteractionCheck()
 	FVector ForwardVector = GetActorForwardVector();
 	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
 
-	float CapsuleRadius = 150.f;
+	float CapsuleRadius = 50.f;
 	float CapsuleHalfHeight = 90.f;
 
 	DrawDebugCapsule(GetWorld(), TraceStart, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Red, false,

@@ -131,7 +131,7 @@ void AForageableActor::StartForagingTimer()
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AForageableActor::HandleTimerFinished, 5.0f, false);
 }
 
-FTransform AForageableActor::CalculateSpawnPoint()
+FTransform AForageableActor::CalculateSpawnPoint() const
 {
 	const float Angle = FMath::RandRange(0.0f, 360.0f);
 	const float Radius = FMath::RandRange(150.0f, 300.0f);

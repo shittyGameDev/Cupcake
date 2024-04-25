@@ -7,8 +7,6 @@
 #include "GameFramework/Actor.h"
 #include "Pickup.generated.h"
 
-class UTimelineComponent;
-struct FTimeline;
 class UBaseItem;
 class UNiagaraSystem;
 
@@ -24,22 +22,10 @@ public:
 
 	void InitializeDrop(UBaseItem* ItemToDrop, const int32 InQuantity);
 
-	UFUNCTION()
-	void StartScaling(UCurveFloat* ScaleCurve);
-
-	UFUNCTION()
-	void HandleScaling(float Value);
-
-	UFUNCTION()
-	void FinishScaling() const;
-	
 	FORCEINLINE UBaseItem* GetItemData(){ return ItemReference;}
 
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
-
-	UPROPERTY()
-	UTimelineComponent* Timeline;
 	
 	
 protected:
@@ -63,8 +49,6 @@ protected:
 	FInteractableData InstanceInteractableData;
 	
 	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
 	
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
 

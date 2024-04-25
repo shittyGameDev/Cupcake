@@ -1,25 +1,16 @@
 #include "Pickup.h"
-
-#include "Components/TimelineComponent.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
-#include "Math/UnitConversion.h"
 
 // Sets default values
 APickup::APickup()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>("PickupMesh");
 	PickupMesh->SetSimulatePhysics(true);
 	SetRootComponent(PickupMesh);
-
-	Timeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("PickupTimeline"));
-	if (Timeline)
-	{
-		Timeline->SetAutoActivate(false);
-	}
 
 }
 
@@ -28,11 +19,6 @@ void APickup::BeginPlay()
 	Super::BeginPlay();
 
 	InitializePickup(UBaseItem::StaticClass(), ItemQuantity);
-}
-
-void APickup::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void APickup::InitializePickup(const TSubclassOf<UBaseItem> BaseClass, const int32 InQuantity)
@@ -73,39 +59,6 @@ void APickup::InitializeDrop(UBaseItem* ItemToDrop, const int32 InQuantity)
 	InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
 	PickupMesh->SetStaticMesh(ItemToDrop->AssetData.Mesh);
 	UpdateInteractableData();
-}
-
-void APickup::StartScaling(UCurveFloat* ScaleCurve)
-{
-	if (ScaleCurve)
-	{
-		FOnTimelineFloat ProgressFunction;
-		ProgressFunction.BindUFunction(this, FName("HandleScaling"));
-		Timeline->AddInterpFloat(ScaleCurve, ProgressFunction);
-
-		FOnTimelineEvent TimelineFinishedFunction;
-		TimelineFinishedFunction.BindUFunction(this, FName("FinishScaling"));
-		Timeline->SetTimelineFinishedFunc(TimelineFinishedFunction);
-
-		UE_LOG(LogTemp, Warning, TEXT("Curve keys count: %d"), ScaleCurve->FloatCurve.Keys.Num());
-		Timeline->PlayFromStart();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ScaleCurve is NULL"));
-	}
-}
-
-void APickup::HandleScaling(const float Value)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Actor is scaled"));
-	SetActorScale3D(FVector(Value, Value,Value));
-}
-
-void APickup::FinishScaling() const
-{
-	// Log the completion of scaling, or trigger other game events
-	UE_LOG(LogTemp, Warning, TEXT("Scaling completed for %s"), *GetName());
 }
 
 void APickup::BeginFocus()

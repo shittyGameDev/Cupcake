@@ -16,9 +16,6 @@
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
 #include "Cupcake/World/Pickup.h"
-#include "EngineUtils.h"  
-#include "Cupcake/TheMapObject.h"
-
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -300,7 +297,6 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
 		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
-		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
 
 
 		
@@ -438,29 +434,5 @@ void ACupcakeCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
-	}
-}
-
-ATheMapObject* ACupcakeCharacter::FindMapObject()
-{
-	// Kontrollera att vi har en giltig värld att söka i
-	if (GetWorld())
-	{
-		// Skapa en actor-iterator för ATheMapObject
-		for (TActorIterator<ATheMapObject> It(GetWorld()); It; ++It)
-		{
-			// Returnera den första hittade ATheMapObject-instansen
-			return *It;
-		}
-	}
-	return nullptr;  // Returnera nullptr om ingen ATheMapObject hittades
-}
-
-void ACupcakeCharacter::ToggleMapViaKey()
-{
-	ATheMapObject* MapObject = FindMapObject();
-	if (MapObject)
-	{
-		MapObject->ToggleMapVisibility();
 	}
 }

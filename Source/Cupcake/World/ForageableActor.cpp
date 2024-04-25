@@ -89,18 +89,26 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 				// Loopa och spawn varje objekt separat inom en cirkel
 				for (int i = 0; i < ItemQuantity; i++)
 				{
-					APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), CalculateSpawnPoint(), SpawnParameters);
+					const float Angle = FMath::RandRange(0.0f, 360.0f);
+					const float Radius = FMath::RandRange(150.0f, 300.0f);
+					const FVector Direction = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0.0f);
+					const FVector SpawnLocation = GetActorLocation() + Direction * Radius;
+					const FTransform SpawnTransform(FRotator(0.0f, Angle, 0.0f), SpawnLocation);
+					APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParameters);
 					Pickup->InitializeDrop(ItemReference, 1);
-					Pickup->StartScaling(Curve);
 					UE_LOG(LogTemp, Warning, TEXT("Dropped non-stackable item #%d"), i+1);
 				}
 			}
 			else
 			{
 				// Hantera stackbara objekt eller enstaka icke-stackbara objekt
-				APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), CalculateSpawnPoint(), SpawnParameters);
+				const float Angle = FMath::RandRange(0.0f, 360.0f);
+				const float Radius = FMath::RandRange(150.0f, 300.0f);
+				const FVector Direction = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0.0f);
+				const FVector SpawnLocation = GetActorLocation() + Direction * Radius;
+				const FTransform SpawnTransform(FRotator(0.0f, Angle, 0.0f), SpawnLocation);
+				APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParameters);
 				Pickup->InitializeDrop(ItemReference, ItemReference->Quantity);
-				Pickup->StartScaling(Curve);
 			}
 		}
 		else
@@ -108,16 +116,5 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 			UE_LOG(LogTemp, Warning, TEXT("Puckip internal item reference was somehow null!"));
 		}
 	}
-}
-
-FTransform AForageableActor::CalculateSpawnPoint()
-{
-	const float Angle = FMath::RandRange(0.0f, 360.0f);
-	const float Radius = FMath::RandRange(150.0f, 300.0f);
-	const FVector Direction = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0.0f);
-	const FVector SpawnLocation = GetActorLocation() + Direction * Radius;
-	const FTransform SpawnTransform(FRotator(0.0f, Angle, 0.0f), SpawnLocation);
-
-	return SpawnTransform;
 }
 

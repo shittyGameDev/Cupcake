@@ -6,14 +6,27 @@
 #include "GameFramework/GameModeBase.h"
 #include "CupcakeGameMode.generated.h"
 
-UCLASS(minimalapi)
-class ACupcakeGameMode : public AGameModeBase
+UCLASS()
+class CUPCAKE_API ACupcakeGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(EditAnywhere)
+	TArray<FName> TriggerBoxNames;
+
+	UPROPERTY(EditAnywhere)
+	TArray<bool> TriggerBoxBoolArray;
+
 public:
-	ACupcakeGameMode();
+	UFUNCTION(BlueprintCallable)
+	void AddTriggerBox(bool bBoolValue, const FName& BoxName);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetTriggerBoxBool(const FName& BoxName) const;
+
+	UFUNCTION(BlueprintCallable)
+	void LogTriggerBoxes() const;
+	
+	virtual void BeginPlay() override;
 };
-
-
-

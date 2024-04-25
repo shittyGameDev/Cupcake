@@ -3,6 +3,7 @@
 
 #include "TreeAIController.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 void ATreeAIController::BeginPlay()
@@ -10,13 +11,20 @@ void ATreeAIController::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	LookAtPlayer();
+	
+	if (AIBehavior != nullptr)
+	{
+		RunBehaviorTree(AIBehavior);
+
+		GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+	}
 }
 
 void ATreeAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	/*
 	if (LineOfSightTo(PlayerPawn))
 	{
 		SetFocus(PlayerPawn);
@@ -27,8 +35,10 @@ void ATreeAIController::Tick(float DeltaTime)
 		ClearFocus(EAIFocusPriority::Gameplay);
 		StopMovement();
 	}
+	*/
 }
 
+/*
 void ATreeAIController::LookAtPlayer()
 {
 	if (PlayerPawn)
@@ -39,3 +49,4 @@ void ATreeAIController::LookAtPlayer()
 		}
 	}
 }
+*/

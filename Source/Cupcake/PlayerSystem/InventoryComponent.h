@@ -5,8 +5,56 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Cupcake/Items/Item.h"
+#include "Cupcake/Items/NewItem.h"
 #include "Cupcake/UI/HotbarWidget.h"
 #include "InventoryComponent.generated.h"
+
+/*
+struct InventorySlot
+{
+	INewItem* Item;
+	int Quantity;
+
+	FString ItemName()
+	{
+		if (Item != nullptr)
+			{
+				return Item->GetID();
+			}
+		return FString(TEXT("No Item"));
+	}
+
+	UImage* ItemImage()
+	{
+		if (Item != nullptr)
+			{
+				return Item->GetImage();
+			}
+		return nullptr;
+	}
+
+	void AddItem(INewItem* NewItem, int NumToAdd)
+	{
+		if (Item == nullptr)
+		{
+			Item = NewItem;
+		}
+		Quantity += NumToAdd;
+	}
+
+	void RemoveItem()
+	{
+		if (Quantity == 0)
+		{
+			Item == nullptr;
+		}
+		else if (Quantity > 0)
+		{
+			Quantity--;
+		}
+	}
+};
+*/
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CUPCAKE_API UInventoryComponent : public UActorComponent
@@ -17,28 +65,31 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Item")
+	UPROPERTY()
 	TArray<AItem*> InventoryItems;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void AddItem(AItem* Item);
 
-	UFUNCTION(BlueprintCallable)
-	void RemoveItem(AItem* Item);
-
-private:
 	UFUNCTION()
-	AItem* FindItemByName(FString ItemName);
-
-		
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> InventoryHUDClass;
+	void RemoveItem(AItem* Item);
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> HotbarWidgetClass;
 
 	UPROPERTY()
 	UHotbarWidget* HotbarWidget;
+
+private:
+	UFUNCTION()
+	AItem* FindItemByName(FString ItemName);
+
+	UFUNCTION()
+	void LogInventory();
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> InventoryHUDClass;
+	
 
 	UPROPERTY()
 	UUserWidget* InventoryHUD;

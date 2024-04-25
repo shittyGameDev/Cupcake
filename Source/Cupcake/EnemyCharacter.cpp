@@ -20,6 +20,13 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
+void AEnemyCharacter::OnDeath_Implementation()
+{
+	IDamageableInterface::OnDeath_Implementation();
+
+	Destroy();
+}
+
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();

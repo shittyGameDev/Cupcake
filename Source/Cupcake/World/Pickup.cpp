@@ -2,6 +2,7 @@
 
 #include "Components/TimelineComponent.h"
 #include "Cupcake/Items/BaseItem.h"
+#include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 #include "Math/UnitConversion.h"
 

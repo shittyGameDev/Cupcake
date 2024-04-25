@@ -10,13 +10,15 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Cupcake/Actors/HealthComponent.h"
 #include "Cupcake/Items/Interactable.h"
 #include "Cupcake/Items/Item.h"
 #include "DrawDebugHelpers.h"
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
 #include "Cupcake/World/Pickup.h"
+#include "EngineUtils.h"  
+#include "Cupcake/TheMapObject.h"
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -67,9 +69,6 @@ ACupcakeCharacter::ACupcakeCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-
-	// Add Health Component
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 void ACupcakeCharacter::OnDeath_Implementation()
@@ -89,7 +88,7 @@ void ACupcakeCharacter::Attack()
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
 		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
-
+	Weapon->SetOwner(this);
 	Weapon->EnableWeapon(); // Enable the weapon
 
 	// Set a timer to disable the weapon after a short duration, simulating an attack duration
@@ -301,7 +300,7 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
 		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
-		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
+		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
 
 
 		
@@ -439,5 +438,29 @@ void ACupcakeCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+ATheMapObject* ACupcakeCharacter::FindMapObject()
+{
+	// Kontrollera att vi har en giltig värld att söka i
+	if (GetWorld())
+	{
+		// Skapa en actor-iterator för ATheMapObject
+		for (TActorIterator<ATheMapObject> It(GetWorld()); It; ++It)
+		{
+			// Returnera den första hittade ATheMapObject-instansen
+			return *It;
+		}
+	}
+	return nullptr;  // Returnera nullptr om ingen ATheMapObject hittades
+}
+
+void ACupcakeCharacter::ToggleMapViaKey()
+{
+	ATheMapObject* MapObject = FindMapObject();
+	if (MapObject)
+	{
+		MapObject->ToggleMapVisibility();
 	}
 }

@@ -157,30 +157,34 @@ void ACupcakeCharacter::PerformInteractionCheck()
 	FVector TraceStart{GetActorLocation()};
 	FVector ForwardVector = GetActorForwardVector();
 	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
-	
-		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 10.0f);
-	
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(this);
-		FHitResult TraceHit;
 
-	
-		if(GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	float CapsuleRadius = 150.f;
+	float CapsuleHalfHeight = 90.f;
+
+	DrawDebugCapsule(GetWorld(), TraceStart, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Red, false,
+	                 1.0f);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	FHitResult TraceHit;
+
+
+	if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 		{
-			if(TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+			if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
 			{
-				if(TraceHit.GetActor() != InteractionData.CurrentInteractable)
-				{
-					FoundInteractable(TraceHit.GetActor());
-					return;
-				}
+				FoundInteractable(TraceHit.GetActor());
+				return;
+			}
 
-				if(TraceHit.GetActor() == InteractionData.CurrentInteractable)
-				{
-					return;
-				}
+			if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+			{
+				return;
 			}
 		}
+	}
 	NoInteractableFound();
 }
 

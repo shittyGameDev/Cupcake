@@ -23,6 +23,9 @@ public:
 	void InitializeForageItem(const TSubclassOf<UBaseItem> BaseClass, const int32 InQuantity);
 
 	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY(EditAnywhere, Category = Curve)
+	UCurveFloat* Curve;
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,6 +33,8 @@ protected:
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
+
+	FTransform CalculateSpawnPoint();
 
 	UPROPERTY(EditAnywhere, Category="Interaction Data")
 	FInteractableData InstanceInteractableData;

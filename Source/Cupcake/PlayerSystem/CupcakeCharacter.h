@@ -87,6 +87,12 @@ public:
 	UFUNCTION()
 	void DisableMovement();
 
+	UFUNCTION()
+	void ToggleMapViaKey();
+
+	UFUNCTION()
+	ATheMapObject* FindMapObject();
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/

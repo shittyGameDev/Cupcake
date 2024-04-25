@@ -3,9 +3,8 @@
 
 #include "WeaponBase.h"
 
-#include "Actors\DamagableComponent.h"
+#include "Actors/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
-
 
 AWeaponBase::AWeaponBase()
 {
@@ -35,26 +34,25 @@ void AWeaponBase::BeginPlay()
 void AWeaponBase::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
-}
-
-void AWeaponBase::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
 	if(OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
-		UDamagableComponent* DamagableComponent = Cast<UDamagableComponent>(OtherActor);
-		if (DamagableComponent)
+		if (OtherActor->GetComponentByClass<UAttributeComponent>())
 		{
 			UGameplayStatics::ApplyDamage(
 				OtherActor,
 				DamageAmount,
-				GetOwner()->GetInstigator()->GetController(),
+				GetOwner()->GetInstigatorController(),
 				this,
 				UDamageType::StaticClass()
 			);
 		}
 	}
+}
+
+void AWeaponBase::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	
 }
 
 void AWeaponBase::EnableWeapon()

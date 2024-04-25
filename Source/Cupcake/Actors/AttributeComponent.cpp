@@ -3,6 +3,8 @@
 
 #include "AttributeComponent.h"
 
+#include "DamageableInterface.h"
+
 UAttributeComponent::UAttributeComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -11,6 +13,9 @@ UAttributeComponent::UAttributeComponent()
 void UAttributeComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Health = 100.f;
+	MaxHealth = 100.f;
 }
 
 void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -20,14 +25,14 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void UAttributeComponent::ReceiveDamage(float Damage)
 {
-	Health -= Damage;
-	Health = FMath::Clamp(Health, 0.f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("IDK"));
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	
-	UE_LOG(LogTemp, Warning, TEXT("New Health: %f"), Health);
+	UE_LOG(LogTemp, Warning, TEXT("%s Health: %f"), *GetName(), Health);
 
 	if (Health <= 0)
 	{
-		//UDamagableComponent::Execute_OnDeath(Actor);
+		IDamageableInterface::Execute_OnDeath(GetOwner());
 	}
 }
 

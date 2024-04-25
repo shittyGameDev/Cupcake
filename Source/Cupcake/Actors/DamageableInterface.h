@@ -3,24 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "DamagableComponent.generated.h"
+#include "DamageableInterface.generated.h"
 
 class UAttributeComponent;
 
-UCLASS(Abstract, Blueprintable)
-class CUPCAKE_API UDamagableComponent : public UActorComponent
+UINTERFACE(MinimalAPI, Blueprintable)
+class UDamageableInterface : public UInterface
 {
 	GENERATED_BODY()
+};
 
+class CUPCAKE_API IDamageableInterface
+{
+	GENERATED_BODY()
+	
 public:
-	UDamagableComponent();
-
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
-	UAttributeComponent* AttributeComponent;
-
-public:
+	IDamageableInterface() {}
+	
+	explicit IDamageableInterface(UAttributeComponent* InAttributes) : Attributes(InAttributes) {}
+	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Health")
@@ -28,4 +29,6 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Health")
 	void OnDamage();
+
+	UAttributeComponent* Attributes;
 };

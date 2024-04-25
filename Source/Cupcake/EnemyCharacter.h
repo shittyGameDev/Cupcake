@@ -4,21 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "WeaponBase.h"
-#include "Actors\DamagableComponent.h"
+#include "Actors/DamageableInterface.h"
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
 class UAttributeComponent;
 
 UCLASS()
-class CUPCAKE_API AEnemyCharacter : public ACharacter
+class CUPCAKE_API AEnemyCharacter : public ACharacter, public IDamageableInterface
 {
 	GENERATED_BODY()
 
 public:
 	AEnemyCharacter();
+
 	
-	//virtual void OnDeath_Implementation() override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,15 +27,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	AWeaponBase* WeaponComponent;
 
-	UPROPERTY(EditAnywhere, Category="Health")
-	float MaxHealth = 100.f;
-	UPROPERTY(EditAnywhere, Category="Health")
-	float Health;
-
 public:	
 	virtual void Tick(float DeltaTime) override;
-
-private:
-	UPROPERTY(VisibleAnywhere)
-	UAttributeComponent* Attributes;
 };

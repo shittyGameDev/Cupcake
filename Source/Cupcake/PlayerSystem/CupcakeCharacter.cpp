@@ -85,7 +85,7 @@ void ACupcakeCharacter::Attack()
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
 		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
-
+	Weapon->SetOwner(this);
 	Weapon->EnableWeapon(); // Enable the weapon
 
 	// Set a timer to disable the weapon after a short duration, simulating an attack duration

@@ -28,13 +28,23 @@ void ATheMapObject::BeginPlay()
 	if (!MapWidget && GetWorld())
 	{
 		MapWidget = CreateWidget<UUserWidget>(GetWorld(), MapWidgetClass);
+		if (MapWidget)
+		{
+			MapWidget->AddToViewport();
+			UE_LOG(LogTemp, Warning, TEXT("Widget created successfully"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create widget"));
+		}
 	}
-	
+	MapWidget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void ATheMapObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap has occurred"));
 	if (OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
 	{
 		ToggleMapVisibility();

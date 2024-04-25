@@ -44,21 +44,17 @@ void ABP_TriggerMap::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 	if (OtherActor == PlayerCharacter)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("DU KROCKAR I MIG"));
 		// Hitta din UserWidget och gör en cast till rätt typ, antag att den heter UMyUserWidget
 		UTheMapHandler* MyWidget = Cast<UTheMapHandler>(LinkedWidget);
 		if (MyWidget)
 		{
 			// Använd taggen för att hitta den rätta svarta bilden i widgeten
 			FString TagName = Tags[0].ToString(); // Antag att vi har en tag som definierar vilken bild som ska påverkas
-			UImage* BlackImage = MyWidget->GetImageByTag(FName(*TagName));
-			if (BlackImage)
-			{
-				// Sätt opacity till 0 för att göra bilden osynlig
-				BlackImage->SetOpacity(0.0f);
-
-				// Ta bort triggervolymen från scenen
-				Destroy();
-			}
+			UE_LOG(LogTemp, Warning, TEXT("Tagname: %s"), *TagName);
+			MyWidget->SetImageOpacity(FName(*TagName), 0.0f);	
+			//Destroy();
+			
 		}
 	}
 }

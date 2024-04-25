@@ -36,7 +36,7 @@ protected:
 	UUserWidget* MapWidget;
 
 	// Widget class to create from
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> MapWidgetClass;
 
 public: 

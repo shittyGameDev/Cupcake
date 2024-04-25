@@ -98,7 +98,6 @@ void APickup::StartScaling(UCurveFloat* ScaleCurve)
 
 void APickup::HandleScaling(const float Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Actor is scaled"));
 	SetActorScale3D(FVector(Value, Value,Value));
 }
 

@@ -10,7 +10,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Cupcake/Actors/HealthComponent.h"
 #include "Cupcake/Items/Interactable.h"
 #include "Cupcake/Items/Item.h"
 #include "DrawDebugHelpers.h"
@@ -70,9 +69,6 @@ ACupcakeCharacter::ACupcakeCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-
-	// Add Health Component
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 void ACupcakeCharacter::OnDeath_Implementation()
@@ -92,7 +88,7 @@ void ACupcakeCharacter::Attack()
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
 		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
-
+	Weapon->SetOwner(this);
 	Weapon->EnableWeapon(); // Enable the weapon
 
 	// Set a timer to disable the weapon after a short duration, simulating an attack duration
@@ -161,30 +157,34 @@ void ACupcakeCharacter::PerformInteractionCheck()
 	FVector TraceStart{GetActorLocation()};
 	FVector ForwardVector = GetActorForwardVector();
 	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
-	
-		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 10.0f);
-	
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(this);
-		FHitResult TraceHit;
 
-	
-		if(GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	float CapsuleRadius = 50.f;
+	float CapsuleHalfHeight = 90.f;
+
+	DrawDebugCapsule(GetWorld(), TraceStart, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Red, false,
+	                 1.0f);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	FHitResult TraceHit;
+
+
+	if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 		{
-			if(TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+			if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
 			{
-				if(TraceHit.GetActor() != InteractionData.CurrentInteractable)
-				{
-					FoundInteractable(TraceHit.GetActor());
-					return;
-				}
+				FoundInteractable(TraceHit.GetActor());
+				return;
+			}
 
-				if(TraceHit.GetActor() == InteractionData.CurrentInteractable)
-				{
-					return;
-				}
+			if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+			{
+				return;
 			}
 		}
+	}
 	NoInteractableFound();
 }
 

@@ -29,8 +29,9 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 void AEnemyCharacter::OnDeath_Implementation()
 {
 	IDamageableInterface::OnDeath_Implementation();
-
+	
 	Destroy();
+
 }
 
 void AEnemyCharacter::BeginPlay()

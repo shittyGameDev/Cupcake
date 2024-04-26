@@ -8,7 +8,9 @@
 #include "BaseItem.generated.h"
 
 class UNewInventoryComponent;
-
+/**
+ * 
+ */
 UCLASS()
 class CUPCAKE_API UBaseItem : public UObject
 {

@@ -2,7 +2,7 @@
 
 
 #include "ForageableActor.h"
-#include "NiagaraComponent.h"
+
 #include "Pickup.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/Items/Data/ItemDataStructs.h"
@@ -17,9 +17,6 @@ AForageableActor::AForageableActor()
 
 	SetRootComponent(Mesh);
 
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraComponent");
-	NiagaraComponent->SetupAttachment(RootComponent);
-
 }
 
 // Called when the game starts or when spawned
@@ -28,8 +25,6 @@ void AForageableActor::BeginPlay()
 	Super::BeginPlay();
 
 	InteractableData = InstanceInteractableData;
-
-	bIsForageable = true;
 
 	InitializeForageItem(UBaseItem::StaticClass(), ItemQuantity);
 	
@@ -80,7 +75,7 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Interacting with forageable object"));
 
-	if (!IsPendingKillPending() && bIsForageable)
+	if (!IsPendingKillPending())
 	{
 		if (ItemReference)
 		{
@@ -107,7 +102,6 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 				Pickup->InitializeDrop(ItemReference, ItemReference->Quantity);
 				Pickup->StartScaling(Curve);
 			}
-			StartForagingTimer();
 		}
 		else
 		{
@@ -116,22 +110,7 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 	}
 }
 
-void AForageableActor::HandleTimerFinished()
-{
-	// Set bIsForageable to true when the timer finishes
-	bIsForageable = true;
-	NiagaraComponent->SetVisibility(true);
-}
-
-void AForageableActor::StartForagingTimer()
-{
-	// Set the timer for 5 seconds duration
-	bIsForageable = false;
-	NiagaraComponent->SetVisibility(false);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AForageableActor::HandleTimerFinished, 5.0f, false);
-}
-
-FTransform AForageableActor::CalculateSpawnPoint() const
+FTransform AForageableActor::CalculateSpawnPoint()
 {
 	const float Angle = FMath::RandRange(0.0f, 360.0f);
 	const float Radius = FMath::RandRange(150.0f, 300.0f);
@@ -141,8 +120,4 @@ FTransform AForageableActor::CalculateSpawnPoint() const
 
 	return SpawnTransform;
 }
-
-
-
-
 

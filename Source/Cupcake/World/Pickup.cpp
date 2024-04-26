@@ -2,6 +2,7 @@
 
 #include "Components/TimelineComponent.h"
 #include "Cupcake/Items/BaseItem.h"
+#include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 #include "Math/UnitConversion.h"
 
@@ -97,7 +98,6 @@ void APickup::StartScaling(UCurveFloat* ScaleCurve)
 
 void APickup::HandleScaling(const float Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Actor is scaled"));
 	SetActorScale3D(FVector(Value, Value,Value));
 }
 

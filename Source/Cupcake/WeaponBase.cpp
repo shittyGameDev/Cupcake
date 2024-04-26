@@ -3,11 +3,13 @@
 
 #include "WeaponBase.h"
 
-#include "Actors/AttributeComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "Actors/HealthComponent.h"
 
+
+// Sets default values
 AWeaponBase::AWeaponBase()
 {
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Set origo position
@@ -23,36 +25,33 @@ AWeaponBase::AWeaponBase()
 
 	CollisionComponent->SetVisibility(true); // Set visibility to true
 
-	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnSphereOverlap);
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnOverlapBegin);
 }
 
+// Called when the game starts or when spawned
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
 
-void AWeaponBase::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+// Called every frame
+void AWeaponBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void AWeaponBase::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                                 int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
-		if (OtherActor->GetComponentByClass<UAttributeComponent>())
+		if (UHealthComponent* HealthComponent = OtherActor->FindComponentByClass<UHealthComponent>())
 		{
-			UGameplayStatics::ApplyDamage(
-				OtherActor,
-				DamageAmount,
-				GetOwner()->GetInstigatorController(),
-				this,
-				UDamageType::StaticClass()
-			);
+			HealthComponent->DoDamage(DamageAmount);
 		}
 	}
-}
-
-void AWeaponBase::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	
 }
 
 void AWeaponBase::EnableWeapon()

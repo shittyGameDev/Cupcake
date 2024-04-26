@@ -7,11 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "ForageableActor.generated.h"
 
-class UImage;
-class UNiagaraSystem;
 class UBaseItem;
 class ACupcakeCharacter;
-class UNiagaraComponent;
 
 
 UCLASS()
@@ -30,12 +27,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = Curve)
 	UCurveFloat* Curve;
 
-	// Function to handle the completion of the timer
-	void HandleTimerFinished();
-
-	// Function to start the timer when the player interacts with the actor
-	void StartForagingTimer();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,9 +34,7 @@ protected:
 	virtual void EndFocus() override;
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
 
-	
-
-	FTransform CalculateSpawnPoint() const;
+	FTransform CalculateSpawnPoint();
 
 	UPROPERTY(EditAnywhere, Category="Interaction Data")
 	FInteractableData InstanceInteractableData;
@@ -64,15 +53,6 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category= "Forage | Item Reference")
 	UBaseItem* ItemReference;
-
-	UPROPERTY(EditAnywhere, Category= "Forage | Visual")
-	UNiagaraComponent* NiagaraComponent;
-
-	UPROPERTY()
-	bool bIsForageable;
-
-	UPROPERTY()
-	FTimerHandle TimerHandle;
 	
 
 };

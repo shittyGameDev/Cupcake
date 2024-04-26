@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Cupcake/Items/InteractionInterface.h"
+#include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Pickup.generated.h"
 

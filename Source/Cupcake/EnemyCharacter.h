@@ -4,30 +4,35 @@
 
 #include "CoreMinimal.h"
 #include "WeaponBase.h"
-#include "Actors/DamageableInterface.h"
+#include "Actors\DamagableInterface.h"
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
-class UAttributeComponent;
-
 UCLASS()
-class CUPCAKE_API AEnemyCharacter : public ACharacter, public IDamageableInterface
+class CUPCAKE_API AEnemyCharacter : public ACharacter, public IHealth
 {
 	GENERATED_BODY()
 
 public:
+	// Sets default values for this character's properties
 	AEnemyCharacter();
 
-	
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	UHealthComponent* HealthComponent;
 	virtual void OnDeath_Implementation() override;
-	
+
 protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Category="Combat")
 	AWeaponBase* WeaponComponent;
 
+	UPROPERTY(EditAnywhere, Category="Health")
+	float MaxHealth = 100.f;
+	UPROPERTY(EditAnywhere, Category="Health")
+	float Health;
+
 public:	
+	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };

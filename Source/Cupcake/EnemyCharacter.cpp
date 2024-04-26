@@ -3,41 +3,29 @@
 
 #include "EnemyCharacter.h"
 
-#include "Actors/AttributeComponent.h"
-#include "Perception/AIPerceptionSystem.h"
-#include "Perception/AISense_Damage.h"
+#include "Actors/HealthComponent.h"
 
-AEnemyCharacter::AEnemyCharacter() : IDamageableInterface(Attributes)
+// Sets default values
+AEnemyCharacter::AEnemyCharacter()
 {
+ 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
-}
-
-float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
-{
-	UAIPerceptionSystem* PerceptionSystem = UAIPerceptionSystem::GetCurrent(GetWorld());
-	if (PerceptionSystem)
-	{
-		UAISense_Damage::ReportDamageEvent(GetWorld(), this, EventInstigator, DamageAmount, GetActorLocation(), GetActorLocation());
-	}
-	
-	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 void AEnemyCharacter::OnDeath_Implementation()
 {
-	IDamageableInterface::OnDeath_Implementation();
-
 	Destroy();
 }
 
+// Called when the game starts or when spawned
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
+// Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

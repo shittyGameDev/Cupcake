@@ -42,9 +42,10 @@ protected:
 
 	UPROPERTY()
 	UMainMenu* MainMenuWidget;
-
 	UPROPERTY()
 	UInteractionWidget* InteractionWidget;
+
+
 	
 	virtual void BeginPlay() override;
 };

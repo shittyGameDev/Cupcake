@@ -37,7 +37,7 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 		else
 		{
 			//Sätter argument 0 till InteractableData->Quantity.
-			//Enkelt sätt att dynamiskt ändra texten så att den stämmer överens med quantity.
+			//Enkelt sätt att "dynamiskt" ändra texten så att den stämmer överens med quantity.
 			QuantityText->SetText(FText::Format(FText::FromString("x{0}"),
 				InteractableData->Quantity));
 			QuantityText->SetVisibility(ESlateVisibility::Visible);
@@ -49,7 +49,6 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 		
 	case EInteractableType::Device:
 		KeyPressText->SetText(FText::FromString("Press"));
-		InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);
 		
 		QuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		break;

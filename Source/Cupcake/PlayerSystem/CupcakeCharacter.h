@@ -146,6 +146,7 @@ protected:
 	float InteractionCheckDistance;
 
 	FTimerHandle TimerHandle_Interaction;
+	FTimerHandle TimerHandle_ProgressUpdate;
 
 	FInteractionData InteractionData;
 
@@ -155,6 +156,7 @@ protected:
 	void BeginInteract();
 	void EndInteract();
 	void Interact();
+	void UpdateInteractionProgress();
 
 public:
 	virtual void Tick(float DeltaSeconds) override;

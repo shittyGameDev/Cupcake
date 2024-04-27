@@ -18,7 +18,6 @@
 #include "Cupcake/World/Pickup.h"
 #include "EngineUtils.h"  
 #include "Cupcake/TheMapObject.h"
-#include "Cupcake/UI/InteractionWidget.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);

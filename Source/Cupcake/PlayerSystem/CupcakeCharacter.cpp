@@ -232,6 +232,7 @@ void ACupcakeCharacter::BeginInteract()
 {
 	// verifiera att ingenting har ändrats med interactable state sedan vi började interaktionen.
 	PerformInteractionCheck();
+	
 
 	if (InteractionData.CurrentInteractable)
 	{

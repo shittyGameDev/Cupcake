@@ -89,11 +89,14 @@ void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData
 		if(InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
 		{
 			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
-			
 		}
-
 		InteractionWidget->UpdateWidget(InteractableData);
 	}
+}
+
+void ABaseHUD::UpdateInteractionProgress()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Update"));
 }
 
 

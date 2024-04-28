@@ -37,7 +37,7 @@ public:
 	void ShowInteractionWidget() const;
 	void HideInteractionWidget() const;
 	void UpdateInteractionWidget(const FInteractableData* InteractableData) const;
-	void UpdateInteractionProgress();
+	void UpdateInteractionProgress(float Progress) const;
 
 protected:
 

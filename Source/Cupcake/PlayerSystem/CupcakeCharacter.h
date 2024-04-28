@@ -153,6 +153,7 @@ protected:
 	void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
+	void UpdateInteraction();
 	void BeginInteract();
 	void EndInteract();
 	void Interact();

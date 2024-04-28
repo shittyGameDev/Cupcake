@@ -66,9 +66,9 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 	NameText->SetText(InteractableData->Name);
 }
 
-float UInteractionWidget::UpdateInteractionProgress()
+void UInteractionWidget::UpdateInteractionProgress()
 {
-	return 0.0f;
+	
 }
 
 

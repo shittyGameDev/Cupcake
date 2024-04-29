@@ -1,0 +1,73 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "TheMapObject.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "PlayerSystem/CupcakeCharacter.h"
+
+// Sets default values
+ATheMapObject::ATheMapObject()
+{
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	RootComponent = Mesh;
+
+	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+	CollisionComponent->SetupAttachment(RootComponent);
+	CollisionComponent->SetSphereRadius(100.f);
+	CollisionComponent->SetCollisionProfileName(TEXT("Trigger"));
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATheMapObject::OnOverlapBegin);
+}
+
+// Called when the game starts or when spawned
+void ATheMapObject::BeginPlay()
+{
+	Super::BeginPlay();
+	if (!MapWidget && GetWorld())
+	{
+		MapWidget = CreateWidget<UUserWidget>(GetWorld(), MapWidgetClass);
+	}
+	
+}
+
+void ATheMapObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
+	{
+		ToggleMapVisibility();
+	}
+}
+
+
+void ATheMapObject::ToggleMapVisibility()
+{
+	if (MapWidget)
+	{
+		bool bIsVisible = MapWidget->IsVisible();
+		ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+		if (bIsVisible)
+		{
+			MapWidget->SetVisibility(ESlateVisibility::Hidden);
+			if (Player)
+			{
+				Player->EnableMovement(); // Antag att EnableMovement är en funktion i ACupcakeCharacter
+			}
+		}
+		else
+		{
+			MapWidget->SetVisibility(ESlateVisibility::Visible);
+			if (Player)
+			{
+				Player->DisableMovement(); // Antag att DisableMovement är en funktion i ACupcakeCharacter
+			}
+		}
+	}
+}
+
+
+
+
+

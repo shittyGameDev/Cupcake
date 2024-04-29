@@ -10,13 +10,15 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Cupcake/Actors/HealthComponent.h"
 #include "Cupcake/Items/Interactable.h"
 #include "Cupcake/Items/Item.h"
 #include "DrawDebugHelpers.h"
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
 #include "Cupcake/World/Pickup.h"
+#include "EngineUtils.h"  
+#include "Cupcake/TheMapObject.h"
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -67,9 +69,6 @@ ACupcakeCharacter::ACupcakeCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-
-	// Add Health Component
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 void ACupcakeCharacter::OnDeath_Implementation()
@@ -89,7 +88,7 @@ void ACupcakeCharacter::Attack()
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
 		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
-
+	Weapon->SetOwner(this);
 	Weapon->EnableWeapon(); // Enable the weapon
 
 	// Set a timer to disable the weapon after a short duration, simulating an attack duration
@@ -158,30 +157,34 @@ void ACupcakeCharacter::PerformInteractionCheck()
 	FVector TraceStart{GetActorLocation()};
 	FVector ForwardVector = GetActorForwardVector();
 	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
-	
-		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 10.0f);
-	
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(this);
-		FHitResult TraceHit;
 
-	
-		if(GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	float CapsuleRadius = 100.f;
+	float CapsuleHalfHeight = 90.f;
+
+	DrawDebugCapsule(GetWorld(), TraceStart, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Red, false,
+	                 1.0f);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	FHitResult TraceHit;
+
+
+	if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 		{
-			if(TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+			if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
 			{
-				if(TraceHit.GetActor() != InteractionData.CurrentInteractable)
-				{
-					FoundInteractable(TraceHit.GetActor());
-					return;
-				}
+				FoundInteractable(TraceHit.GetActor());
+				return;
+			}
 
-				if(TraceHit.GetActor() == InteractionData.CurrentInteractable)
-				{
-					return;
-				}
+			if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+			{
+				return;
 			}
 		}
+	}
 	NoInteractableFound();
 }
 
@@ -224,28 +227,55 @@ void ACupcakeCharacter::NoInteractableFound()
 	}
 }
 
+void ACupcakeCharacter::UpdateInteraction()
+{
+	if(TargetInteractable && InteractionData.CurrentInteractable)
+	{
+		float TotalDuration = TargetInteractable->InteractableData.InteractionDuration;
+		float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(TimerHandle_Interaction);
+		float Progress = ElapsedTime / TotalDuration;
+		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
+		
+		if(HUD)
+		{
+			HUD->UpdateInteractionProgress(Progress);
+		}
+	}
+}
+
 void ACupcakeCharacter::BeginInteract()
 {
-	// verify nothing has changed with the interactable state since beginning interaction
+	// verifiera att ingenting har ändrats med interactable state sedan vi började interaktionen.
 	PerformInteractionCheck();
+	
 
-	if(InteractionData.CurrentInteractable)
+	if (InteractionData.CurrentInteractable)
 	{
-		if(IsValid(TargetInteractable.GetObject()))
+		if (IsValid(TargetInteractable.GetObject()))
 		{
 			TargetInteractable->BeginInteract();
-
-			if(FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+			
+			// om InteractionDuration nästan är 0 så kallar vi på Interact direkt.
+			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
 			{
 				Interact();
 			}
 			else
 			{
+				// om interactionduration är valid och över 0.1f så startar en timer
+				//När timern är klar så kallar vi på interact
 				GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
-					this,
-					&ACupcakeCharacter::Interact,
-					TargetInteractable->InteractableData.InteractionDuration,
-					false);
+				                                this,
+				                                &ACupcakeCharacter::Interact,
+				                                TargetInteractable->InteractableData.InteractionDuration,
+				                                false);
+
+				GetWorldTimerManager().SetTimer(TimerHandle_ProgressUpdate,
+												this,
+												&ACupcakeCharacter::UpdateInteraction,
+												.01f,
+												true);
+				
 			}
 		}
 	}
@@ -254,6 +284,7 @@ void ACupcakeCharacter::BeginInteract()
 void ACupcakeCharacter::EndInteract()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
 	if(IsValid(TargetInteractable.GetObject()))
 	{
 		TargetInteractable->EndInteract();
@@ -263,6 +294,7 @@ void ACupcakeCharacter::EndInteract()
 void ACupcakeCharacter::Interact()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
 	if(IsValid(TargetInteractable.GetObject()))
 	{
 		TargetInteractable->Interact(this);
@@ -296,11 +328,14 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 
+		//Interact
 		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
 		PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
 
+		//UI
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
 		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
+		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
 
 
 		
@@ -438,5 +473,29 @@ void ACupcakeCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+ATheMapObject* ACupcakeCharacter::FindMapObject()
+{
+	// Kontrollera att vi har en giltig värld att söka i
+	if (GetWorld())
+	{
+		// Skapa en actor-iterator för ATheMapObject
+		for (TActorIterator<ATheMapObject> It(GetWorld()); It; ++It)
+		{
+			// Returnera den första hittade ATheMapObject-instansen
+			return *It;
+		}
+	}
+	return nullptr;  // Returnera nullptr om ingen ATheMapObject hittades
+}
+
+void ACupcakeCharacter::ToggleMapViaKey()
+{
+	ATheMapObject* MapObject = FindMapObject();
+	if (MapObject)
+	{
+		MapObject->ToggleMapVisibility();
 	}
 }

@@ -45,10 +45,6 @@ protected:
 	UPROPERTY()
 	UNewInventoryComponent* InventoryReference;
 	
-
-	//UPROPERTY(EditAnywhere)
-	//UCraftingWidget* CraftingWidget;
-	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
@@ -57,4 +53,5 @@ protected:
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
+	
 };

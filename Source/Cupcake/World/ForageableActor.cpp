@@ -86,7 +86,7 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		{
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.Owner = this;
-			SpawnParameters.bNoFail = true;
+			SpawnParameters.bNoFail = false;
 			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 			
 			if (!ItemReference->NumericData.bIsStackable && ItemQuantity > 1)

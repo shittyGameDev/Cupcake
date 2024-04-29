@@ -158,7 +158,7 @@ void ACupcakeCharacter::PerformInteractionCheck()
 	FVector ForwardVector = GetActorForwardVector();
 	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
 
-	float CapsuleRadius = 50.f;
+	float CapsuleRadius = 100.f;
 	float CapsuleHalfHeight = 90.f;
 
 	DrawDebugCapsule(GetWorld(), TraceStart, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Red, false,
@@ -227,28 +227,55 @@ void ACupcakeCharacter::NoInteractableFound()
 	}
 }
 
+void ACupcakeCharacter::UpdateInteraction()
+{
+	if(TargetInteractable && InteractionData.CurrentInteractable)
+	{
+		float TotalDuration = TargetInteractable->InteractableData.InteractionDuration;
+		float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(TimerHandle_Interaction);
+		float Progress = ElapsedTime / TotalDuration;
+		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
+		
+		if(HUD)
+		{
+			HUD->UpdateInteractionProgress(Progress);
+		}
+	}
+}
+
 void ACupcakeCharacter::BeginInteract()
 {
-	// verify nothing has changed with the interactable state since beginning interaction
+	// verifiera att ingenting har ändrats med interactable state sedan vi började interaktionen.
 	PerformInteractionCheck();
+	
 
-	if(InteractionData.CurrentInteractable)
+	if (InteractionData.CurrentInteractable)
 	{
-		if(IsValid(TargetInteractable.GetObject()))
+		if (IsValid(TargetInteractable.GetObject()))
 		{
 			TargetInteractable->BeginInteract();
-
-			if(FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+			
+			// om InteractionDuration nästan är 0 så kallar vi på Interact direkt.
+			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
 			{
 				Interact();
 			}
 			else
 			{
+				// om interactionduration är valid och över 0.1f så startar en timer
+				//När timern är klar så kallar vi på interact
 				GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
-					this,
-					&ACupcakeCharacter::Interact,
-					TargetInteractable->InteractableData.InteractionDuration,
-					false);
+				                                this,
+				                                &ACupcakeCharacter::Interact,
+				                                TargetInteractable->InteractableData.InteractionDuration,
+				                                false);
+
+				GetWorldTimerManager().SetTimer(TimerHandle_ProgressUpdate,
+												this,
+												&ACupcakeCharacter::UpdateInteraction,
+												.01f,
+												true);
+				
 			}
 		}
 	}
@@ -257,6 +284,7 @@ void ACupcakeCharacter::BeginInteract()
 void ACupcakeCharacter::EndInteract()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
 	if(IsValid(TargetInteractable.GetObject()))
 	{
 		TargetInteractable->EndInteract();
@@ -266,6 +294,7 @@ void ACupcakeCharacter::EndInteract()
 void ACupcakeCharacter::Interact()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
 	if(IsValid(TargetInteractable.GetObject()))
 	{
 		TargetInteractable->Interact(this);
@@ -299,9 +328,11 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 
+		//Interact
 		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
 		PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
 
+		//UI
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
 		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
 		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);

@@ -2,7 +2,7 @@
 
 
 #include "ForageableActor.h"
-
+#include "NiagaraComponent.h"
 #include "Pickup.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/Items/Data/ItemDataStructs.h"
@@ -17,6 +17,9 @@ AForageableActor::AForageableActor()
 
 	SetRootComponent(Mesh);
 
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraComponent");
+	NiagaraComponent->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -25,6 +28,8 @@ void AForageableActor::BeginPlay()
 	Super::BeginPlay();
 
 	InteractableData = InstanceInteractableData;
+
+	bIsForageable = true;
 
 	InitializeForageItem(UBaseItem::StaticClass(), ItemQuantity);
 	
@@ -75,16 +80,34 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Interacting with forageable object"));
 
-	if(!IsPendingKillPending())
+	if (!IsPendingKillPending() && bIsForageable)
 	{
-		if(ItemReference)
+		if (ItemReference)
 		{
-			FVector SpawnLocation = GetActorLocation() + FMath::VRand() * FMath::RandRange(200.0f, 350.0f);
-			FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-
-			APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnLocation, SpawnRotation);
-
-			Pickup->InitializeDrop(ItemReference, ItemReference->Quantity);
+			FActorSpawnParameters SpawnParameters;
+			SpawnParameters.Owner = this;
+			SpawnParameters.bNoFail = false;
+			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			
+			if (!ItemReference->NumericData.bIsStackable && ItemQuantity > 1)
+			{
+				// Loopa och spawn varje objekt separat inom en cirkel
+				for (int i = 0; i < ItemQuantity; i++)
+				{
+					APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), CalculateSpawnPoint(), SpawnParameters);
+					Pickup->InitializeDrop(ItemReference, 1);
+					Pickup->StartScaling(Curve);
+					UE_LOG(LogTemp, Warning, TEXT("Dropped non-stackable item #%d"), i+1);
+				}
+			}
+			else
+			{
+				// Hantera stackbara objekt eller enstaka icke-stackbara objekt
+				APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), CalculateSpawnPoint(), SpawnParameters);
+				Pickup->InitializeDrop(ItemReference, ItemReference->Quantity);
+				Pickup->StartScaling(Curve);
+			}
+			StartForagingTimer();
 		}
 		else
 		{
@@ -92,4 +115,34 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		}
 	}
 }
+
+void AForageableActor::HandleTimerFinished()
+{
+	// Set bIsForageable to true when the timer finishes
+	bIsForageable = true;
+	NiagaraComponent->SetVisibility(true);
+}
+
+void AForageableActor::StartForagingTimer()
+{
+	// Set the timer for 5 seconds duration
+	bIsForageable = false;
+	NiagaraComponent->SetVisibility(false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AForageableActor::HandleTimerFinished, 5.0f, false);
+}
+
+FTransform AForageableActor::CalculateSpawnPoint() const
+{
+	const float Angle = FMath::RandRange(0.0f, 360.0f);
+	const float Radius = FMath::RandRange(150.0f, 300.0f);
+	const FVector Direction = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0.0f);
+	const FVector SpawnLocation = GetActorLocation() + Direction * Radius;
+	const FTransform SpawnTransform(FRotator(0.0f, Angle, 0.0f), SpawnLocation);
+
+	return SpawnTransform;
+}
+
+
+
+
 

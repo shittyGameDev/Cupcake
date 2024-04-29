@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "InventoryComponent.h"
 #include "Cupcake/WeaponBase.h"
-#include "..\Actors\DamagableInterface.h"
 #include "Cupcake/Items/InteractionInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
@@ -37,7 +36,7 @@ struct FInteractionData
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ACupcakeCharacter : public ACharacter, public IHealth
+class ACupcakeCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -88,6 +87,12 @@ public:
 	UFUNCTION()
 	void DisableMovement();
 
+	UFUNCTION()
+	void ToggleMapViaKey();
+
+	UFUNCTION()
+	ATheMapObject* FindMapObject();
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
@@ -96,9 +101,7 @@ public:
 	FORCEINLINE UNewInventoryComponent* GetInventory() const { return PlayerInventory; }
 
 	void UpdateInteractionWidget() const;
-
-	UPROPERTY()
-	UHealthComponent* HealthComponent;
+	
 	UPROPERTY()
 	AWeaponBase* Weapon;
 	UPROPERTY(EditAnywhere, Category="Weapon")
@@ -143,12 +146,14 @@ protected:
 	float InteractionCheckDistance;
 
 	FTimerHandle TimerHandle_Interaction;
+	FTimerHandle TimerHandle_ProgressUpdate;
 
 	FInteractionData InteractionData;
 
 	void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
+	void UpdateInteraction();
 	void BeginInteract();
 	void EndInteract();
 	void Interact();

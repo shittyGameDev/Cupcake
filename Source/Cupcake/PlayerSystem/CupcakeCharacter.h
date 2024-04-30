@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InventoryComponent.h"
 #include "Cupcake/WeaponBase.h"
+#include "Cupcake/Actors/DamageableInterface.h"
 #include "Cupcake/Items/InteractionInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
@@ -36,7 +37,7 @@ struct FInteractionData
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ACupcakeCharacter : public ACharacter
+class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 {
 	GENERATED_BODY()
 
@@ -72,6 +73,8 @@ class ACupcakeCharacter : public ACharacter
 
 public:
 	ACupcakeCharacter();
+	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	                 AActor* DamageCauser);
 
 	UFUNCTION()
 	virtual void OnDeath_Implementation();

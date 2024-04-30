@@ -57,6 +57,7 @@ public:
 	virtual void Use(ACupcakeCharacter* Character);
 	FString ToString() const;
 
+	
 protected:
 	bool operator==(const FName& OtherID) const
 	{

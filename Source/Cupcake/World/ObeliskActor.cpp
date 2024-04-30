@@ -92,6 +92,7 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		UE_LOG(LogTemp, Warning, TEXT("Test"));
 		PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemReference->Quantity);
 		NumberOfItemsDonated++;
+		CheckIfDonationReached(NumberOfItemsDonated);
 		InventoryReference->OnInventoryUpdated.Broadcast();
 	}
 	else
@@ -106,6 +107,16 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("InventoryContents: %s"), *InventoryDetails);
+}
+
+bool AObeliskActor::CheckIfDonationReached(const int32 ItemsDonated)
+{
+	if(ItemsDonated >= DonationGoal)
+	{
+		//TODO: ACTIVATE OR DEACTIVATE SOMETHING
+		return true;
+	}
+	return false;
 }
 
 

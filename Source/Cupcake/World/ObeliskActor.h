@@ -46,8 +46,15 @@ protected:
 	UPROPERTY()
 	UNewInventoryComponent* InventoryReference;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditInstanceOnly , Category="Donation")
+	int32 DonationGoal = 10;
+	
+	UPROPERTY(VisibleAnywhere, Category="Donation")
 	int32 NumberOfItemsDonated;
+	
+	UFUNCTION(Category="Donation")
+	bool CheckIfDonationReached(int32 ItemsDonated);
+
 
 public:	
 	// Called every frame

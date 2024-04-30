@@ -1,35 +1,38 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TheMapHandler.h"
-
 #include "Components/Image.h"
 
-void UTheMapHandler::NativeConstruct()
+
+void UTheMapHandler::HideImage(int32 ImageIndex)
 {
-	Super::NativeConstruct();
-	Images.Add("Image1", Image1);
-	Images.Add("Image2", Image2);
-	Images.Add("Image3", Image3);
-	Images.Add("Image4", Image4);
+	switch (ImageIndex)
+	{
+	case 1:
+		if (Image1)
+			Image1->SetVisibility(ESlateVisibility::Collapsed);
+		break;
+	case 2:
+		if (Image2)
+			Image2->SetVisibility(ESlateVisibility::Collapsed);
+		break;
+	case 3:
+		if (Image3)
+			Image3->SetVisibility(ESlateVisibility::Collapsed);
+		break;
+	case 4:
+		if (Image4)
+			Image4->SetVisibility(ESlateVisibility::Collapsed);
+			Image4->SetVisibility(ESlateVisibility::Collapsed);
+		break;
+	default:
+		break;
+	}
 }
 
-UImage* UTheMapHandler::GetImageByTag(const FName& Tag)
-{
-	UImage** FoundImage = Images.Find(Tag);
-	if (FoundImage)
-	{
-		return *FoundImage;
-	}
-	return nullptr;
-}
 
-void UTheMapHandler::SetImageOpacity(const FName& ImageTag, float NewOpacity)
-{
-	UImage* TargetImage = GetImageByTag(ImageTag);
-	if (TargetImage)
-	{
-		TargetImage->SetOpacity(NewOpacity);
-	}
-}
+
+
+
+
 

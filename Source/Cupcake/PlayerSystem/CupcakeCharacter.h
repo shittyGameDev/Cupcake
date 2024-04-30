@@ -166,5 +166,7 @@ public:
 	void ToggleMenu();
 
 	void DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop);
+
+	void RemoveItemFromInventory(UBaseItem* ItemToRemove, const int32 QuantityToRemove);
 };
 

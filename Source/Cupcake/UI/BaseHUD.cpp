@@ -90,7 +90,7 @@ void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData
 		if(InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
 		{
 			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
-			InteractionWidget->InteractionProgressBar->SetPercent(0);
+			//InteractionWidget->InteractionProgressBar->SetPercent(0);
 		}
 		InteractionWidget->UpdateWidget(InteractableData);
 	}

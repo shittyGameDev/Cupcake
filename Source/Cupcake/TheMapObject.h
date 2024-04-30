@@ -18,6 +18,17 @@ class CUPCAKE_API ATheMapObject : public AActor
 public:
 	// Sets default values for this actor's properties
 	ATheMapObject();
+	// Widget to show when the map object is interacted with
+	UPROPERTY(Transient)
+	UUserWidget* MapWidget;
+
+	// Ny medlemsvariabel för att spåra om spelaren kan interagera
+	bool bCanToggleMap = false;
+
+	// Hantering av spelarinteraktion
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,12 +42,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* Mesh;
 
-	// Widget to show when the map object is interacted with
-	UPROPERTY(Transient)
-	UUserWidget* MapWidget;
+
 
 	// Widget class to create from
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> MapWidgetClass;
 
 public: 

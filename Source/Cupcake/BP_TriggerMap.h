@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BP_TriggerMap.generated.h"
 
+class UTheMapHandler;
+
 UCLASS()
 class CUPCAKE_API ABP_TriggerMap : public AActor
 {
@@ -26,6 +28,12 @@ public:
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	//UPROPERTY(EditAnywhere)
+	//class UUserWidget* LinkedWidget;
+
 	UPROPERTY(EditAnywhere)
-	class UUserWidget* LinkedWidget;
+	UTheMapHandler* TheMapHandler;
+
+	UPROPERTY(EditInstanceOnly)
+	int32 id;
 };

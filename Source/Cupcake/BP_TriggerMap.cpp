@@ -28,6 +28,13 @@ ABP_TriggerMap::ABP_TriggerMap()
 void ABP_TriggerMap::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
+	
+	if(TheMapHandler)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Test"));
+	}
 	
 }
 
@@ -44,17 +51,51 @@ void ABP_TriggerMap::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 	if (OtherActor == PlayerCharacter)
 	{
+		UTheMapHandler* MyMidget = UTheMapHandler::GetInstance();
 		UE_LOG(LogTemp, Warning, TEXT("DU KROCKAR I MIG"));
 		// Hitta din UserWidget och gör en cast till rätt typ, antag att den heter UMyUserWidget
-		UTheMapHandler* MyWidget = Cast<UTheMapHandler>(LinkedWidget);
-		if (MyWidget)
+		//UTheMapHandler* MyWidget = Cast<UTheMapHandler>(LinkedWidget);
+		if (MyMidget)
 		{
-			// Använd taggen för att hitta den rätta svarta bilden i widgeten
-			FString TagName = Tags[0].ToString(); // Antag att vi har en tag som definierar vilken bild som ska påverkas
-			UE_LOG(LogTemp, Warning, TEXT("Tagname: %s"), *TagName);
-			MyWidget->SetImageOpacity(FName(*TagName), 0.0f);	
-			//Destroy();
-			
+			switch (id)
+			{
+			case 1:
+				UE_LOG(LogTemp, Warning, TEXT("HEJ"));
+				
+				if(MyMidget->Image1)
+				{
+					MyMidget->Image1->SetVisibility(ESlateVisibility::Hidden);
+					UE_LOG(LogTemp, Warning, TEXT("TEXT1"));
+				}
+				break;
+			case 2:
+				if(MyMidget->Image2)
+				{
+					MyMidget->Image2->SetVisibility(ESlateVisibility::Hidden);
+					UE_LOG(LogTemp, Warning, TEXT("TEXT1"));
+				}
+			case 3:
+				
+				if(MyMidget->Image3 == nullptr)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("HEJ"));
+				}
+				if(MyMidget->Image3)
+				{
+					MyMidget->Image3->SetVisibility(ESlateVisibility::Hidden);
+					UE_LOG(LogTemp, Warning, TEXT("TEXT3"));
+				}
+
+				break;
+			case 4:
+				if(MyMidget->Image4)
+				{
+					MyMidget->Image4->SetVisibility(ESlateVisibility::Hidden);
+					UE_LOG(LogTemp, Warning, TEXT("TEXT1"));
+				}
+			default:
+				break; // If no valid id, do nothing (Destroy removed)
+			}
 		}
 	}
 }

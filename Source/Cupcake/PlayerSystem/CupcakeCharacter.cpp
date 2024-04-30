@@ -440,6 +440,15 @@ void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDr
 	}
 }
 
+void ACupcakeCharacter::RemoveItemFromInventory(UBaseItem* ItemToRemove, const int32 QuantityToRemove)
+{
+	if(PlayerInventory->FindMatchingItem(ItemToRemove))
+	{
+		PlayerInventory->RemoveAmountOfItem(ItemToRemove, QuantityToRemove);
+		UE_LOG(LogTemp, Warning, TEXT("ItemToRemove: %p was successfully removed!"), ItemToRemove);
+	}
+}
+
 void ACupcakeCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D

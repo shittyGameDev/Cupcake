@@ -41,6 +41,7 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 			QuantityText->SetText(FText::Format(FText::FromString("x{0}"),
 				InteractableData->Quantity));
 			QuantityText->SetVisibility(ESlateVisibility::Visible);
+			
 		}
 		break;
 		
@@ -51,6 +52,7 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 		KeyPressText->SetText(FText::FromString("Press"));
 		
 		QuantityText->SetVisibility(ESlateVisibility::Collapsed);
+		InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);
 		break;
 		
 	case EInteractableType::Toggle:

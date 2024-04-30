@@ -26,15 +26,19 @@ void UNewInventoryComponent::BeginPlay()
 
 UBaseItem* UNewInventoryComponent::FindMatchingItem(UBaseItem* ItemIn) const
 {
-	if(ItemIn)
+	if (ItemIn)
 	{
-		if(InventoryContents.Contains(ItemIn))
+		for (const TObjectPtr<UBaseItem>& Item : InventoryContents)
 		{
-			return ItemIn;
+			if (Item->ID == ItemIn->ID) // Ensure this compares the unique identifiers correctly
+				{
+				return Item.Get();
+				}
 		}
 	}
 	return nullptr;
 }
+
 
 UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
 {
@@ -45,6 +49,14 @@ UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
 			return *Result;
 		}
 	}
+	// Assuming UBaseItem has a ToString method that returns FString
+	FString InventoryDetails;
+	for (const TObjectPtr<UBaseItem>& Item : InventoryContents)
+	{
+		InventoryDetails += Item->ToString() + TEXT(", ");
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("InventoryContents: %s"), *InventoryDetails);
 	return nullptr;
 }
 
@@ -73,6 +85,8 @@ void UNewInventoryComponent::RemoveSingleInstanceOfItem(UBaseItem* ItemToRemove)
 {
 	InventoryContents.RemoveSingle(ItemToRemove);
 	//Delegate that UI listens to.
+	UE_LOG(LogTemp, Warning, TEXT("Item was removed: %s"), *ItemToRemove->ID.ToString());
+
 	OnInventoryUpdated.Broadcast();
 }
 

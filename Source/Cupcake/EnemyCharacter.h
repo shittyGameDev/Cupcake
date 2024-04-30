@@ -28,6 +28,19 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	AWeaponBase* WeaponComponent;
 
+
+	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
+	UDataTable* ItemDataTable;
+
+	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
+	FName DesiredItemID;
+
+	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
+	int32 ItemQuantity;
+	
+	UPROPERTY(VisibleAnywhere, Category= "Drop | Item Reference")
+	UBaseItem* ItemReference;
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 };

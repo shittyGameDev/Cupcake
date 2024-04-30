@@ -146,12 +146,14 @@ protected:
 	float InteractionCheckDistance;
 
 	FTimerHandle TimerHandle_Interaction;
+	FTimerHandle TimerHandle_ProgressUpdate;
 
 	FInteractionData InteractionData;
 
 	void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
+	void UpdateInteraction();
 	void BeginInteract();
 	void EndInteract();
 	void Interact();

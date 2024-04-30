@@ -26,15 +26,19 @@ void UNewInventoryComponent::BeginPlay()
 
 UBaseItem* UNewInventoryComponent::FindMatchingItem(UBaseItem* ItemIn) const
 {
-	if(ItemIn)
+	if (ItemIn)
 	{
-		if(InventoryContents.Contains(ItemIn))
+		for (const TObjectPtr<UBaseItem>& Item : InventoryContents)
 		{
-			return ItemIn;
+			if (Item->ID == ItemIn->ID) // Ensure this compares the unique identifiers correctly
+				{
+				return Item.Get();
+				}
 		}
 	}
 	return nullptr;
 }
+
 
 UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
 {

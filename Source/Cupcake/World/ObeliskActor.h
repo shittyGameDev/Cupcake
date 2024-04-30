@@ -46,6 +46,9 @@ protected:
 	UPROPERTY()
 	UNewInventoryComponent* InventoryReference;
 
+	UPROPERTY(VisibleAnywhere)
+	int32 NumberOfItemsDonated;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

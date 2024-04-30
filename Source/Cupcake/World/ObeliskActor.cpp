@@ -28,6 +28,7 @@ void AObeliskActor::BeginPlay()
 	InitializeObeliskItem(UBaseItem::StaticClass(), ItemQuantity);
 
 	UE_LOG(LogTemp, Warning, TEXT("InventoryReference: %p"), InventoryReference);
+	UE_LOG(LogTemp, Warning, TEXT("ItemReference: %p"), ItemReference);
 	
 }
 
@@ -85,10 +86,19 @@ void AObeliskActor::EndInteract()
 void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 {
 	InventoryReference = PlayerCharacter->GetInventory();
-	if(InventoryReference->FindMatchingItem(ItemReference))
+	if(ItemReference)
 	{
-		InventoryReference->RemoveAmountOfItem(ItemReference, ItemReference->Quantity);
+		UBaseItem* ItemToDonate = InventoryReference->FindMatchingItem(ItemReference);
+		UE_LOG(LogTemp, Warning, TEXT("Test"));
+		PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemReference->Quantity);
+		NumberOfItemsDonated++;
+		InventoryReference->OnInventoryUpdated.Broadcast();
 	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ItemRef was somehow null"));
+	}
+
 	FString InventoryDetails;
 	for (const TObjectPtr<UBaseItem>& Item : InventoryReference->GetInventoryContents())
 	{

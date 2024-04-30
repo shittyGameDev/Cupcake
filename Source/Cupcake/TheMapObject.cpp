@@ -21,6 +21,25 @@ ATheMapObject::ATheMapObject()
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATheMapObject::OnOverlapBegin);
 }
 
+void ATheMapObject::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	if (OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
+	{
+		bCanToggleMap = true;
+	}
+	
+}
+
+void ATheMapObject::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorEndOverlap(OtherActor);
+	if (OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
+	{
+		bCanToggleMap = false;
+	}
+}
+
 // Called when the game starts or when spawned
 void ATheMapObject::BeginPlay()
 {
@@ -28,13 +47,23 @@ void ATheMapObject::BeginPlay()
 	if (!MapWidget && GetWorld())
 	{
 		MapWidget = CreateWidget<UUserWidget>(GetWorld(), MapWidgetClass);
+		if (MapWidget)
+		{
+			MapWidget->AddToViewport();
+			UE_LOG(LogTemp, Warning, TEXT("Widget created successfully"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to create widget"));
+		}
 	}
-	
+	MapWidget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void ATheMapObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap has occurred"));
 	if (OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
 	{
 		ToggleMapVisibility();
@@ -44,7 +73,7 @@ void ATheMapObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 
 void ATheMapObject::ToggleMapVisibility()
 {
-	if (MapWidget)
+	if (MapWidget && bCanToggleMap)
 	{
 		bool bIsVisible = MapWidget->IsVisible();
 		ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));

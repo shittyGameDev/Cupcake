@@ -2,12 +2,13 @@
 
 
 #include "BP_TriggerMap.h"
-
+#include "TheMapObject.h" 
 #include "TheMapHandler.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Image.h"
 #include "GameFramework/Character.h"
+#include "PlayerSystem/CupcakeCharacter.h"
 
 
 // Sets default values
@@ -48,56 +49,21 @@ void ABP_TriggerMap::Tick(float DeltaTime)
 void ABP_TriggerMap::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-	if (OtherActor == PlayerCharacter)
+	// Hämta referensen till ATheMapObject
+	ATheMapObject* MapObject = Cast<ATheMapObject>(UGameplayStatics::GetActorOfClass(GetWorld(), ATheMapObject::StaticClass()));
+	if (MapObject && OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
 	{
-		UTheMapHandler* MyMidget = UTheMapHandler::GetInstance();
-		UE_LOG(LogTemp, Warning, TEXT("DU KROCKAR I MIG"));
-		// Hitta din UserWidget och gör en cast till rätt typ, antag att den heter UMyUserWidget
-		//UTheMapHandler* MyWidget = Cast<UTheMapHandler>(LinkedWidget);
-		if (MyMidget)
+		UTheMapHandler* MapHandler = Cast<UTheMapHandler>(MapObject->MapWidget); // Casta till din specifika widget klass
+		if (MapHandler)
 		{
-			switch (id)
-			{
-			case 1:
-				UE_LOG(LogTemp, Warning, TEXT("HEJ"));
-				
-				if(MyMidget->Image1)
-				{
-					MyMidget->Image1->SetVisibility(ESlateVisibility::Hidden);
-					UE_LOG(LogTemp, Warning, TEXT("TEXT1"));
-				}
-				break;
-			case 2:
-				if(MyMidget->Image2)
-				{
-					MyMidget->Image2->SetVisibility(ESlateVisibility::Hidden);
-					UE_LOG(LogTemp, Warning, TEXT("TEXT1"));
-				}
-			case 3:
-				
-				if(MyMidget->Image3 == nullptr)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("HEJ"));
-				}
-				if(MyMidget->Image3)
-				{
-					MyMidget->Image3->SetVisibility(ESlateVisibility::Hidden);
-					UE_LOG(LogTemp, Warning, TEXT("TEXT3"));
-				}
-
-				break;
-			case 4:
-				if(MyMidget->Image4)
-				{
-					MyMidget->Image4->SetVisibility(ESlateVisibility::Hidden);
-					UE_LOG(LogTemp, Warning, TEXT("TEXT1"));
-				}
-			default:
-				break; // If no valid id, do nothing (Destroy removed)
-			}
+			// Använd någon logik för att bestämma vilken bild som ska döljas baserat på 'id' eller annan logik
+			MapHandler->HideImage(id); // Antag att HideImage är en metod i UTheMapHandler som tar ett ID och döljer motsvarande bild.
+			UE_LOG(LogTemp, Warning, TEXT("Triggered image hide"));
+			Destroy();
 		}
 	}
 }
+	
+
 
 

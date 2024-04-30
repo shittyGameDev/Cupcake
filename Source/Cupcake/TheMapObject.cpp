@@ -21,6 +21,25 @@ ATheMapObject::ATheMapObject()
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATheMapObject::OnOverlapBegin);
 }
 
+void ATheMapObject::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	if (OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
+	{
+		bCanToggleMap = true;
+	}
+	
+}
+
+void ATheMapObject::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorEndOverlap(OtherActor);
+	if (OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
+	{
+		bCanToggleMap = false;
+	}
+}
+
 // Called when the game starts or when spawned
 void ATheMapObject::BeginPlay()
 {
@@ -54,7 +73,7 @@ void ATheMapObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 
 void ATheMapObject::ToggleMapVisibility()
 {
-	if (MapWidget)
+	if (MapWidget && bCanToggleMap)
 	{
 		bool bIsVisible = MapWidget->IsVisible();
 		ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));

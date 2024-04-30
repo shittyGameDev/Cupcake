@@ -3,6 +3,7 @@
 
 #include "ObeliskActor.h"
 
+#include "NiagaraComponent.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/Items/Data/ItemDataStructs.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
@@ -14,6 +15,9 @@ AObeliskActor::AObeliskActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraComponent");
+	NiagaraComponent->SetupAttachment(RootComponent);
 
 	SetRootComponent(Mesh);
 	
@@ -114,6 +118,11 @@ bool AObeliskActor::CheckIfDonationReached(const int32 ItemsDonated)
 	if(ItemsDonated >= DonationGoal)
 	{
 		//TODO: ACTIVATE OR DEACTIVATE SOMETHING
+		if(NiagaraComponent)
+		{
+			NiagaraComponent->SetActive(true);
+			UE_LOG(LogTemp, Warning, TEXT("DONATION GOAL REACHED"));
+		}
 		return true;
 	}
 	return false;

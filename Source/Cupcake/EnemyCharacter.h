@@ -24,9 +24,12 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+	
+	AWeaponBase* Weapon;
+	UPROPERTY(EditAnywhere, Category="Weapon")
+	TSubclassOf<AWeaponBase> WeaponBlueprint;
 
-	UPROPERTY(EditAnywhere, Category="Combat")
-	AWeaponBase* WeaponComponent;
+	FTimerHandle TimerHandle_AttackFinished;
 
 
 	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
@@ -43,4 +46,7 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintCallable)
+	void DoAttack();
+	void OnAttackFinished();
 };

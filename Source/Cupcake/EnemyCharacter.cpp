@@ -31,7 +31,6 @@ void AEnemyCharacter::OnDeath_Implementation()
 	IDamageableInterface::OnDeath_Implementation();
 	
 	Destroy();
-
 }
 
 void AEnemyCharacter::BeginPlay()

@@ -47,13 +47,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category= "Pickup | Components")
 	UStaticMeshComponent* PickupMesh;
 
-	UPROPERTY(EditInstanceOnly, Category= "Pickup | Item Initialization")
+	UPROPERTY(EditAnywhere, Category= "Pickup | Item Initialization")
 	UDataTable* ItemDataTable;
 	
-	UPROPERTY(EditInstanceOnly, Category= "Pickup | Item Initialization")
+	UPROPERTY(EditAnywhere, Category= "Pickup | Item Initialization")
 	FName DesiredItemID;
 
-	UPROPERTY(EditInstanceOnly, Category= "Pickup | Item Initialization")
+	UPROPERTY(EditAnywhere, Category= "Pickup | Item Initialization")
 	int32 ItemQuantity;
 	
 	UPROPERTY(VisibleAnywhere, Category= "Pickup | Item Reference")

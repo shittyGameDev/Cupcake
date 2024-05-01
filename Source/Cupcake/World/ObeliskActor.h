@@ -53,15 +53,21 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Donation")
 	int32 NumberOfItemsDonated;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category= "Forage | Visual")
 	UNiagaraComponent* NiagaraComponent;
+
 	
-	UFUNCTION(Category="Donation")
+	
+	
+	UFUNCTION(BlueprintCallable ,Category="Donation")
 	bool CheckIfDonationReached(int32 ItemsDonated);
 
 
 public:	
 	// Called every frame
+	UPROPERTY(VisibleAnywhere)
+	bool DonationGoalReached = false;
+	
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;

@@ -3,6 +3,7 @@
 
 #include "ObeliskActor.h"
 
+#include "NiagaraComponent.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/Items/Data/ItemDataStructs.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
@@ -16,6 +17,9 @@ AObeliskActor::AObeliskActor()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 
 	SetRootComponent(Mesh);
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraComponent");
+	NiagaraComponent->SetupAttachment(RootComponent);
 	
 }
 
@@ -26,6 +30,7 @@ void AObeliskActor::BeginPlay()
 
 	InteractableData = InstanceInteractableData;
 	InitializeObeliskItem(UBaseItem::StaticClass(), ItemQuantity);
+	NiagaraComponent->SetActive(false);
 
 	UE_LOG(LogTemp, Warning, TEXT("InventoryReference: %p"), InventoryReference);
 	UE_LOG(LogTemp, Warning, TEXT("ItemReference: %p"), ItemReference);
@@ -89,11 +94,18 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 	if(ItemReference)
 	{
 		UBaseItem* ItemToDonate = InventoryReference->FindMatchingItem(ItemReference);
-		UE_LOG(LogTemp, Warning, TEXT("Test"));
-		PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemReference->Quantity);
-		NumberOfItemsDonated++;
-		CheckIfDonationReached(NumberOfItemsDonated);
-		InventoryReference->OnInventoryUpdated.Broadcast();
+		if(ItemToDonate)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Test"));
+			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemReference->Quantity);
+			NumberOfItemsDonated++;
+			CheckIfDonationReached(NumberOfItemsDonated);
+			InventoryReference->OnInventoryUpdated.Broadcast();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("The obelisk does not want that."));
+		}
 	}
 	else
 	{
@@ -113,10 +125,11 @@ bool AObeliskActor::CheckIfDonationReached(const int32 ItemsDonated)
 {
 	if(ItemsDonated >= DonationGoal)
 	{
-		//TODO: ACTIVATE OR DEACTIVATE SOMETHING
-		return true;
+		UE_LOG(LogTemp, Warning, TEXT("Donation goal reached"));
+		NiagaraComponent->SetActive(true);
+		return DonationGoalReached = true;
 	}
-	return false;
+	return DonationGoalReached = false;
 }
 
 

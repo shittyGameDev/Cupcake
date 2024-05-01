@@ -26,15 +26,19 @@ void UNewInventoryComponent::BeginPlay()
 
 UBaseItem* UNewInventoryComponent::FindMatchingItem(UBaseItem* ItemIn) const
 {
-	if(ItemIn)
+	if (ItemIn)
 	{
-		if(InventoryContents.Contains(ItemIn))
+		for (const TObjectPtr<UBaseItem>& Item : InventoryContents)
 		{
-			return ItemIn;
+			if (Item->ID == ItemIn->ID) // Ensure this compares the unique identifiers correctly
+				{
+				return Item.Get();
+				}
 		}
 	}
 	return nullptr;
 }
+
 
 UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
 {
@@ -45,23 +49,30 @@ UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
 			return *Result;
 		}
 	}
+	// Assuming UBaseItem has a ToString method that returns FString
+	FString InventoryDetails;
+	for (const TObjectPtr<UBaseItem>& Item : InventoryContents)
+	{
+		InventoryDetails += Item->ToString() + TEXT(", ");
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("InventoryContents: %s"), *InventoryDetails);
 	return nullptr;
 }
 
 UBaseItem* UNewInventoryComponent::FindNextPartialStack(UBaseItem* ItemIn) const
 {
-	// Lambda
-	if(const TArray<TObjectPtr<UBaseItem>>::ElementType* Result =
+	if (const TArray<TObjectPtr<UBaseItem>>::ElementType* Result =
 		InventoryContents.FindByPredicate([&ItemIn](const UBaseItem* InventoryItem)
 		{
-			return InventoryItem->ID == ItemIn->ID && InventoryItem->IsFullItemStack();
-		}
-		))
+			return InventoryItem->ID == ItemIn->ID && !InventoryItem->IsFullItemStack();
+		}))
 	{
 		return *Result;
 	}
 	return nullptr;
 }
+
 
 int32 UNewInventoryComponent::CalculateNumberForFullStack(UBaseItem* StackableItem, int32 InitialRequestedAddAmount)
 {
@@ -74,6 +85,8 @@ void UNewInventoryComponent::RemoveSingleInstanceOfItem(UBaseItem* ItemToRemove)
 {
 	InventoryContents.RemoveSingle(ItemToRemove);
 	//Delegate that UI listens to.
+	UE_LOG(LogTemp, Warning, TEXT("Item was removed: %s"), *ItemToRemove->ID.ToString());
+
 	OnInventoryUpdated.Broadcast();
 }
 
@@ -120,8 +133,47 @@ FItemAddResult UNewInventoryComponent::HandleNonStackableItems(UBaseItem* InputI
 
 int32 UNewInventoryComponent::HandleStackableItems(UBaseItem* InputItem, int32 RequestedAddAmount)
 {
-	return 0;
+	if (RequestedAddAmount <= 0)
+	{
+		// Invalid item data
+		return 0;
+	}
+
+	int32 AmountToDistribute = RequestedAddAmount;
+	UBaseItem* ExistingItemStack = FindNextPartialStack(InputItem);
+
+	// Distribute item stack over existing partial stacks
+	while (ExistingItemStack != nullptr)
+	{
+		const int32 AmountToAdd = CalculateNumberForFullStack(ExistingItemStack, AmountToDistribute);
+
+		if (AmountToAdd > 0)
+		{
+			ExistingItemStack->SetQuantity(ExistingItemStack->Quantity + AmountToAdd);
+			AmountToDistribute -= AmountToAdd;
+
+			if (AmountToDistribute == 0)
+			{
+				OnInventoryUpdated.Broadcast();
+				return RequestedAddAmount;
+			}
+		}
+
+		ExistingItemStack = FindNextPartialStack(InputItem);
+	}
+
+	// If there are still items left to distribute and there is an available slot
+	if (AmountToDistribute > 0 && InventoryContents.Num() < InventorySlotsCapacity)
+	{
+		AddNewItem(InputItem, AmountToDistribute);
+		OnInventoryUpdated.Broadcast();
+		return RequestedAddAmount;
+	}
+
+	// If all partial stacks are processed and no new slots are available, but items still need to be distributed
+	return RequestedAddAmount - AmountToDistribute;
 }
+
 
 FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 {
@@ -149,10 +201,12 @@ FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 
 		if(StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
 		{
+			OnInventoryUpdated.Broadcast();
 			return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
 				FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
 				InputItem->TextData.Name,
 				StackableAmountAdded));
+			
 		}
 
 		if(StackableAmountAdded <= 0)

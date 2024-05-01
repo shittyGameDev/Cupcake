@@ -4,6 +4,7 @@
 #include "BaseHUD.h"
 #include "MainMenu.h"
 #include "InteractionWidget.h"
+#include "Components/ProgressBar.h"
 
 
 ABaseHUD::ABaseHUD()
@@ -89,10 +90,26 @@ void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData
 		if(InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
 		{
 			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+			//InteractionWidget->InteractionProgressBar->SetPercent(0);
 		}
-
 		InteractionWidget->UpdateWidget(InteractableData);
 	}
 }
+
+void ABaseHUD::UpdateInteractionProgress(float Progress) const
+{
+	UE_LOG(LogTemp, Warning, TEXT("This was reached"));
+	if(InteractionWidget->InteractionProgressBar)
+	{
+		InteractionWidget->InteractionProgressBar->SetPercent(Progress);
+		UE_LOG(LogTemp, Warning, TEXT("Progress: %f"), Progress);
+		if(Progress == 1)
+		{
+			InteractionWidget->InteractionProgressBar->SetPercent(0);
+		}
+	}
+}
+
+
 
 

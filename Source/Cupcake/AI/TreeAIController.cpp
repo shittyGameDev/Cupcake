@@ -23,30 +23,4 @@ void ATreeAIController::BeginPlay()
 void ATreeAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	/*
-	if (LineOfSightTo(PlayerPawn))
-	{
-		SetFocus(PlayerPawn);
-		MoveToActor(PlayerPawn, AcceptanceRadius);
-	}
-	else
-	{
-		ClearFocus(EAIFocusPriority::Gameplay);
-		StopMovement();
-	}
-	*/
 }
-
-/*
-void ATreeAIController::LookAtPlayer()
-{
-	if (PlayerPawn)
-	{
-		if (PlayerPawn)
-		{
-			SetFocus(PlayerPawn); // Set the player's pawn as the focus of the AI
-		}
-	}
-}
-*/

@@ -4,6 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
 #include "Engine/StaticMeshActor.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -37,7 +38,7 @@ void ADayCycleManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ElapsedTime += DeltaTime * AccelerateTime;
-	UE_LOG(LogTemp, Warning, TEXT("Time in hours: %i"), GetHour());
+	//UE_LOG(LogTemp, Warning, TEXT("Time in hours: %i"), GetHour());
 	/*if (!bHasSlept && ElapsedTime > 5 * AccelerateTime)
 	{
 		Sleep();
@@ -247,5 +248,29 @@ void ADayCycleManager::SpawnTreeEvent()
 
 void ADayCycleManager::ApplyInsanity()
 {
-	
+	if (CameraShakeClass && PlayerController && SkyLight && SkyLight->GetLightComponent())
+	{
+		FLinearColor Magenta(255.f, 0.f, 231.f);
+		SkyLight->GetLightComponent()->SetLightColor(Magenta);
+		PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = 50.f;
+		GetWorld()->GetFirstPlayerController()->ClientStartCameraShake(CameraShakeClass);
+
+		bool bIsLightPink = true;
+
+		FTimerHandle FlickerLightTimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(FlickerLightTimerHandle, [this, &bIsLightPink, Magenta]()
+		{
+			FLinearColor NewColor = bIsLightPink ? FLinearColor::White : Magenta;
+			SkyLight->GetLightComponent()->SetLightColor(NewColor);
+			bIsLightPink = !bIsLightPink;
+		}, 0.01f, true);
+
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, FlickerLightTimerHandle]() mutable
+		{
+			PlayerCharacter->GetCharacterMovement()->MaxWalkSpeed = 500.f;
+			GetWorld()->GetTimerManager().ClearTimer(FlickerLightTimerHandle);
+			SkyLight->GetLightComponent()->SetLightColor(FLinearColor::White);
+		}, 3.0f, false);
+	}
 }

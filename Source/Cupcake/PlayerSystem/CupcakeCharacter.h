@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "InventoryComponent.h"
 #include "Cupcake/WeaponBase.h"
-#include "Cupcake/Actors/Health.h"
+#include "Cupcake/Actors/DamageableInterface.h"
 #include "Cupcake/Items/InteractionInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
@@ -37,7 +37,7 @@ struct FInteractionData
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class ACupcakeCharacter : public ACharacter, public IHealth
+class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 {
 	GENERATED_BODY()
 
@@ -73,6 +73,8 @@ class ACupcakeCharacter : public ACharacter, public IHealth
 
 public:
 	ACupcakeCharacter();
+	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	                 AActor* DamageCauser);
 
 	UFUNCTION()
 	virtual void OnDeath_Implementation();
@@ -88,6 +90,12 @@ public:
 	UFUNCTION()
 	void DisableMovement();
 
+	UFUNCTION()
+	void ToggleMapViaKey();
+
+	UFUNCTION()
+	ATheMapObject* FindMapObject();
+
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
@@ -96,9 +104,7 @@ public:
 	FORCEINLINE UNewInventoryComponent* GetInventory() const { return PlayerInventory; }
 
 	void UpdateInteractionWidget() const;
-
-	UPROPERTY()
-	UHealthComponent* HealthComponent;
+	
 	UPROPERTY()
 	AWeaponBase* Weapon;
 	UPROPERTY(EditAnywhere, Category="Weapon")
@@ -143,12 +149,14 @@ protected:
 	float InteractionCheckDistance;
 
 	FTimerHandle TimerHandle_Interaction;
+	FTimerHandle TimerHandle_ProgressUpdate;
 
 	FInteractionData InteractionData;
 
 	void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
+	void UpdateInteraction();
 	void BeginInteract();
 	void EndInteract();
 	void Interact();
@@ -161,5 +169,7 @@ public:
 	void ToggleMenu();
 
 	void DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop);
+
+	void RemoveItemFromInventory(UBaseItem* ItemToRemove, const int32 QuantityToRemove);
 };
 

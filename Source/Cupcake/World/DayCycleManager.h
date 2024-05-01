@@ -67,7 +67,8 @@ protected:
 	TSubclassOf<UUserWidget> BlackScreenWidgetClass;
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> DayTransitionWidgetClass;
-
+	UPROPERTY(EditAnywhere, Category= "Insanity");
+	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Management")
 	TArray<FTimeEvent> TimeEvents;
 	

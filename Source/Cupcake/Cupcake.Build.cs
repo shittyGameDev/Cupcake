@@ -16,6 +16,8 @@ public class Cupcake : ModuleRules
 			"EnhancedInput", 
 			"UMG", 
 			"Slate", 
-			"SlateCore"});
+			"SlateCore",
+			"Niagara"
+		});
 	}
 }

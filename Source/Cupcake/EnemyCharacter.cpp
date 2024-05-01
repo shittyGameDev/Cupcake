@@ -31,16 +31,55 @@ void AEnemyCharacter::OnDeath_Implementation()
 	IDamageableInterface::OnDeath_Implementation();
 	
 	Destroy();
-
 }
 
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (WeaponBlueprint)
+	{
+		// Spawn the weapon
+		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
+
+		// Optionally, attach the weapon to the character
+		//Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+
+		Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+
+		Weapon->DisableWeapon();
+	}
 }
 
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+}
+
+void AEnemyCharacter::DoAttack()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
+	if (!Weapon) return;
+    
+	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
+	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
+	{
+		//Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
+		UE_LOG(LogTemp, Warning, TEXT("Attached"));
+	}
+	Weapon->SetOwner(this);
+	Weapon->EnableWeapon(); // Enable the weapon
+
+	// Set a timer to disable the weapon after a short duration, simulating an attack duration
+	// Assuming an attack takes 1 second; adjust this duration as needed
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.2f, false);
+}
+
+void AEnemyCharacter::OnAttackFinished()
+{
+	if (Weapon)
+	{
+		Weapon->DisableWeapon(); // Disable the weapon after the attack is complete
+	}
 }

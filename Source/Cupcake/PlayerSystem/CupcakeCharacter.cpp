@@ -18,6 +18,7 @@
 #include "Cupcake/World/Pickup.h"
 #include "EngineUtils.h"  
 #include "Cupcake/TheMapObject.h"
+#include "Cupcake/Actors/AttributeComponent.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -69,13 +70,24 @@ ACupcakeCharacter::ACupcakeCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+
+
+	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+}
+
+float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void ACupcakeCharacter::OnDeath_Implementation()
 {
+	IDamageableInterface::OnDeath_Implementation();
+	
 	Destroy();
-}
 
+}
 
 void ACupcakeCharacter::Attack()
 {
@@ -85,7 +97,8 @@ void ACupcakeCharacter::Attack()
 	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
 	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
 	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
+		//Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
+		Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
 	Weapon->SetOwner(this);
@@ -336,9 +349,6 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
 		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
 		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
-
-
-		
 
 
 		/* Looking

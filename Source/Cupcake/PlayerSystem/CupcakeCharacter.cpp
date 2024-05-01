@@ -97,10 +97,11 @@ void ACupcakeCharacter::Attack()
 	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
 	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
 	{
-		//Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
-		Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
+		//Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
+	
 	Weapon->SetOwner(this);
 	Weapon->EnableWeapon(); // Enable the weapon
 
@@ -135,6 +136,10 @@ void ACupcakeCharacter::BeginPlay()
 		// Optionally, attach the weapon to the character
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
 
+		FRotator CurrentRotation = Weapon->GetActorRotation();
+		CurrentRotation.Yaw += 90.0f;
+		Weapon->SetActorRotation(CurrentRotation);
+		
 		Weapon->DisableWeapon();
 	}
 

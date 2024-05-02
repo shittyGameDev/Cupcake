@@ -127,6 +127,7 @@ bool AObeliskActor::CheckIfDonationReached(const int32 ItemsDonated)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Donation goal reached"));
 		NiagaraComponent->SetActive(true);
+		OnDonationGoalReached.Broadcast();
 		return DonationGoalReached = true;
 	}
 	return DonationGoalReached = false;

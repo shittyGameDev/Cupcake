@@ -40,9 +40,6 @@ public:
 
 	UPROPERTY()
 	UTimelineComponent* Timeline;
-	
-	
-protected:
 
 	UPROPERTY(VisibleAnywhere, Category= "Pickup | Components")
 	UStaticMeshComponent* PickupMesh;
@@ -71,9 +68,5 @@ protected:
 	void UpdateInteractableData();
 	
 	void TakePickup(const ACupcakeCharacter* Taker);
-
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
 	
 };

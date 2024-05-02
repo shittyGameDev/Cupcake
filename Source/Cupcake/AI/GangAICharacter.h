@@ -40,14 +40,18 @@ public:
 
 	FVector GetRandomPatrolPoint();
 
-protected:
+	UPROPERTY(EditAnywhere)
 	FVector SpawnLocation;
+	UPROPERTY(EditAnywhere)
 	float PatrolRadius;
+
+protected:
+
 	bool bIsChasing;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
-	UAIPerceptionComponent* PerceptionComponent;
+	//PROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
+	//UAIPerceptionComponent* PerceptionComponent;
 
-	UGangAIManager* AIManager;
+	AGangAIManager* AIManager;
 	
 };

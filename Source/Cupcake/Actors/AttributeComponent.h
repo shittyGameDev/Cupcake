@@ -25,7 +25,7 @@ private:
 	// Current Health
 	UPROPERTY(EditAnywhere, Category="Actor Attributes")
 	float Health = 100.f;
-	
+	 
 	UPROPERTY(EditAnywhere, Category="Actor Attributes")
 	float MaxHealth = 100.f;
 

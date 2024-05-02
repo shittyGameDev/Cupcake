@@ -11,12 +11,17 @@ class UNiagaraComponent;
 class UBaseItem;
 class UNewInventoryComponent;
 
+
+DECLARE_MULTICAST_DELEGATE(FOnDonationGoalReached);
+
 UCLASS()
 class CUPCAKE_API AObeliskActor : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+	FOnDonationGoalReached OnDonationGoalReached;
+	
 	// Sets default values for this actor's properties
 	AObeliskActor();
 

@@ -6,8 +6,6 @@ public class Cupcake : ModuleRules
 {
 	public Cupcake(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivateDependencyModuleNames.AddRange(new string[] { "UMGEditor" });
-		PrivateDependencyModuleNames.AddRange(new string[] { "NavigationSystem" });
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", 
@@ -18,8 +16,7 @@ public class Cupcake : ModuleRules
 			"UMG", 
 			"Slate", 
 			"SlateCore",
-			"Niagara", 
-			"NavigationSystem"
+			"Niagara"
 		});
 	}
 }

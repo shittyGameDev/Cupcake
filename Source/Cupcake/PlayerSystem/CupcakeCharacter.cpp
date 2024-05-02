@@ -86,7 +86,6 @@ void ACupcakeCharacter::OnDeath_Implementation()
 	IDamageableInterface::OnDeath_Implementation();
 	
 	Destroy();
-
 }
 
 void ACupcakeCharacter::Attack()

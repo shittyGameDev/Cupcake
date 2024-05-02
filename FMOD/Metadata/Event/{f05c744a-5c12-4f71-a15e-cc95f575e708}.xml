@@ -76,9 +76,6 @@
 		<relationship name="modules">
 			<destination>{84328175-c6c0-471f-95cd-c15a1e41bf02}</destination>
 		</relationship>
-		<relationship name="markers">
-			<destination>{9a561d74-1a3c-4412-82e3-0ca5c8b0d3e4}</destination>
-		</relationship>
 	</object>
 	<object class="ParameterProxy" id="{ec5119ce-9c80-462e-a113-58fb77b67f00}">
 		<relationship name="preset">
@@ -112,7 +109,7 @@
 			<value>0.40000000000000002</value>
 		</property>
 		<property name="volume">
-			<value>4</value>
+			<value>6.5</value>
 		</property>
 		<property name="playlistMode">
 			<value>1</value>
@@ -151,20 +148,6 @@
 			<destination>{eb4fb958-b721-4e8d-a339-65fb520ebb65}</destination>
 		</relationship>
 	</object>
-	<object class="LoopRegion" id="{9a561d74-1a3c-4412-82e3-0ca5c8b0d3e4}">
-		<property name="position">
-			<value>0</value>
-		</property>
-		<property name="length">
-			<value>0.40000000000000002</value>
-		</property>
-		<relationship name="timeline">
-			<destination>{01b11c5c-6f0f-4c81-b1ef-b05e496a2f04}</destination>
-		</relationship>
-		<relationship name="markerTrack">
-			<destination>{b494abb9-e301-44bb-aa13-d5df4a8519db}</destination>
-		</relationship>
-	</object>
 	<object class="MixerBusEffectChain" id="{2b6e959b-f028-4c84-9919-2bf40aedcb66}">
 		<relationship name="effects">
 			<destination>{21a49c01-8a82-47cb-8d26-d24beee1604d}</destination>
@@ -177,7 +160,7 @@
 			<value>volume</value>
 		</property>
 		<property name="amount">
-			<value>8.5</value>
+			<value>6.5</value>
 		</property>
 	</object>
 	<object class="RandomizerModulator" id="{3aa05ee6-dfa0-42a5-b43b-d59af37ede0f}">
@@ -185,7 +168,7 @@
 			<value>pitch</value>
 		</property>
 		<property name="amount">
-			<value>7.5</value>
+			<value>8</value>
 		</property>
 	</object>
 	<object class="SingleSound" id="{ea79fbe9-783a-429a-bbda-ede4bfe8746a}">

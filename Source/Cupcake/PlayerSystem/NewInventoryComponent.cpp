@@ -19,9 +19,6 @@ UNewInventoryComponent::UNewInventoryComponent()
 void UNewInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 UBaseItem* UNewInventoryComponent::FindMatchingItem(UBaseItem* ItemIn) const
@@ -110,6 +107,18 @@ void UNewInventoryComponent::SplitExistingStack(UBaseItem* ItemIn, const int32 A
 		RemoveAmountOfItem(ItemIn, AmountToSplit);
 		AddNewItem(ItemIn, AmountToSplit);
 	}
+}
+
+bool UNewInventoryComponent::HasItemByID(FName ID)
+{
+	for (auto Element : InventoryContents)
+	{
+		if (Element->ID.IsEqual(ID))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 FItemAddResult UNewInventoryComponent::HandleNonStackableItems(UBaseItem* InputItem, int32 RequestedAddAmount)

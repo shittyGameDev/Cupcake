@@ -29,6 +29,6 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, Category = "Health")
 	void OnDamage();
-
+	
 	UAttributeComponent* Attributes;
 };

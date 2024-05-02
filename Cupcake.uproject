@@ -33,15 +33,12 @@
 			"Enabled": true
 		},
 		{
-			"Name": "FMODStudioNiagara",
+			"Name": "FMODStudio",
 			"Enabled": true
 		},
 		{
-			"Name": "FMODStudio",
+			"Name": "FMODStudioNiagara",
 			"Enabled": true
 		}
-	],
-	"TargetPlatforms": [
-		"Windows"
 	]
 }

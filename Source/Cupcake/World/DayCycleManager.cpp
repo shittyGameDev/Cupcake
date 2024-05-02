@@ -274,3 +274,8 @@ void ADayCycleManager::ApplyInsanity()
 		}, 3.0f, false);
 	}
 }
+
+float ADayCycleManager::GetElapsedTime() const
+{
+	return ElapsedTime;
+}

@@ -19,6 +19,6 @@ public:
 
 	void RegisterAICharacter(AGangAICharacter* AICharacter);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UBillboardComponent* BillboardComponent;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	//UBillboardComponent* BillboardComponent;
 };

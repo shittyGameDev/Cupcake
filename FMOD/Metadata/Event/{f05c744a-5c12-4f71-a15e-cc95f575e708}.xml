@@ -108,9 +108,6 @@
 		<property name="length">
 			<value>0.40000000000000002</value>
 		</property>
-		<property name="volume">
-			<value>6.5</value>
-		</property>
 		<property name="playlistMode">
 			<value>1</value>
 		</property>

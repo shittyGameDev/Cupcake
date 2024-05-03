@@ -8,7 +8,7 @@
 #include "NavigationSystem.h"
 #include "Cupcake/Actors/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Perception/AIPerceptionComponent.h"
+
 
 
 // Sets default values

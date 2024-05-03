@@ -37,7 +37,7 @@ struct FItemAddResult
 	// Informational message that can be passed with the result (Victor)
 	UPROPERTY(BlueprintReadOnly, Category = "Item Add Result")
 	FText ResultMessage;
-
+	
 	// HELPER FUNCTIONS
 	static FItemAddResult AddedNone(const FText& ErrorText)
 	{
@@ -92,6 +92,9 @@ public:
 	int32 RemoveAmountOfItem(UBaseItem* ItemIn, int32 DesiredAmountToRemove);
 	UFUNCTION(Category= "Inventory")
 	void SplitExistingStack(UBaseItem* ItemIn, const int32 AmountToSplit);
+	
+	UFUNCTION(Category= "Inventory")
+	bool HasItemByID(FName ID);
 
 	//Getters
 	// ----------------------

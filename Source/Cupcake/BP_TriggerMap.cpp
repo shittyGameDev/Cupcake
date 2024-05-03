@@ -2,12 +2,13 @@
 
 
 #include "BP_TriggerMap.h"
-
+#include "TheMapObject.h" 
 #include "TheMapHandler.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Image.h"
 #include "GameFramework/Character.h"
+#include "PlayerSystem/CupcakeCharacter.h"
 
 
 // Sets default values
@@ -28,6 +29,13 @@ ABP_TriggerMap::ABP_TriggerMap()
 void ABP_TriggerMap::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
+	
+	if(TheMapHandler)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Test"));
+	}
 	
 }
 
@@ -41,26 +49,21 @@ void ABP_TriggerMap::Tick(float DeltaTime)
 void ABP_TriggerMap::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
-	if (OtherActor == PlayerCharacter)
+	// Hämta referensen till ATheMapObject
+	ATheMapObject* MapObject = Cast<ATheMapObject>(UGameplayStatics::GetActorOfClass(GetWorld(), ATheMapObject::StaticClass()));
+	if (MapObject && OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
 	{
-		// Hitta din UserWidget och gör en cast till rätt typ, antag att den heter UMyUserWidget
-		UTheMapHandler* MyWidget = Cast<UTheMapHandler>(LinkedWidget);
-		if (MyWidget)
+		UTheMapHandler* MapHandler = Cast<UTheMapHandler>(MapObject->MapWidget); // Casta till din specifika widget klass
+		if (MapHandler)
 		{
-			// Använd taggen för att hitta den rätta svarta bilden i widgeten
-			FString TagName = Tags[0].ToString(); // Antag att vi har en tag som definierar vilken bild som ska påverkas
-			UImage* BlackImage = MyWidget->GetImageByTag(FName(*TagName));
-			if (BlackImage)
-			{
-				// Sätt opacity till 0 för att göra bilden osynlig
-				BlackImage->SetOpacity(0.0f);
-
-				// Ta bort triggervolymen från scenen
-				Destroy();
-			}
+			// Använd någon logik för att bestämma vilken bild som ska döljas baserat på 'id' eller annan logik
+			MapHandler->HideImage(id); // Antag att HideImage är en metod i UTheMapHandler som tar ett ID och döljer motsvarande bild.
+			UE_LOG(LogTemp, Warning, TEXT("Triggered image hide"));
+			Destroy();
 		}
 	}
 }
+	
+
 
 

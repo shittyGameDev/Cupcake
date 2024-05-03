@@ -101,6 +101,9 @@ public:
 	UFUNCTION()
 	void ApplyInsanity();
 
+	UFUNCTION(BlueprintCallable)
+	float GetElapsedTime() const;
+
 private:
 	char DayCycle = 0;
 	float ElapsedTime = 0.f;

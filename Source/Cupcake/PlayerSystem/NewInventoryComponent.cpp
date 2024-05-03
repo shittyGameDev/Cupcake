@@ -19,22 +19,23 @@ UNewInventoryComponent::UNewInventoryComponent()
 void UNewInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 UBaseItem* UNewInventoryComponent::FindMatchingItem(UBaseItem* ItemIn) const
 {
-	if(ItemIn)
+	if (ItemIn)
 	{
-		if(InventoryContents.Contains(ItemIn))
+		for (const TObjectPtr<UBaseItem>& Item : InventoryContents)
 		{
-			return ItemIn;
+			if (Item->ID == ItemIn->ID) // Ensure this compares the unique identifiers correctly
+				{
+				return Item.Get();
+				}
 		}
 	}
 	return nullptr;
 }
+
 
 UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
 {
@@ -45,6 +46,14 @@ UBaseItem* UNewInventoryComponent::FindNextItemByID(UBaseItem* ItemIn) const
 			return *Result;
 		}
 	}
+	// Assuming UBaseItem has a ToString method that returns FString
+	FString InventoryDetails;
+	for (const TObjectPtr<UBaseItem>& Item : InventoryContents)
+	{
+		InventoryDetails += Item->ToString() + TEXT(", ");
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("InventoryContents: %s"), *InventoryDetails);
 	return nullptr;
 }
 
@@ -73,6 +82,8 @@ void UNewInventoryComponent::RemoveSingleInstanceOfItem(UBaseItem* ItemToRemove)
 {
 	InventoryContents.RemoveSingle(ItemToRemove);
 	//Delegate that UI listens to.
+	UE_LOG(LogTemp, Warning, TEXT("Item was removed: %s"), *ItemToRemove->ID.ToString());
+
 	OnInventoryUpdated.Broadcast();
 }
 
@@ -96,6 +107,18 @@ void UNewInventoryComponent::SplitExistingStack(UBaseItem* ItemIn, const int32 A
 		RemoveAmountOfItem(ItemIn, AmountToSplit);
 		AddNewItem(ItemIn, AmountToSplit);
 	}
+}
+
+bool UNewInventoryComponent::HasItemByID(FName ID)
+{
+	for (auto Element : InventoryContents)
+	{
+		if (Element->ID.IsEqual(ID))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 FItemAddResult UNewInventoryComponent::HandleNonStackableItems(UBaseItem* InputItem, int32 RequestedAddAmount)
@@ -187,10 +210,12 @@ FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 
 		if(StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
 		{
+			OnInventoryUpdated.Broadcast();
 			return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
 				FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
 				InputItem->TextData.Name,
 				StackableAmountAdded));
+			
 		}
 
 		if(StackableAmountAdded <= 0)

@@ -10,13 +10,16 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Cupcake/Actors/HealthComponent.h"
 #include "Cupcake/Items/Interactable.h"
 #include "Cupcake/Items/Item.h"
 #include "DrawDebugHelpers.h"
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
 #include "Cupcake/World/Pickup.h"
+#include "EngineUtils.h"  
+#include "Cupcake/TheMapObject.h"
+#include "Cupcake/Actors/AttributeComponent.h"
+
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -68,28 +71,39 @@ ACupcakeCharacter::ACupcakeCharacter()
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 
-	// Add Health Component
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+
+	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+}
+
+float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void ACupcakeCharacter::OnDeath_Implementation()
 {
+	IDamageableInterface::OnDeath_Implementation();
+	
 	Destroy();
 }
 
-
 void ACupcakeCharacter::Attack()
-{
+{	
 	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
 	if (!Weapon) return;
+
+	if (!PlayerInventory->HasItemByID("axe")) return;
     
 	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
 	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
 	{
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
+		//Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
-
+	
+	Weapon->SetOwner(this);
 	Weapon->EnableWeapon(); // Enable the weapon
 
 	// Set a timer to disable the weapon after a short duration, simulating an attack duration
@@ -123,6 +137,10 @@ void ACupcakeCharacter::BeginPlay()
 		// Optionally, attach the weapon to the character
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
 
+		FRotator CurrentRotation = Weapon->GetActorRotation();
+		CurrentRotation.Yaw += 90.0f;
+		Weapon->SetActorRotation(CurrentRotation);
+		
 		Weapon->DisableWeapon();
 	}
 
@@ -158,30 +176,27 @@ void ACupcakeCharacter::PerformInteractionCheck()
 	FVector TraceStart{GetActorLocation()};
 	FVector ForwardVector = GetActorForwardVector();
 	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
-	
-		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 1.0f, 0, 10.0f);
-	
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(this);
-		FHitResult TraceHit;
 
-	
-		if(GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	FHitResult TraceHit;
+
+	if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 		{
-			if(TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+			if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
 			{
-				if(TraceHit.GetActor() != InteractionData.CurrentInteractable)
-				{
-					FoundInteractable(TraceHit.GetActor());
-					return;
-				}
+				FoundInteractable(TraceHit.GetActor());
+				return;
+			}
 
-				if(TraceHit.GetActor() == InteractionData.CurrentInteractable)
-				{
-					return;
-				}
+			if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+			{
+				return;
 			}
 		}
+	}
 	NoInteractableFound();
 }
 
@@ -224,28 +239,55 @@ void ACupcakeCharacter::NoInteractableFound()
 	}
 }
 
+void ACupcakeCharacter::UpdateInteraction()
+{
+	if(TargetInteractable && InteractionData.CurrentInteractable)
+	{
+		float TotalDuration = TargetInteractable->InteractableData.InteractionDuration;
+		float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(TimerHandle_Interaction);
+		float Progress = ElapsedTime / TotalDuration;
+		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
+		
+		if(HUD)
+		{
+			HUD->UpdateInteractionProgress(Progress);
+		}
+	}
+}
+
 void ACupcakeCharacter::BeginInteract()
 {
-	// verify nothing has changed with the interactable state since beginning interaction
+	// verifiera att ingenting har ändrats med interactable state sedan vi började interaktionen.
 	PerformInteractionCheck();
+	
 
-	if(InteractionData.CurrentInteractable)
+	if (InteractionData.CurrentInteractable)
 	{
-		if(IsValid(TargetInteractable.GetObject()))
+		if (IsValid(TargetInteractable.GetObject()))
 		{
 			TargetInteractable->BeginInteract();
-
-			if(FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+			
+			// om InteractionDuration nästan är 0 så kallar vi på Interact direkt.
+			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
 			{
 				Interact();
 			}
 			else
 			{
+				// om interactionduration är valid och över 0.1f så startar en timer
+				//När timern är klar så kallar vi på interact
 				GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
-					this,
-					&ACupcakeCharacter::Interact,
-					TargetInteractable->InteractableData.InteractionDuration,
-					false);
+				                                this,
+				                                &ACupcakeCharacter::Interact,
+				                                TargetInteractable->InteractableData.InteractionDuration,
+				                                false);
+
+				GetWorldTimerManager().SetTimer(TimerHandle_ProgressUpdate,
+												this,
+												&ACupcakeCharacter::UpdateInteraction,
+												.01f,
+												true);
+				
 			}
 		}
 	}
@@ -254,6 +296,7 @@ void ACupcakeCharacter::BeginInteract()
 void ACupcakeCharacter::EndInteract()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
 	if(IsValid(TargetInteractable.GetObject()))
 	{
 		TargetInteractable->EndInteract();
@@ -263,6 +306,7 @@ void ACupcakeCharacter::EndInteract()
 void ACupcakeCharacter::Interact()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
+	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
 	if(IsValid(TargetInteractable.GetObject()))
 	{
 		TargetInteractable->Interact(this);
@@ -296,14 +340,14 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 
+		//Interact
 		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
 		PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
 
+		//UI
 		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
 		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
-
-
-		
+		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
 
 
 		/* Looking
@@ -405,6 +449,15 @@ void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDr
 	}
 }
 
+void ACupcakeCharacter::RemoveItemFromInventory(UBaseItem* ItemToRemove, const int32 QuantityToRemove)
+{
+	if(PlayerInventory->FindMatchingItem(ItemToRemove))
+	{
+		PlayerInventory->RemoveAmountOfItem(ItemToRemove, QuantityToRemove);
+		UE_LOG(LogTemp, Warning, TEXT("ItemToRemove: %p was successfully removed!"), ItemToRemove);
+	}
+}
+
 void ACupcakeCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -438,5 +491,31 @@ void ACupcakeCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+ATheMapObject* ACupcakeCharacter::FindMapObject()
+{
+	// Kontrollera att vi har en giltig värld att söka i
+	if (GetWorld())
+	{
+		// Skapa en actor-iterator för ATheMapObject
+		for (TActorIterator<ATheMapObject> It(GetWorld()); It; ++It)
+		{
+			// Returnera den första hittade ATheMapObject-instansen
+			return *It;
+		}
+	}
+	return nullptr;  // Returnera nullptr om ingen ATheMapObject hittades
+}
+
+void ACupcakeCharacter::ToggleMapViaKey()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ToggleMapVis körs utanpå"));
+	ATheMapObject* MapObject = FindMapObject();
+	if (MapObject && MapObject->bCanToggleMap)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ToggleMapVis körs inuti"));
+		MapObject->ToggleMapVisibility();
 	}
 }

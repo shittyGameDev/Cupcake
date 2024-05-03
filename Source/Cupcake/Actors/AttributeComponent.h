@@ -21,21 +21,21 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-<<<<<<< HEAD:Source/Cupcake/Actors/HealthComponent.h
+<<<<<<<< HEAD:Source/Cupcake/Actors/HealthComponent.h
 	bool RegenerateHealth(float HealthAmount);
 	
 	void DoDamage(float DamageAmount);
 };
-=======
+========
 private:
 	// Current Health
 	UPROPERTY(EditAnywhere, Category="Actor Attributes")
 	float Health = 100.f;
-	
+	 
 	UPROPERTY(EditAnywhere, Category="Actor Attributes")
 	float MaxHealth = 100.f;
 
 public:
 	void ReceiveDamage(float Damage);
 };
->>>>>>> main:Source/Cupcake/Actors/AttributeComponent.h
+>>>>>>>> main:Source/Cupcake/Actors/AttributeComponent.h

@@ -2,6 +2,9 @@
 
 
 #include "InterfaceTestActor.h"
+#include "Cupcake/Items/BaseItem.h"
+#include "PlayerSystem/CupcakeCharacter.h"
+#include "PlayerSystem/NewInventoryComponent.h"
 
 // Sets default values
 AInterfaceTestActor::AInterfaceTestActor()
@@ -16,13 +19,35 @@ AInterfaceTestActor::AInterfaceTestActor()
 
 }
 
+
 // Called when the game starts or when spawned
 void AInterfaceTestActor::BeginPlay()
 {
 	Super::BeginPlay();
 
 	InteractableData = InstanceInteractableData;
+
+	InitializeCraftedItem(UBaseItem::StaticClass(), ItemQuantity);
 }
+
+void AInterfaceTestActor::InitializeCraftedItem(const TSubclassOf<UBaseItem> BaseClass, const int32 InQuantity)
+{
+	if(ItemDataTable && !DesiredItemID.IsNone())
+	{
+		const FItemData* ItemData = ItemDataTable->FindRow<FItemData>(DesiredItemID, DesiredItemID.ToString());
+
+		ItemReference = NewObject<UBaseItem>(this, BaseClass);
+
+		ItemReference->ID = ItemData->ID;
+		ItemReference->ItemType = ItemData->ItemType;
+		ItemReference->TextData = ItemData->TextData;
+		ItemReference->NumericData = ItemData->NumericData;
+		ItemReference->AssetData = ItemData->AssetData;
+
+		InQuantity <= 0 ? ItemReference->SetQuantity(1) : ItemReference->SetQuantity(InQuantity);
+	}
+}
+
 
 // Called every frame
 void AInterfaceTestActor::Tick(float DeltaTime)
@@ -47,18 +72,39 @@ void AInterfaceTestActor::EndFocus()
 	}
 }
 
-void AInterfaceTestActor::BeginInteract()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Calling BeginInteract on Interface test actor"));
-}
-
-void AInterfaceTestActor::EndInteract()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Calling EndInteract on Interface test actor"));
-}
-
 void AInterfaceTestActor::Interact(ACupcakeCharacter* PlayerCharacter)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Calling Interact on Interface test actor"));
+	if(!IsPendingKillPending())
+	{
+		if(ItemReference)
+		{
+			if(UNewInventoryComponent* PlayerInventory = PlayerCharacter->GetInventory())
+			{
+				const FItemAddResult AddResult = PlayerInventory->HandleAddItem(ItemReference);
+
+				switch (AddResult.OperationResult)
+				{
+				case EItemAddResult::Iar_NoItemAdded:
+					break;
+				case EItemAddResult::Iar_PartialAmountItemAdded:
+					PlayerCharacter->UpdateInteractionWidget();
+					break;
+				case EItemAddResult::Iar_AllItemAdded:
+					break;
+				}
+
+				UE_LOG(LogTemp, Warning, TEXT("%s"), *AddResult.ResultMessage.ToString());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Player inventory component is null!"));
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Puckip internal item reference was somehow null!"));
+		}
+	}
 }
+
 

@@ -85,6 +85,7 @@ void ABaseHUD::HideInteractionWidget() const
 
 void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData) const
 {
+	UE_LOG(LogTemp, Warning, TEXT("Consider it updated"));
 	if(InteractionWidget)
 	{
 		if(InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)

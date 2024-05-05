@@ -66,10 +66,9 @@ class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 	UInventoryComponent* InventoryComponent;
 
 
-	/** Look Input Action 
+	//Look Input Action 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
-	*/
 
 public:
 	ACupcakeCharacter();

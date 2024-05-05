@@ -168,11 +168,6 @@ void ACupcakeCharacter::BeginPlay()
 void ACupcakeCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	/*if(GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
-	{
-		PerformInteractionCheck();
-	}*/
 }
 
 void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -346,9 +341,8 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
 
 
-		/* Looking
+		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);
-		*/
 
 		// Combat
 		PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACupcakeCharacter::Attack);
@@ -363,14 +357,14 @@ void ACupcakeCharacter::DisableMovement()
 {
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	//bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = false;
 }
 
 
 void ACupcakeCharacter::EnableMovement()
 {
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-	//bUseControllerRotationYaw = true;
+	bUseControllerRotationYaw = true;
 }
 
 void ACupcakeCharacter::OnRemoveItem()

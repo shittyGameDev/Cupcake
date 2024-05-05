@@ -3,25 +3,38 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Cupcake/Items/InteractionInterface.h"
+#include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 #include "GameFramework/Actor.h"
-#include "Items/InteractionInterface.h"
-#include "InterfaceTestActor.generated.h"
+#include "CraftingBenchActor.generated.h"
 
 class UBaseItem;
 class UNewInventoryComponent;
 class UCraftingWidget;
 
 UCLASS()
-class CUPCAKE_API AInterfaceTestActor : public AActor, public IInteractionInterface
+class CUPCAKE_API ACraftingBenchActor : public AActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AInterfaceTestActor();
+	ACraftingBenchActor();
 	
 	void InitializeCraftedItem(const TSubclassOf<UBaseItem> BaseClass, const int32 InQuantity);
+	void InitializeCraftedItemCost(TSubclassOf<UBaseItem> BaseClass, int32 InQuantity);
 
+	UPROPERTY(EditAnywhere, Category="Crafting values")
+	int32 CraftingCost;
+
+	UPROPERTY(EditAnywhere, Category="Crafting values")
+	FName RecipeItemID;
+
+	UPROPERTY(VisibleAnywhere, Category="Crafting Reference")
+	UBaseItem* RecipeItem;
+
+	UPROPERTY(EditAnywhere, Category="Crafting values")
+	int32 CraftedAmount;
 
 protected:
 	UPROPERTY(EditAnywhere, Category="Test Actor")
@@ -53,5 +66,7 @@ protected:
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
-	
+	bool IsValidItemAndRecipe() const;
+	void HandleItemRemovalAndAddition(ACupcakeCharacter* PlayerCharacter, UNewInventoryComponent* PlayerInventory);
+	void HandleAddResult(const FItemAddResult& AddResult, ACupcakeCharacter* PlayerCharacter) const;
 };

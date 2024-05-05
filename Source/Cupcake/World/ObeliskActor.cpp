@@ -111,14 +111,6 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ItemRef was somehow null"));
 	}
-
-	FString InventoryDetails;
-	for (const TObjectPtr<UBaseItem>& Item : InventoryReference->GetInventoryContents())
-	{
-		InventoryDetails += Item->ToString() + TEXT(", ");
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("InventoryContents: %s"), *InventoryDetails);
 }
 
 bool AObeliskActor::CheckIfDonationReached(const int32 ItemsDonated)

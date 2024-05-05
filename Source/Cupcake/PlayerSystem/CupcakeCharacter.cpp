@@ -58,6 +58,11 @@ ACupcakeCharacter::ACupcakeCharacter()
 	PlayerInventory = CreateDefaultSubobject<UNewInventoryComponent>("PlayerInventory");
 	PlayerInventory->SetSlotsCapacity(20);
 
+	InteractionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionSphere"));
+	InteractionSphere->SetupAttachment(RootComponent);
+	InteractionSphere->SetSphereRadius(150.f);  // Set as needed for your interaction range
+	InteractionSphere->SetCollisionProfileName(TEXT("Trigger"));
+
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
@@ -125,6 +130,10 @@ void ACupcakeCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	InteractionSphere->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
+	InteractionSphere->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
+
+
 	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());
 	HUD = Cast<ABaseHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 
@@ -159,46 +168,28 @@ void ACupcakeCharacter::BeginPlay()
 void ACupcakeCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	if(GetWorld()->TimeSince(InteractionData.LastInteractionCheckTime) > InteractionCheckFrequency)
-	{
-		PerformInteractionCheck();
-	}
 }
 
-
-void ACupcakeCharacter::PerformInteractionCheck()
+void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
-
-	//Anledningen till att vi använder oss av initialisering via {} är för att det garanterar typen som vi använder blir
-	//Initialiserade korrekt. Annars är koden väldigt basic linetrace skapande. (Victor)
-	FVector TraceStart{GetActorLocation()};
-	FVector ForwardVector = GetActorForwardVector();
-	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
-
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
-	FHitResult TraceHit;
-
-	if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	if (OtherActor && OtherActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 	{
-		if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+		if (OtherActor != InteractionData.CurrentInteractable)
 		{
-			if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
-			{
-				FoundInteractable(TraceHit.GetActor());
-				return;
-			}
-
-			if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
-			{
-				return;
-			}
+			FoundInteractable(OtherActor);
+			return;
 		}
 	}
-	NoInteractableFound();
 }
+
+void ACupcakeCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor == InteractionData.CurrentInteractable)
+	{
+		NoInteractableFound();
+	}
+}
+
 
 void ACupcakeCharacter::FoundInteractable(AActor* NewInteractable)
 {
@@ -258,7 +249,7 @@ void ACupcakeCharacter::UpdateInteraction()
 void ACupcakeCharacter::BeginInteract()
 {
 	// verifiera att ingenting har ändrats med interactable state sedan vi började interaktionen.
-	PerformInteractionCheck();
+	//PerformInteractionCheck();
 	
 
 	if (InteractionData.CurrentInteractable)
@@ -350,9 +341,8 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
 
 
-		/* Looking
+		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);
-		*/
 
 		// Combat
 		PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACupcakeCharacter::Attack);
@@ -367,14 +357,14 @@ void ACupcakeCharacter::DisableMovement()
 {
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	//bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = false;
 }
 
 
 void ACupcakeCharacter::EnableMovement()
 {
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-	//bUseControllerRotationYaw = true;
+	bUseControllerRotationYaw = true;
 }
 
 void ACupcakeCharacter::OnRemoveItem()
@@ -519,3 +509,38 @@ void ACupcakeCharacter::ToggleMapViaKey()
 		MapObject->ToggleMapVisibility();
 	}
 }
+
+// KOD ÄR BASICALY OBSELETE MEN SPARAR DET HÄR UTIFALL ATT.
+
+/*void ACupcakeCharacter::PerformInteractionCheck()
+{
+	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
+
+	//Anledningen till att vi använder oss av initialisering via {} är för att det garanterar typen som vi använder blir
+	//Initialiserade korrekt. Annars är koden väldigt basic linetrace skapande. (Victor)
+	FVector TraceStart{GetActorLocation()};
+	FVector ForwardVector = GetActorForwardVector();
+	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	FHitResult TraceHit;
+
+	if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	{
+		if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
+		{
+			if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
+			{
+				FoundInteractable(TraceHit.GetActor());
+				return;
+			}
+
+			if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
+			{
+				return;
+			}
+		}
+	}
+	NoInteractableFound();
+}*/

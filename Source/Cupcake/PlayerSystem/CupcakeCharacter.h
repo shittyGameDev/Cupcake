@@ -161,7 +161,7 @@ protected:
 
 	FInteractionData InteractionData;
 
-	void PerformInteractionCheck();
+	//void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
 	void UpdateInteraction();

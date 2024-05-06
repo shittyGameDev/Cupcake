@@ -8,7 +8,9 @@
 #include "InventoryTooltip.h"
 #include "ItemDragDropOperation.h"
 #include "Components/Image.h"
+#include "Cupcake/Actors/AttributeComponent.h"
 #include "Cupcake/Items/BaseItem.h"
+#include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 
 void UInventoryItemSlot::NativeOnInitialized()
 {
@@ -98,13 +100,22 @@ bool UInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
 
+
+//Denna metod ska reworkas i och med att vi kollar på ItemDataStructs. Allt man ser här är EXTREMT TILLFÄLLIGT i mån om tid. (Victor)
 void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	if(ItemReference)
 	{
 		if(ItemReference->ID.IsEqual("test_001"))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("item is indeed test_001"));
+			PlayerCharacter = Cast<ACupcakeCharacter>(ItemReference->OwningInventory->GetOwner());
+			if(PlayerCharacter->Attributes->RegenerateHealth(10.f))
+			{
+				PlayerCharacter->RemoveItemFromInventory(ItemReference, 1);
+				UE_LOG(LogTemp, Warning, TEXT("New Health: %f"), PlayerCharacter->Attributes);
+				UE_LOG(LogTemp, Warning, TEXT("Used berry"));
+			}
+			
 		}
 	}
 }

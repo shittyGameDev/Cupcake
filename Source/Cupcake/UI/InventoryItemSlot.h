@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryItemSlot.generated.h"
 
+class USubMenu;
 class UTextBlock;
 class UImage;
 class UBorder;
@@ -31,6 +32,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
 	TSubclassOf<UInventoryTooltip> ToolTipClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
+	TSubclassOf<USubMenu> SubMenuClass;
 	
 	UPROPERTY(VisibleAnywhere, Category="Inventory Slot")
 	UBaseItem* ItemReference;
@@ -52,4 +56,5 @@ protected:
 		UDragDropOperation*& OutOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 		UDragDropOperation* InOperation) override;
+	void OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 };

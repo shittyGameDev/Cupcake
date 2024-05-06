@@ -7,6 +7,7 @@
 #include "NewInventoryComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
+DECLARE_MULTICAST_DELEGATE(FOnKeyItemAdded);
 
 class UBaseItem;
 
@@ -72,6 +73,7 @@ class CUPCAKE_API UNewInventoryComponent : public UActorComponent
 
 public:	
 
+	FOnKeyItemAdded OnKeyItemAdded;
 	FOnInventoryUpdated OnInventoryUpdated;
 	
 	UNewInventoryComponent();

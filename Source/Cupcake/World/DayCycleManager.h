@@ -49,11 +49,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	UPROPERTY(EditAnywhere)
-	UStaticMesh* CubeMesh;
+	UStaticMesh* TreeMesh;
 	UPROPERTY(EditAnywhere)
 	FVector SpawnTreeLocation;
 	UPROPERTY(EditAnywhere)
 	FRotator SpawnRotation;
+	UPROPERTY(EditAnywhere)
+	AStaticMeshActor* NoteMesh;
 
 	UPROPERTY(EditAnywhere)
 	float SleepDurationInHours = 7.f;
@@ -71,6 +73,11 @@ protected:
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Management")
 	TArray<FTimeEvent> TimeEvents;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsTutorialDay = true;
+		
+	
 	
 public:	
 	// Called every frame
@@ -87,19 +94,25 @@ public:
 	int GetMinutes();
 
 	// Functions
-	void ShiftTime(float Time);
-	void Sleep();
-	virtual void Interact_Implementation();
-
+	//void ShiftTime(float Time);
+	//void Sleep();
+	//virtual void Interact_Implementation();
+	void EndTutorial();
+	//void UpdateLighting(float DeltaTime);
+	//FLinearColor CalculateLightColor(float DayProgress);
+	
 	bool CanSleep();
 	void DayTransistion();
 	void BindTimeEvent(FTimeEvent& Event);
+	void ShiftDay();
 
 	void RegisterTimeEvent(FTimeEvent& NewEvent);
 	UFUNCTION()
 	void SpawnTreeEvent();
 	UFUNCTION()
 	void ApplyInsanity();
+	UFUNCTION()
+	void SetNoteActive();
 
 	UFUNCTION(BlueprintCallable)
 	float GetElapsedTime() const;

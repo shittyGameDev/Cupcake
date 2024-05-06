@@ -35,3 +35,12 @@ void UAttributeComponent::ReceiveDamage(float Damage)
 	}
 }
 
+float UAttributeComponent::GetHealth() const
+{
+	return Health;
+}
+
+float UAttributeComponent::GetMaxHealth() const
+{
+	return MaxHealth;
+}

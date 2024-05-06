@@ -234,6 +234,11 @@ void UNewInventoryComponent::AddNewItem(UBaseItem* Item, const int32 AmountToAdd
 {
 	UBaseItem* NewItem;
 
+	if(Item->ID.IsEqual("Pickaxe"))
+	{
+		OnKeyItemAdded.Broadcast();
+	}
+
 	if(Item->bIsCopy|| Item->bIsPickup)
 	{
 		//If the item is already a copy, or is a world pickup

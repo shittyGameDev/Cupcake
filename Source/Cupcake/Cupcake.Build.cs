@@ -18,8 +18,7 @@ public class Cupcake : ModuleRules
 			"UMG", 
 			"Slate", 
 			"SlateCore",
-			"Niagara", 
-			"NavigationSystem"
+			"Niagara"
 		});
 	}
 }

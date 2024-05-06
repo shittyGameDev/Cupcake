@@ -4,21 +4,32 @@
 #include "GangAIManager.h"
 
 #include "GangAICharacter.h"
+#include "Components/BillboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
-void UGangAIManager::InitiateGroupChase()
+AGangAIManager::AGangAIManager()
 {
+	BillboardComponent = CreateDefaultSubobject<UBillboardComponent>(TEXT("BillboardComponent"));
+	RootComponent = BillboardComponent;
+}
+
+void AGangAIManager::InitiateGroupChase()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Initiating group chase for %d characters"), RegisteredAICharacters.Num());
+
 	for (auto& AIChar : RegisteredAICharacters)
 	{
-		if (AIChar && !AIChar->IsChasing())
+		if (AIChar)
 		{
+			// Tvingar alla karaktärer att starta eller uppdatera sin jakt
+			UE_LOG(LogTemp, Warning, TEXT("AI Character %s is now chasing"), *AIChar->GetName());
 			AIChar->StartChasing(UGameplayStatics::GetPlayerPawn(AIChar, 0));
 		}
 	}
 }
 
-void UGangAIManager::RegisterAICharacter(AGangAICharacter* AICharacter)
+void AGangAIManager::RegisterAICharacter(AGangAICharacter* AICharacter)
 {
 	RegisteredAICharacters.AddUnique(AICharacter);
 }

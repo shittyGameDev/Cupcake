@@ -20,41 +20,40 @@ ADayCycleManager::ADayCycleManager()
 void ADayCycleManager::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
 	
 	for (FTimeEvent& Event : TimeEvents)
 	{
 		BindTimeEvent(Event);
 	}
 
-	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
+	UNewInventoryComponent* InventoryComponent = PlayerCharacter->GetInventory();
+	if (InventoryComponent)
+	{
+		InventoryComponent.OnKey
+	}
 }
 
 // Called every frame
 void ADayCycleManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	ElapsedTime += DeltaTime * AccelerateTime;
-	//UE_LOG(LogTemp, Warning, TEXT("Time in hours: %i"), GetHour());
-	/*if (!bHasSlept && ElapsedTime > 5 * AccelerateTime)
-	{
-		Sleep();
-		bHasSlept = true;
-	}*/
-	//UE_LOG(LogTemp, Warning, TEXT("Time: %f"), ElapsedTime);
+	/*
 	if (ElapsedTime >= SECONDS_IN_A_DAY)
 	{
 		DayCycle++;
 		ElapsedTime = 0;
 		UE_LOG(LogTemp, Display, TEXT("New Day %i, Time: %f"), GetCurrentDayNumber(), ElapsedTime);
 		DayTransistion();
-	}
+	}*/
 	float DayProgress = ElapsedTime / SECONDS_IN_A_DAY;
 	float Rotation = 360.f * DayProgress;
-
+	/*
 	if (SkyLight && SkyLight->GetLightComponent() && DirectionalLight && DirectionalLight->GetLightComponent())
 	{
 		// Uppdatera rotation
@@ -68,7 +67,7 @@ void ADayCycleManager::Tick(float DeltaTime)
 		// Uppdatera intensitet
 		float Intensity = FMath::Abs(FMath::Sin(FMath::DegreesToRadians(Rotation)));
 		SkyLight->GetLightComponent()->SetIntensity(Intensity);
-	}
+	}*/
 
 	//check för om ett event ska ske nu
 	int CurrentDay = GetCurrentDayNumber();
@@ -103,7 +102,7 @@ int ADayCycleManager::GetMinutes()
 {
 	return static_cast<int>((ElapsedTime / 60)) % 60;
 }
-
+/*
 void ADayCycleManager::ShiftTime(float Time)
 {
 	float OldElapsedTime = ElapsedTime; // Spara det gamla värdet för att jämföra
@@ -184,6 +183,11 @@ void ADayCycleManager::Interact_Implementation()
 		LastSleepDay = GetCurrentDayNumber();
 	}
 }
+bool ADayCycleManager::CanSleep()
+{
+	return GetCurrentDayNumber() > LastSleepDay;
+}
+*/
 
 void ADayCycleManager::RegisterTimeEvent(FTimeEvent& NewEvent)
 {
@@ -191,10 +195,7 @@ void ADayCycleManager::RegisterTimeEvent(FTimeEvent& NewEvent)
 	BindTimeEvent(NewEvent);
 }
 
-bool ADayCycleManager::CanSleep()
-{
-	return GetCurrentDayNumber() > LastSleepDay;
-}
+
 
 void ADayCycleManager::DayTransistion()
 {
@@ -203,7 +204,7 @@ void ADayCycleManager::DayTransistion()
 		UUserWidget* DayTranistionWidget = CreateWidget<UUserWidget>(GetWorld(), DayTransitionWidgetClass);
 		if (DayTranistionWidget != nullptr)
 		{
-			PlayerCharacter->DisableMovement();
+			//PlayerCharacter->DisableMovement();
 			DayTranistionWidget->AddToViewport(1000);
 			if(UTextBlock* DayText = Cast<UTextBlock>(DayTranistionWidget->GetWidgetFromName(TEXT("DayText"))))
 			{
@@ -214,7 +215,7 @@ void ADayCycleManager::DayTransistion()
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, DayTranistionWidget]()
 			{
 				DayTranistionWidget->RemoveFromParent();
-				PlayerCharacter->EnableMovement();
+				//PlayerCharacter->EnableMovement();
 			}, 3.0f, false);
 		}
 	}
@@ -226,6 +227,12 @@ void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
 	{
 		Event.EventDelegate.BindUFunction(this, FName(*Event.FunctionName));
 	}
+}
+
+void ADayCycleManager::ShiftDay()
+{
+	DayCycle++;
+	DayTransistion();
 }
 
 void ADayCycleManager::SpawnTreeEvent()

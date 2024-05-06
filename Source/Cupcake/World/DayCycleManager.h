@@ -87,14 +87,14 @@ public:
 	int GetMinutes();
 
 	// Functions
-	void ShiftTime(float Time);
-	void Sleep();
-	virtual void Interact_Implementation();
+	//void ShiftTime(float Time);
+	//void Sleep();
+	//virtual void Interact_Implementation();
 
-	bool CanSleep();
+	//bool CanSleep();
 	void DayTransistion();
 	void BindTimeEvent(FTimeEvent& Event);
-
+	void ShiftDay();
 	void RegisterTimeEvent(FTimeEvent& NewEvent);
 	UFUNCTION()
 	void SpawnTreeEvent();

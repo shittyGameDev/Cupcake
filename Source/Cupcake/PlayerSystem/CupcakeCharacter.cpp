@@ -503,7 +503,7 @@ void ACupcakeCharacter::ToggleMapViaKey()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ToggleMapVis körs utanpå"));
 	ATheMapObject* MapObject = FindMapObject();
-	if (MapObject && MapObject->bCanToggleMap)
+	if (MapObject)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ToggleMapVis körs inuti"));
 		MapObject->ToggleMapVisibility();

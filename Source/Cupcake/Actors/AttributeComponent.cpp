@@ -23,14 +23,6 @@ void UAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UAttributeComponent::RegenerateHealth(float HealthAmount)
-{
-	if (Health == MaxHealth) return false;
-
-	Health = FMath::Clamp(Health + HealthAmount, 0.f, MaxHealth);
-	return true;
-}
-
 void UAttributeComponent::ReceiveDamage(float Damage)
 {
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
@@ -41,4 +33,14 @@ void UAttributeComponent::ReceiveDamage(float Damage)
 	{
 		IDamageableInterface::Execute_OnDeath(GetOwner());
 	}
+}
+
+float UAttributeComponent::GetHealth() const
+{
+	return Health;
+}
+
+float UAttributeComponent::GetMaxHealth() const
+{
+	return MaxHealth;
 }

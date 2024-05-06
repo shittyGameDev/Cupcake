@@ -33,7 +33,7 @@ void ADayCycleManager::BeginPlay()
 	UNewInventoryComponent* InventoryComponent = PlayerCharacter->GetInventory();
 	if (InventoryComponent)
 	{
-		InventoryComponent.OnKey
+		
 	}
 }
 

@@ -22,10 +22,12 @@ void ADonationActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	bIsMoving = false;
+
 	if(ObeliskActor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("DESTROYING ACTOR"));
-		ObeliskActor->OnDonationGoalReached.AddUObject(this, &ADonationActor::DestroyActor);
+		ObeliskActor->OnDonationGoalReached.AddUObject(this, &ADonationActor::DonationGoalAction);
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Obelisk Actor: %p"), ObeliskActor);
@@ -36,11 +38,37 @@ void ADonationActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Handle the movement over time
+	if (bIsMoving)
+	{
+		if (MoveTimer < MoveDuration)
+		{
+			// Increment the timer
+			MoveTimer += DeltaTime;
+
+			// Interpolate the current location to the target location
+			FVector NewLocation = FMath::Lerp(GetActorLocation(), TargetLocation, MoveTimer / MoveDuration);
+			SetActorLocation(NewLocation);
+
+			// Check if the move is complete
+			if (MoveTimer >= MoveDuration)
+			{
+				bIsMoving = false;
+				MoveTimer = 0.0f;  // Reset the timer
+			}
+		}
+	}
+
 }
 
-void ADonationActor::DestroyActor()
+void ADonationActor::DonationGoalAction()
 {
-	UE_LOG(LogTemp, Warning, TEXT("DESTROYING ACTOR"));
-	Destroy();
+	if (!bIsMoving)  // Ensure that we are not already moving
+		{
+		TargetLocation = GetActorLocation() + FVector(0, 0, MoveDistance);
+		MoveTimer = 0.0f;  // Reset the timer
+		bIsMoving = true;  // Start moving
+		}
 }
+
 

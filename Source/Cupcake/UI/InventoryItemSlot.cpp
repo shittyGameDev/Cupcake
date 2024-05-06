@@ -2,6 +2,7 @@
 
 
 #include "InventoryItemSlot.h"
+#include "SubMenu.h"
 
 #include "DragItemVisual.h"
 #include "InventoryTooltip.h"
@@ -52,6 +53,12 @@ FReply UInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 		return Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
 	}
 
+	/*else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+	{
+		OnRightMouseButtonClick(InGeometry, InMouseEvent);
+		return FReply::Handled();
+	}*/
+
 	// submenu on right click will happen here
 
 	return Reply.Unhandled();
@@ -90,3 +97,24 @@ bool UInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
 {
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
+
+/*void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	// Create the submenu widget (assuming UMySubMenu is a UUserWidget)
+	USubMenu* SubMenu = CreateWidget<USubMenu>(this, SubMenuClass);
+    
+	if (SubMenu)
+	{
+		// Set the position of the submenu
+		FVector2D MenuPosition = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
+
+		SubMenu->SetPositionInViewport(MenuPosition);
+
+		
+		if (!SubMenu->IsInViewport())
+		{
+			SubMenu->AddToViewport();
+		}
+	}
+}*/
+

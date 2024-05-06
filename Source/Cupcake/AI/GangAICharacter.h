@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Patrol();
 
+	UFUNCTION(BlueprintCallable)
+	void ReturnToPatrol();
+
 	bool IsChasing() const { return bIsChasing; }
 
 	FVector GetRandomPatrolPoint();
@@ -44,6 +47,8 @@ public:
 	FVector SpawnLocation;
 	UPROPERTY(EditAnywhere)
 	float PatrolRadius;
+	UPROPERTY(EditAnywhere)
+	float ChaseDistance;
 
 protected:
 

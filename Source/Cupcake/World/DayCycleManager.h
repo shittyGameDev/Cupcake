@@ -54,7 +54,8 @@ protected:
 	FVector SpawnTreeLocation;
 	UPROPERTY(EditAnywhere)
 	FRotator SpawnRotation;
-
+	UPROPERTY(EditAnywhere, Category = "SpawnPoint")
+	FVector PlayerSpawnPoint;
 	UPROPERTY(EditAnywhere)
 	float SleepDurationInHours = 7.f;
 
@@ -71,7 +72,8 @@ protected:
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Management")
 	TArray<FTimeEvent> TimeEvents;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Barrier")
+	TArray<AActor*> ActorsBarrier;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -100,7 +102,9 @@ public:
 	void SpawnTreeEvent();
 	UFUNCTION()
 	void ApplyInsanity();
-
+	UFUNCTION()
+	void RemoveTutorialBarrier();
+	
 	UFUNCTION(BlueprintCallable)
 	float GetElapsedTime() const;
 

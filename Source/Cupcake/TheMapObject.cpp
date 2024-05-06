@@ -73,25 +73,19 @@ void ATheMapObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 
 void ATheMapObject::ToggleMapVisibility()
 {
-	if (MapWidget && bCanToggleMap)
+	if (MapWidget)
 	{
 		bool bIsVisible = MapWidget->IsVisible();
 		ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 		if (bIsVisible)
 		{
 			MapWidget->SetVisibility(ESlateVisibility::Hidden);
-			if (Player)
-			{
-				Player->EnableMovement(); // Antag att EnableMovement är en funktion i ACupcakeCharacter
-			}
+
 		}
 		else
 		{
 			MapWidget->SetVisibility(ESlateVisibility::Visible);
-			if (Player)
-			{
-				Player->DisableMovement(); // Antag att DisableMovement är en funktion i ACupcakeCharacter
-			}
+
 		}
 	}
 }

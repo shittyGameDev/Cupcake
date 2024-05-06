@@ -7,6 +7,7 @@
 #include "GangAIManager.h"
 #include "NavigationSystem.h"
 #include "Cupcake/Actors/AttributeComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -20,6 +21,8 @@ AGangAICharacter::AGangAICharacter()
 	PatrolRadius = 500.0f;
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 	bIsChasing = false;
+
+	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 }
 
 // Called when the game starts or when spawned
@@ -47,18 +50,31 @@ void AGangAICharacter::BeginPlay()
 void AGangAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (bIsChasing)
+	{
+		AActor* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+		float DistanceToPlayer = FVector::Dist(Player->GetActorLocation(), GetActorLocation());
+        
+		if (DistanceToPlayer > ChaseDistance)
+		{
+			ReturnToPatrol();
+		}
+		else
+		{
+			AGangAIController* AIController = Cast<AGangAIController>(GetController());
+			if (AIController)
+			{
+				GetCharacterMovement()->MaxWalkSpeed = 300.f;
+				AIController->MoveToActor(Player, 5.0f, true);
+			}
+		}
+	}
 }
 
 void AGangAICharacter::StartChasing(AActor* Target)
 {
 	bIsChasing = true;
-	AGangAIController* AIController = Cast<AGangAIController>(GetController());
-	if (AIController)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AIcontroller hittas"));
-		AIController->MoveToActor(Target);
-	}
+	
 }
 
 float AGangAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -77,12 +93,12 @@ void AGangAICharacter::OnDamage_Implementation()
 {
 	if (!bIsChasing)
 	{
+		bIsChasing = true;
 		UE_LOG(LogTemp, Warning, TEXT("Börja jaga spelaren"));
-		StartChasing(UGameplayStatics::GetPlayerPawn(this, 0)); // Start chasing immediately on damage
 		if (AIManager)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("GRUPPEN ATTACKERA"));
-			AIManager->InitiateGroupChase(); // Trigger the group chase if this is the first instance to react
+			AIManager->InitiateGroupChase();  
 		}
 	}
 }
@@ -94,9 +110,20 @@ void AGangAICharacter::Patrol()
 		AAIController* AIController = Cast<AAIController>(GetController());
 		if (AIController)
 		{
+			GetCharacterMovement()->MaxWalkSpeed = 100.f;
 			FVector PatrolPoint = GetRandomPatrolPoint();
 			AIController->MoveToLocation(PatrolPoint);
 		}
+	}
+}
+
+void AGangAICharacter::ReturnToPatrol()
+{
+	bIsChasing = false;
+	AGangAIController* AIController = Cast<AGangAIController>(GetController());
+	if (AIController)
+	{
+		AIController->MoveToLocation(SpawnLocation, 5.0f, true);
 	}
 }
 

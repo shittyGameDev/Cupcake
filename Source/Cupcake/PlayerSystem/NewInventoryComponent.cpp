@@ -234,7 +234,14 @@ void UNewInventoryComponent::AddNewItem(UBaseItem* Item, const int32 AmountToAdd
 {
 	UBaseItem* NewItem;
 
-	if(Item->ID.IsEqual("Pickaxe"))
+	if(Item->ID.IsEqual("axe"))
+	{
+		OnKeyItemAdded.Broadcast();
+	} else if (Item->ID.IsEqual("caveItem"))
+	{
+		OnKeyItemAdded.Broadcast();
+	}
+	else if (Item->ID.IsEqual("hillItem"))
 	{
 		OnKeyItemAdded.Broadcast();
 	}

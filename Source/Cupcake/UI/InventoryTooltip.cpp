@@ -16,7 +16,7 @@ void UInventoryTooltip::NativeConstruct()
 	{
 	case EItemType::Wood:
 		ItemType->SetText(FText::FromString("Consumable"));
-		UsageText->SetVisibility(ESlateVisibility::Collapsed);
+		UsageText->SetVisibility(ESlateVisibility::Visible);
 		break;
 	case EItemType::Stone:
 		break;

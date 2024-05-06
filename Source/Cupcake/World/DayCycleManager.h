@@ -20,13 +20,13 @@ struct FTimeEvent
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
-	int Day = 0;
+	int Day;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
-	int Hour = 0;
+	int Hour;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
-	int Minute = 0;
+	int Minute;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
 	FString FunctionName;
@@ -49,14 +49,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	UPROPERTY(EditAnywhere)
-	UStaticMesh* TreeMesh;
+	UStaticMesh* CubeMesh;
 	UPROPERTY(EditAnywhere)
 	FVector SpawnTreeLocation;
 	UPROPERTY(EditAnywhere)
 	FRotator SpawnRotation;
-	UPROPERTY(EditAnywhere)
-	AStaticMeshActor* NoteMesh;
-
+	UPROPERTY(EditAnywhere, Category = "SpawnPoint")
+	FVector PlayerSpawnPoint;
 	UPROPERTY(EditAnywhere)
 	float SleepDurationInHours = 7.f;
 
@@ -73,12 +72,8 @@ protected:
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Management")
 	TArray<FTimeEvent> TimeEvents;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool bIsTutorialDay = true;
-		
-	
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Barrier")
+	TArray<AActor*> ActorsBarrier;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -97,23 +92,19 @@ public:
 	//void ShiftTime(float Time);
 	//void Sleep();
 	//virtual void Interact_Implementation();
-	void EndTutorial();
-	//void UpdateLighting(float DeltaTime);
-	//FLinearColor CalculateLightColor(float DayProgress);
-	
-	bool CanSleep();
+
+	//bool CanSleep();
 	void DayTransistion();
 	void BindTimeEvent(FTimeEvent& Event);
 	void ShiftDay();
-
 	void RegisterTimeEvent(FTimeEvent& NewEvent);
 	UFUNCTION()
 	void SpawnTreeEvent();
 	UFUNCTION()
 	void ApplyInsanity();
 	UFUNCTION()
-	void SetNoteActive();
-
+	void RemoveTutorialBarrier();
+	
 	UFUNCTION(BlueprintCallable)
 	float GetElapsedTime() const;
 

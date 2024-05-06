@@ -10,8 +10,8 @@
 
 AGangAIManager::AGangAIManager()
 {
-	BillboardComponent = CreateDefaultSubobject<UBillboardComponent>(TEXT("BillboardComponent"));
-	RootComponent = BillboardComponent;
+	//BillboardComponent = CreateDefaultSubobject<UBillboardComponent>(TEXT("BillboardComponent"));
+	//RootComponent = BillboardComponent;
 }
 
 void AGangAIManager::InitiateGroupChase()

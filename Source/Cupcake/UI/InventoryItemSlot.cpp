@@ -2,6 +2,7 @@
 
 
 #include "InventoryItemSlot.h"
+#include "SubMenu.h"
 
 #include "DragItemVisual.h"
 #include "InventoryTooltip.h"
@@ -52,6 +53,12 @@ FReply UInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 		return Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
 	}
 
+	/*else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+	{
+		OnRightMouseButtonClick(InGeometry, InMouseEvent);
+		return FReply::Handled();
+	}*/
+
 	// submenu on right click will happen here
 
 	return Reply.Unhandled();
@@ -90,3 +97,15 @@ bool UInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
 {
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
+
+void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if(ItemReference)
+	{
+		if(ItemReference->ID.IsEqual("test_002"))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("item is indeed test_002"));
+		}
+	}
+}
+

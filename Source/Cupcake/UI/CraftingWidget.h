@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "CraftingWidget.generated.h"
 
+class UBorder;
 struct FInteractableData;
 class UImage;
 class UNewInventoryComponent;
@@ -22,11 +23,20 @@ class CUPCAKE_API UCraftingWidget : public UUserWidget
 
 public:
 	
-	UPROPERTY(meta=(BindWidget))
-	UWrapBox* CraftingPanel;
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UBorder* CraftingBorder;
 
-	UPROPERTY(meta=(BindWidget))
-	UImage* CraftingICon;
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UImage* CraftedItemIcon;
+
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UImage* CraftingItemReq;
+
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UTextBlock* CraftingDescription;
+	
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UTextBlock* CraftingQuantity;
 
 	UPROPERTY()
 	ACupcakeCharacter* PlayerCharacter;

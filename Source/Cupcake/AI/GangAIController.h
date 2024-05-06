@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "Cupcake/Actors/DamageableInterface.h"
 #include "GangAIController.generated.h"
 
 

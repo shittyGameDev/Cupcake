@@ -98,23 +98,14 @@ bool UInventoryItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
 
-/*void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	// Create the submenu widget (assuming UMySubMenu is a UUserWidget)
-	USubMenu* SubMenu = CreateWidget<USubMenu>(this, SubMenuClass);
-    
-	if (SubMenu)
+	if(ItemReference)
 	{
-		// Set the position of the submenu
-		FVector2D MenuPosition = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
-
-		SubMenu->SetPositionInViewport(MenuPosition);
-
-		
-		if (!SubMenu->IsInViewport())
+		if(ItemReference->ID.IsEqual("test_002"))
 		{
-			SubMenu->AddToViewport();
+			UE_LOG(LogTemp, Warning, TEXT("item is indeed test_002"));
 		}
 	}
-}*/
+}
 

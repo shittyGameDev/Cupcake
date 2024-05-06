@@ -3,6 +3,7 @@
 #include "Components/SkyLightComponent.h"
 #include "Components/TextBlock.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
+#include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -33,7 +34,7 @@ void ADayCycleManager::BeginPlay()
 	UNewInventoryComponent* InventoryComponent = PlayerCharacter->GetInventory();
 	if (InventoryComponent)
 	{
-		
+		InventoryComponent->OnKeyItemAdded.AddUObject(this, &ADayCycleManager::ShiftDay);
 	}
 }
 

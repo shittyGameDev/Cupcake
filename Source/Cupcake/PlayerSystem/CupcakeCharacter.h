@@ -66,10 +66,9 @@ class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 	UInventoryComponent* InventoryComponent;
 
 
-	/** Look Input Action 
+	//Look Input Action 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
-	*/
 
 public:
 	ACupcakeCharacter();
@@ -92,6 +91,9 @@ public:
 
 	UFUNCTION()
 	void ToggleMapViaKey();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
+	USphereComponent* InteractionSphere;
 
 	UFUNCTION()
 	ATheMapObject* FindMapObject();
@@ -137,6 +139,12 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UPROPERTY(VisibleAnywhere, Category="Interaction")
 	TScriptInterface<IInteractionInterface> TargetInteractable;

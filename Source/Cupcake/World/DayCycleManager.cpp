@@ -234,6 +234,7 @@ void ADayCycleManager::ShiftDay()
 {
 	DayCycle++;
 	DayTransistion();
+	PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
 }
 
 void ADayCycleManager::SpawnTreeEvent()
@@ -283,7 +284,17 @@ void ADayCycleManager::ApplyInsanity()
 	}
 }
 
+void ADayCycleManager::RemoveTutorialBarrier()
+{
+	for (AActor* Actor : ActorsBarrier)
+	{
+		Actor->Destroy();
+	}
+}
+
 float ADayCycleManager::GetElapsedTime() const
 {
 	return ElapsedTime;
 }
+
+

@@ -112,10 +112,9 @@ void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, co
 			if(PlayerCharacter->Attributes->RegenerateHealth(10.f))
 			{
 				PlayerCharacter->RemoveItemFromInventory(ItemReference, 1);
-				UE_LOG(LogTemp, Warning, TEXT("New Health: %f"), PlayerCharacter->Attributes);
+				UE_LOG(LogTemp, Warning, TEXT("New Health: %f"), PlayerCharacter->Attributes->GetHealth());
 				UE_LOG(LogTemp, Warning, TEXT("Used berry"));
 			}
-			
 		}
 	}
 }

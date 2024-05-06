@@ -53,11 +53,11 @@ FReply UInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 		return Reply.Handled().DetectDrag(TakeWidget(), EKeys::LeftMouseButton);
 	}
 
-	/*else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
 	{
 		OnRightMouseButtonClick(InGeometry, InMouseEvent);
 		return FReply::Handled();
-	}*/
+	}
 
 	// submenu on right click will happen here
 
@@ -102,9 +102,9 @@ void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, co
 {
 	if(ItemReference)
 	{
-		if(ItemReference->ID.IsEqual("test_002"))
+		if(ItemReference->ID.IsEqual("test_001"))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("item is indeed test_002"));
+			UE_LOG(LogTemp, Warning, TEXT("item is indeed test_001"));
 		}
 	}
 }

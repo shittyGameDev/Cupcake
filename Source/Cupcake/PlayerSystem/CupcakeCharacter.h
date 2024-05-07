@@ -41,6 +41,9 @@ class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
+	APlayerController* PlayerController;
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;

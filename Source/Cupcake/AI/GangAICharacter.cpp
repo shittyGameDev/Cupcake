@@ -21,7 +21,7 @@ AGangAICharacter::AGangAICharacter()
 	PatrolRadius = 500.0f;
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 	bIsChasing = false;
-
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 }
 
@@ -69,6 +69,15 @@ void AGangAICharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+	else
+	{
+		// Check if close to current patrol point, if so, get a new one
+		FVector CurrentLocation = GetActorLocation();
+		if (FVector::Dist(CurrentLocation, CurrentPatrolPoint) < 100.0f)
+		{
+			Patrol(); // Update to a new patrol point
+		}
+	}
 }
 
 void AGangAICharacter::StartChasing(AActor* Target)
@@ -112,7 +121,8 @@ void AGangAICharacter::Patrol()
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 100.f;
 			FVector PatrolPoint = GetRandomPatrolPoint();
-			AIController->MoveToLocation(PatrolPoint);
+			CurrentPatrolPoint = PatrolPoint;
+			AIController->MoveToLocation(PatrolPoint, 1.0f, true, true, false, true, nullptr, true);
 		}
 	}
 }
@@ -124,6 +134,7 @@ void AGangAICharacter::ReturnToPatrol()
 	if (AIController)
 	{
 		AIController->MoveToLocation(SpawnLocation, 5.0f, true);
+		Patrol();
 	}
 }
 

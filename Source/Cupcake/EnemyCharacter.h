@@ -49,4 +49,5 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DoAttack();
 	void OnAttackFinished();
+
 };

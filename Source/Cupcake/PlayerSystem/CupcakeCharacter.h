@@ -123,6 +123,7 @@ protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	FVector GetMouseForwardDirection();
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
@@ -174,6 +175,7 @@ protected:
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	void UpdateFacingDirection();
 
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
 

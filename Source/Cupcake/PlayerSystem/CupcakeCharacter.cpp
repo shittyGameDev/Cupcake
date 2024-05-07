@@ -19,6 +19,7 @@
 #include "EngineUtils.h"  
 #include "Cupcake/TheMapObject.h"
 #include "Cupcake/Actors/AttributeComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -173,18 +174,53 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (PlayerController)
-	{
-		FVector mouseLocation, mouseDirection;
-		PlayerController->DeprojectMousePositionToWorld(mouseLocation, mouseDirection);
-		
-		FRotator currentCharacterRotation = this->GetActorRotation();
-		FRotator targetRotation = mouseDirection.Rotation();
-
-		FRotator newRotation = FRotator(currentCharacterRotation.Pitch, targetRotation.Yaw, currentCharacterRotation.Roll);
-		this->SetActorRotation(newRotation);
-	}
+	UpdateFacingDirection();
 }
+
+void ACupcakeCharacter::UpdateFacingDirection()
+{
+	if (!GetController())
+		return;
+
+	// Retrieve the player controller
+	if (!PlayerController)
+		return;
+
+	// Get the mouse position on the screen
+	float MouseX, MouseY;
+	if (!PlayerController->GetMousePosition(MouseX, MouseY))
+		return;
+
+	// Convert the mouse position to a world direction
+	FVector WorldDirection;
+	FVector WorldLocation;
+	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), OUT WorldLocation, OUT WorldDirection))
+		return;
+
+	// Calculate the point in the world the mouse is pointing at
+	FVector StartLocation = FollowCamera->GetComponentLocation();
+	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend the direction to some far point
+
+	// Perform a line trace to ensure it does not hit anything before this point
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	GetWorld()->LineTraceSingleByChannel(OUT HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
+
+	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
+
+	// Calculate the direction from the character to the target point
+	FVector ToTarget = (TargetPoint - GetActorLocation()).GetSafeNormal();
+	FRotator TargetRotation = FRotationMatrix::MakeFromX(ToTarget).Rotator();
+
+	// Update the character rotation
+	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
+	NewRotation.Pitch = 0.0f; // Keep the pitch unchanged
+	NewRotation.Roll = 0.0f;  // Keep the roll unchanged
+	SetActorRotation(NewRotation);
+}
+
+
 
 void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -466,25 +502,47 @@ void ACupcakeCharacter::RemoveItemFromInventory(UBaseItem* ItemToRemove, const i
 
 void ACupcakeCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
+	// Input is a Vector2D (X for right movement, Y for forward movement)
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+	// Get mouse direction as the new forward direction
+	FVector ForwardDirection = GetMouseForwardDirection();
+	FVector RightDirection = FVector::CrossProduct(FVector::UpVector, ForwardDirection).GetSafeNormal();
 
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	// Add movement in the mouse forward and right directions
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
+}
+
+FVector ACupcakeCharacter::GetMouseForwardDirection()
+{
+	if (!GetController())
+		return FVector::ZeroVector;
 	
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	if (!PlayerController)
+		return FVector::ZeroVector;
 
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
+	// Retrieve the player controller and get mouse position
+	float MouseX, MouseY;
+	if (!PlayerController->GetMousePosition(MouseX, MouseY))
+		return FVector::ZeroVector;
+
+	FVector WorldDirection;
+	FVector WorldLocation;
+	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), WorldLocation, WorldDirection))
+		return FVector::ZeroVector;
+
+	FVector StartLocation = FollowCamera->GetComponentLocation();
+	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend the direction to a far point
+
+	// Perform a line trace to determine where the mouse is pointing in the world
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
+
+	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
+	return (TargetPoint - GetActorLocation()).GetSafeNormal();
 }
 
 void ACupcakeCharacter::Look(const FInputActionValue& Value)

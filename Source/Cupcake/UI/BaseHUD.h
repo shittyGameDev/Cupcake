@@ -30,7 +30,10 @@ public:
 
 	ABaseHUD();
 
+	UFUNCTION(BlueprintCallable)
 	void DisplayMenu();
+	
+	UFUNCTION(BlueprintCallable)
 	void HideMenu();
 	void ToggleMenu();
 

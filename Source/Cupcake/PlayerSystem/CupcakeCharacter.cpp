@@ -154,8 +154,12 @@ void ACupcakeCharacter::BeginPlay()
 	}
 
 	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController)
 	{
+		PlayerController->bShowMouseCursor = true;
+		PlayerController->bEnableClickEvents = true; 
+		PlayerController->bEnableMouseOverEvents = true;
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
@@ -168,6 +172,18 @@ void ACupcakeCharacter::BeginPlay()
 void ACupcakeCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	if (PlayerController)
+	{
+		FVector mouseLocation, mouseDirection;
+		PlayerController->DeprojectMousePositionToWorld(mouseLocation, mouseDirection);
+		
+		FRotator currentCharacterRotation = this->GetActorRotation();
+		FRotator targetRotation = mouseDirection.Rotation();
+
+		FRotator newRotation = FRotator(currentCharacterRotation.Pitch, targetRotation.Yaw, currentCharacterRotation.Roll);
+		this->SetActorRotation(newRotation);
+	}
 }
 
 void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -12,12 +12,15 @@ class UMainMenu;
 /**
  * 
  */
+DECLARE_MULTICAST_DELEGATE(FOnMenuOpen);
+
 UCLASS()
 class CUPCAKE_API ABaseHUD : public AHUD
 {
 	GENERATED_BODY()
 
 public:
+	FOnMenuOpen OpenMenu;
 	//Håller bara den visuella komponent av denna widget i editorn
 	UPROPERTY(EditDefaultsOnly, Category="Widgets")
 	TSubclassOf<UMainMenu> MainMenuClass;
@@ -35,6 +38,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void HideMenu();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void AnimateOpenMenu();
+	UFUNCTION(BlueprintImplementableEvent)
+	void AnimateCloseMenu();
+
 	void ToggleMenu();
 
 	void ShowInteractionWidget() const;
@@ -42,14 +51,13 @@ public:
 	void UpdateInteractionWidget(const FInteractableData* InteractableData) const;
 	void UpdateInteractionProgress(float Progress) const;
 
-protected:
-
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	UMainMenu* MainMenuWidget;
 	UPROPERTY()
 	UInteractionWidget* InteractionWidget;
 
-
+protected:
+	
 	
 	virtual void BeginPlay() override;
 };

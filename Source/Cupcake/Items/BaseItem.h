@@ -8,9 +8,7 @@
 #include "BaseItem.generated.h"
 
 class UNewInventoryComponent;
-/**
- * 
- */
+
 UCLASS()
 class CUPCAKE_API UBaseItem : public UObject
 {
@@ -57,6 +55,8 @@ public:
 	
 	UFUNCTION(Category="Item")
 	virtual void Use(ACupcakeCharacter* Character);
+	FString ToString() const;
+
 	
 protected:
 	bool operator==(const FName& OtherID) const

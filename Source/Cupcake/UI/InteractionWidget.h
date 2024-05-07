@@ -24,6 +24,12 @@ public:
 
 	void UpdateWidget(const FInteractableData* InteractableData) const;
 
+	UFUNCTION(Category= "Interaction")
+	void UpdateInteractionProgress();
+
+	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
+	UProgressBar* InteractionProgressBar;
+
 protected:
 	
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
@@ -38,14 +44,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
 	UTextBlock* KeyPressText;
 
-	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
-	UProgressBar* InteractionProgressBar;
+
 
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
 	float CurrentInteractionDuration;
 
-	UFUNCTION(Category= "Interaction")
-	float UpdateInteractionProgress();
+
 	
 	virtual void NativeOnInitialized() override;
 	virtual void NativeConstruct() override;

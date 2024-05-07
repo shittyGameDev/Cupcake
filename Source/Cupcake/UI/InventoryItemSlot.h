@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "IDetailTreeNode.h"
 #include "Blueprint/UserWidget.h"
 #include "InventoryItemSlot.generated.h"
 
+class ACupcakeCharacter;
+class USubMenu;
 class UTextBlock;
 class UImage;
 class UBorder;
@@ -27,11 +28,17 @@ public:
 
 protected:
 
+	UPROPERTY()
+	ACupcakeCharacter* PlayerCharacter;
+
 	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
 	TSubclassOf<UDragItemVisual> DragItemVisualClass;
 
 	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
 	TSubclassOf<UInventoryTooltip> ToolTipClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
+	TSubclassOf<USubMenu> SubMenuClass;
 	
 	UPROPERTY(VisibleAnywhere, Category="Inventory Slot")
 	UBaseItem* ItemReference;
@@ -53,4 +60,5 @@ protected:
 		UDragDropOperation*& OutOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 		UDragDropOperation* InOperation) override;
+	void OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 };

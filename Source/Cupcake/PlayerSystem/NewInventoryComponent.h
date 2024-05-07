@@ -7,6 +7,7 @@
 #include "NewInventoryComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
+DECLARE_MULTICAST_DELEGATE(FOnKeyItemAdded);
 
 class UBaseItem;
 
@@ -37,7 +38,7 @@ struct FItemAddResult
 	// Informational message that can be passed with the result (Victor)
 	UPROPERTY(BlueprintReadOnly, Category = "Item Add Result")
 	FText ResultMessage;
-
+	
 	// HELPER FUNCTIONS
 	static FItemAddResult AddedNone(const FText& ErrorText)
 	{
@@ -72,6 +73,7 @@ class CUPCAKE_API UNewInventoryComponent : public UActorComponent
 
 public:	
 
+	FOnKeyItemAdded OnKeyItemAdded;
 	FOnInventoryUpdated OnInventoryUpdated;
 	
 	UNewInventoryComponent();
@@ -92,6 +94,9 @@ public:
 	int32 RemoveAmountOfItem(UBaseItem* ItemIn, int32 DesiredAmountToRemove);
 	UFUNCTION(Category= "Inventory")
 	void SplitExistingStack(UBaseItem* ItemIn, const int32 AmountToSplit);
+	
+	UFUNCTION(Category= "Inventory")
+	bool HasItemByID(FName ID);
 
 	//Getters
 	// ----------------------

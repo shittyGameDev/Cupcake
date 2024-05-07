@@ -48,4 +48,12 @@ void UBaseItem::SetQuantity(const int32 NewQuantity)
 
 void UBaseItem::Use(ACupcakeCharacter* Character)
 {
+	UE_LOG(LogTemp, Warning, TEXT("This Item was used"));
 }
+
+FString UBaseItem::ToString() const
+{
+	// Customize this to include whatever item details are important
+	return FString::Printf(TEXT("ItemName: %s, ItemID: %d"), *ID.ToString(), Quantity);
+}
+

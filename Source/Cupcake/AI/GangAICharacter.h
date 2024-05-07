@@ -49,11 +49,19 @@ public:
 	float PatrolRadius;
 	UPROPERTY(EditAnywhere)
 	float ChaseDistance;
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	FVector CurrentPatrolPoint;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float AttackDistance;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float AttackChargeTime;
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float AttackStartTime;
 
 protected:
 
 	bool bIsChasing;
-
+	bool bIsAttacking;
 	//PROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	//UAIPerceptionComponent* PerceptionComponent;
 

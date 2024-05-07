@@ -229,7 +229,6 @@ void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 		if (OtherActor != InteractionData.CurrentInteractable)
 		{
 			FoundInteractable(OtherActor);
-			return;
 		}
 	}
 }
@@ -502,17 +501,22 @@ void ACupcakeCharacter::RemoveItemFromInventory(UBaseItem* ItemToRemove, const i
 
 void ACupcakeCharacter::Move(const FInputActionValue& Value)
 {
-	// Input is a Vector2D (X for right movement, Y for forward movement)
+	// Input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	// Get mouse direction as the new forward direction
-	FVector ForwardDirection = GetMouseForwardDirection();
-	FVector RightDirection = FVector::CrossProduct(FVector::UpVector, ForwardDirection).GetSafeNormal();
+	if (Controller != nullptr)
+	{
+		// No need to recalculate the forward and right vectors
+		// directly use the actor's forward and right vectors
+		const FVector ForwardDirection = GetActorForwardVector();
+		const FVector RightDirection = GetActorRightVector();
 
-	// Add movement in the mouse forward and right directions
-	AddMovementInput(ForwardDirection, MovementVector.Y);
-	AddMovementInput(RightDirection, MovementVector.X);
+		// Add movement in the current forward and right directions
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		AddMovementInput(RightDirection, MovementVector.X);
+	}
 }
+
 
 FVector ACupcakeCharacter::GetMouseForwardDirection()
 {

@@ -35,7 +35,9 @@ void ABaseHUD::DisplayMenu()
 	if(MainMenuWidget)
 	{
 		bIsMenuVisible = true;
-		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+		OpenMenu.Broadcast();
+		AnimateOpenMenu();
+		//MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -43,8 +45,10 @@ void ABaseHUD::HideMenu()
 {
 	if(MainMenuWidget)
 	{
+		OpenMenu.Broadcast();
 		bIsMenuVisible = false;
-		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		AnimateCloseMenu();
+		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -53,7 +57,6 @@ void ABaseHUD::ToggleMenu()
 	if(bIsMenuVisible)
 	{
 		HideMenu();
-
 		const FInputModeGameOnly InputMode;
 		GetOwningPlayerController()->SetInputMode(InputMode);
 	}

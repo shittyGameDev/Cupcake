@@ -11,6 +11,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UBoxComponent;
 class UBaseItem;
 class UNewInventoryComponent;
 class ABaseHUD;

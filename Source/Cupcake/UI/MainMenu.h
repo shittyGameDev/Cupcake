@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenu.generated.h"
 
+class UInventoryPanel;
 class ACupcakeCharacter;
 /**
  * 
@@ -16,8 +17,11 @@ class CUPCAKE_API UMainMenu : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	
 	UPROPERTY()
 	ACupcakeCharacter* PlayerCharacter;
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UInventoryPanel* InventoryPanel;
 	
 protected:
 	virtual void NativeOnInitialized() override;

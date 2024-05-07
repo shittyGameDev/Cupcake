@@ -3,16 +3,23 @@
 
 #include "Tree.h"
 
+#include "Components/CapsuleComponent.h"
 #include "Cupcake/Actors/AttributeComponent.h"
 
-ATree::ATree()
+ATree::ATree() : IDamageableInterface(Attributes)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(Mesh);
+	Collider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collider"));
+	SetRootComponent(Collider);
+}
+
+float ATree::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void ATree::BeginPlay()

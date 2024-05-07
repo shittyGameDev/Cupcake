@@ -15,17 +15,16 @@ class CUPCAKE_API ATree : public AActor, public IDamageableInterface
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ATree();
+	
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 private:
 	UPROPERTY(EditAnywhere, Category="Mesh")
-	UStaticMeshComponent* Mesh;
+	UCapsuleComponent* Collider;
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };

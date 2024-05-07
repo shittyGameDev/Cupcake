@@ -53,7 +53,6 @@ void ABaseHUD::ToggleMenu()
 	if(bIsMenuVisible)
 	{
 		HideMenu();
-
 		const FInputModeGameOnly InputMode;
 		GetOwningPlayerController()->SetInputMode(InputMode);
 	}

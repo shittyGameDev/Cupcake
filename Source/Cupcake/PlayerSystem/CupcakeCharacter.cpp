@@ -174,11 +174,15 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	UpdateFacingDirection();
+	//UpdateFacingDirection();
 }
 
 void ACupcakeCharacter::UpdateFacingDirection()
 {
+	if (!GetController())
+		return;
+
+	// Retrieve the player controller
 	if (!PlayerController)
 		return;
 
@@ -188,38 +192,33 @@ void ACupcakeCharacter::UpdateFacingDirection()
 		return;
 
 	// Convert the mouse position to a world direction
-	FVector WorldLocation, WorldDirection;
-	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), WorldLocation, WorldDirection))
+	FVector WorldDirection;
+	FVector WorldLocation;
+	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), OUT WorldLocation, OUT WorldDirection))
 		return;
 
-	// Determine the point in the world to look at
-	FVector StartLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
-	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend to a far point
+	// Calculate the point in the world the mouse is pointing at
+	FVector StartLocation = FollowCamera->GetComponentLocation();
+	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend the direction to some far point
 
-	// Create a horizontal plane at the character's feet for projection
-	FPlane GroundPlane = FPlane(GetActorLocation(), FVector(0, 0, 1));
+	// Perform a line trace to ensure it does not hit anything before this point
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	GetWorld()->LineTraceSingleByChannel(OUT HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
 
-	// Find where the line intersects with the ground plane
-	FVector IntersectionPoint;
-	FMath::SegmentPlaneIntersection(StartLocation, EndLocation, GroundPlane, IntersectionPoint);
+	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
 
-	// Calculate the new forward vector
-	FVector NewForward = (IntersectionPoint - GetActorLocation()).GetSafeNormal();
+	// Calculate the direction from the character to the target point
+	FVector ToTarget = (TargetPoint - GetActorLocation()).GetSafeNormal();
+	FRotator TargetRotation = FRotationMatrix::MakeFromX(ToTarget).Rotator();
 
-	// Ensure it's purely horizontal
-	NewForward.Z = 0;
-	NewForward = NewForward.GetSafeNormal();
-
-	// Generate the new target rotation from this vector
-	FRotator NewRotation = FRotationMatrix::MakeFromX(NewForward).Rotator();
-	NewRotation.Pitch = 0; // Lock pitch
-	NewRotation.Roll = 0; // Lock roll
-
-	// Smoothly interpolate the rotation
-	SetActorRotation(FMath::RInterpTo(GetActorRotation(), NewRotation, GetWorld()->GetDeltaSeconds(), 10.0f));
+	// Update the character rotation
+	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
+	NewRotation.Pitch = 0.0f; // Keep the pitch unchanged
+	NewRotation.Roll = 0.0f;  // Keep the roll unchanged
+	SetActorRotation(NewRotation);
 }
-
-
 
 
 
@@ -502,17 +501,22 @@ void ACupcakeCharacter::RemoveItemFromInventory(UBaseItem* ItemToRemove, const i
 
 void ACupcakeCharacter::Move(const FInputActionValue& Value)
 {
-	// Input is a Vector2D
+	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
-		// No need to recalculate the forward and right vectors
-		// directly use the actor's forward and right vectors
-		const FVector ForwardDirection = GetActorForwardVector();
-		const FVector RightDirection = GetActorRightVector();
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// Add movement in the current forward and right directions
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}

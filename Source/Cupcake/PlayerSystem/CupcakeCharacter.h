@@ -11,6 +11,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UBoxComponent;
 class UBaseItem;
 class UNewInventoryComponent;
 class ABaseHUD;
@@ -96,7 +97,7 @@ public:
 	void ToggleMapViaKey();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
-	USphereComponent* InteractionSphere;
+	UBoxComponent* InteractionSphere;
 
 	UFUNCTION()
 	ATheMapObject* FindMapObject();

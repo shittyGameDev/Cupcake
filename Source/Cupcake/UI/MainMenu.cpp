@@ -3,9 +3,11 @@
 
 #include "MainMenu.h"
 
+#include "InventoryPanel.h"
 #include "ItemDragDropOperation.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
+
 
 void UMainMenu::NativeOnInitialized()
 {

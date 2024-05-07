@@ -41,6 +41,9 @@ class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
+	APlayerController* PlayerController;
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -120,6 +123,7 @@ protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	FVector GetMouseForwardDirection();
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
@@ -161,7 +165,7 @@ protected:
 
 	FInteractionData InteractionData;
 
-	void PerformInteractionCheck();
+	//void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
 	void UpdateInteraction();
@@ -171,6 +175,7 @@ protected:
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	void UpdateFacingDirection();
 
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
 

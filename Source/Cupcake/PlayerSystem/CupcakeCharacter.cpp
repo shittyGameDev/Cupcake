@@ -179,10 +179,6 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 
 void ACupcakeCharacter::UpdateFacingDirection()
 {
-	if (!GetController())
-		return;
-
-	// Retrieve the player controller
 	if (!PlayerController)
 		return;
 
@@ -192,33 +188,38 @@ void ACupcakeCharacter::UpdateFacingDirection()
 		return;
 
 	// Convert the mouse position to a world direction
-	FVector WorldDirection;
-	FVector WorldLocation;
-	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), OUT WorldLocation, OUT WorldDirection))
+	FVector WorldLocation, WorldDirection;
+	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), WorldLocation, WorldDirection))
 		return;
 
-	// Calculate the point in the world the mouse is pointing at
-	FVector StartLocation = FollowCamera->GetComponentLocation();
-	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend the direction to some far point
+	// Determine the point in the world to look at
+	FVector StartLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
+	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend to a far point
 
-	// Perform a line trace to ensure it does not hit anything before this point
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-	GetWorld()->LineTraceSingleByChannel(OUT HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
+	// Create a horizontal plane at the character's feet for projection
+	FPlane GroundPlane = FPlane(GetActorLocation(), FVector(0, 0, 1));
 
-	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
+	// Find where the line intersects with the ground plane
+	FVector IntersectionPoint;
+	FMath::SegmentPlaneIntersection(StartLocation, EndLocation, GroundPlane, IntersectionPoint);
 
-	// Calculate the direction from the character to the target point
-	FVector ToTarget = (TargetPoint - GetActorLocation()).GetSafeNormal();
-	FRotator TargetRotation = FRotationMatrix::MakeFromX(ToTarget).Rotator();
+	// Calculate the new forward vector
+	FVector NewForward = (IntersectionPoint - GetActorLocation()).GetSafeNormal();
 
-	// Update the character rotation
-	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
-	NewRotation.Pitch = 0.0f; // Keep the pitch unchanged
-	NewRotation.Roll = 0.0f;  // Keep the roll unchanged
-	SetActorRotation(NewRotation);
+	// Ensure it's purely horizontal
+	NewForward.Z = 0;
+	NewForward = NewForward.GetSafeNormal();
+
+	// Generate the new target rotation from this vector
+	FRotator NewRotation = FRotationMatrix::MakeFromX(NewForward).Rotator();
+	NewRotation.Pitch = 0; // Lock pitch
+	NewRotation.Roll = 0; // Lock roll
+
+	// Smoothly interpolate the rotation
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), NewRotation, GetWorld()->GetDeltaSeconds(), 10.0f));
 }
+
+
 
 
 

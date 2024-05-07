@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GangAIController.h"
 #include "GangAIManager.h"
 #include "Cupcake/Actors/DamageableInterface.h"
 #include "GameFramework/Character.h"
+#include "Cupcake/WeaponBase.h"
 #include "GangAICharacter.generated.h"
 
 class UAIPerceptionComponent;
@@ -39,6 +41,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReturnToPatrol();
 
+	UFUNCTION(BlueprintCallable)
+	void DoAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void OnAttackFinished();
+
 	bool IsChasing() const { return bIsChasing; }
 
 	FVector GetRandomPatrolPoint();
@@ -49,11 +57,22 @@ public:
 	float PatrolRadius;
 	UPROPERTY(EditAnywhere)
 	float ChaseDistance;
+	UPROPERTY(EditAnywhere, Category= "AI")
+	float AttackDistance;
+	UPROPERTY(VisibleAnywhere, Category = "AI")
+	FVector CurrentPatrolPoint;
+	UPROPERTY(EditAnywhere);
+	AWeaponBase* Weapon;
+	UPROPERTY(EditAnywhere, Category="Weapon")
+	TSubclassOf<AWeaponBase> WeaponBlueprint;
+	
+	FTimerHandle TimerHandle_PreAttack; 
+	FTimerHandle TimerHandle_AttackFinished; 
 
 protected:
-
+	//AAIController* AIController;
 	bool bIsChasing;
-
+	bool bIsAttacking;
 	//PROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	//UAIPerceptionComponent* PerceptionComponent;
 

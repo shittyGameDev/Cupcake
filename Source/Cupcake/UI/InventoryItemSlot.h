@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryItemSlot.generated.h"
 
+class ACupcakeCharacter;
 class USubMenu;
 class UTextBlock;
 class UImage;
@@ -26,6 +27,9 @@ public:
 	FORCEINLINE UBaseItem* GetItemReference() const { return ItemReference;}
 
 protected:
+
+	UPROPERTY()
+	ACupcakeCharacter* PlayerCharacter;
 
 	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
 	TSubclassOf<UDragItemVisual> DragItemVisualClass;

@@ -12,68 +12,49 @@
 // Sets default values
 ADayCycleManager::ADayCycleManager()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 }
 
 // Called when the game starts or when spawned
 void ADayCycleManager::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
-
-	//PlayerCharacter->GetInventory()
-	/*
-	if (bIsTutorialDay)
-	{
-		SetActorTickEnabled(false);
-		if (SkyLight && SkyLight->GetLightComponent())
-		{
-			FRotator EveningRotation = FRotator(-30.f, -90.f, 0.f);
-			SkyLight->SetActorRotation(EveningRotation);
-			FLinearColor EveningColor = FLinearColor(0.25f, 0.1f, 0.5f);
-			SkyLight->GetLightComponent()->SetLightColor(EveningColor);
-			SkyLight->GetLightComponent()->SetIntensity(0.5f);
-		}
-	}*/
-	if (NoteMesh)
-	{
-		NoteMesh->SetActorHiddenInGame(true);
-		NoteMesh->SetActorEnableCollision(false); 
-	}
+	
 	for (FTimeEvent& Event : TimeEvents)
 	{
 		BindTimeEvent(Event);
 	}
 
+	UNewInventoryComponent* InventoryComponent = PlayerCharacter->GetInventory();
+	if (InventoryComponent)
+	{
+		InventoryComponent->OnKeyItemAdded.AddUObject(this, &ADayCycleManager::ShiftDay);
+	}
 }
 
 // Called every frame
 void ADayCycleManager::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+	
+	ElapsedTime += DeltaTime * AccelerateTime;
 	/*
-	if (!bIsTutorialDay)
+	if (ElapsedTime >= SECONDS_IN_A_DAY)
 	{
-		Super::Tick(DeltaTime);
-
-		ElapsedTime += DeltaTime * AccelerateTime;
-		if (ElapsedTime >= SECONDS_IN_A_DAY)
-		{
-			DayCycle++;
-			ElapsedTime = 0;
-			UE_LOG(LogTemp, Display, TEXT("New Day %i, Time: %f"), GetCurrentDayNumber(), ElapsedTime);
-			DayTransistion();
-		}
-		//UpdateLighting(DeltaTime);
-	}
-
-
-
+		DayCycle++;
+		ElapsedTime = 0;
+		UE_LOG(LogTemp, Display, TEXT("New Day %i, Time: %f"), GetCurrentDayNumber(), ElapsedTime);
+		DayTransistion();
+	}*/
 	float DayProgress = ElapsedTime / SECONDS_IN_A_DAY;
 	float Rotation = 360.f * DayProgress;
-
+	/*
 	if (SkyLight && SkyLight->GetLightComponent() && DirectionalLight && DirectionalLight->GetLightComponent())
 	{
 		// Uppdatera rotation
@@ -122,24 +103,20 @@ int ADayCycleManager::GetMinutes()
 {
 	return static_cast<int>((ElapsedTime / 60)) % 60;
 }
-
-void ADayCycleManager::EndTutorial()
-{
-	
-}
 /*
 void ADayCycleManager::ShiftTime(float Time)
 {
 	float OldElapsedTime = ElapsedTime; // Spara det gamla värdet för att jämföra
 	ElapsedTime += Time;
-	
+    
 	int daysPassed = FMath::FloorToInt(ElapsedTime / SECONDS_IN_A_DAY);
 	DayCycle += daysPassed;
-	
+    
 	ElapsedTime -= daysPassed * SECONDS_IN_A_DAY;
 
 	UE_LOG(LogTemp, Warning, TEXT("ShiftTime called. Old Time: %f, New Time: %f, Days Passed: %d"), OldElapsedTime, ElapsedTime, DayCycle);
 }
+
 void ADayCycleManager::Sleep()
 {
 	int DayBeforeSleep = GetCurrentDayNumber();
@@ -194,6 +171,9 @@ void ADayCycleManager::Sleep()
 	
 
 }
+
+
+
 void ADayCycleManager::Interact_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Fuck off you think you can sleep idiot?"));
@@ -204,15 +184,11 @@ void ADayCycleManager::Interact_Implementation()
 		LastSleepDay = GetCurrentDayNumber();
 	}
 }
-void ADayCycleManager::UpdateLighting(float DeltaTime)
+bool ADayCycleManager::CanSleep()
 {
+	return GetCurrentDayNumber() > LastSleepDay;
 }
-
-
-FLinearColor ADayCycleManager::CalculateLightColor(float DayProgress)
-{
-	
-}*/
+*/
 
 void ADayCycleManager::RegisterTimeEvent(FTimeEvent& NewEvent)
 {
@@ -220,10 +196,7 @@ void ADayCycleManager::RegisterTimeEvent(FTimeEvent& NewEvent)
 	BindTimeEvent(NewEvent);
 }
 
-bool ADayCycleManager::CanSleep()
-{
-	return GetCurrentDayNumber() > LastSleepDay;
-}
+
 
 void ADayCycleManager::DayTransistion()
 {
@@ -259,21 +232,22 @@ void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
 
 void ADayCycleManager::ShiftDay()
 {
-		DayCycle++;
-		DayTransistion();
+	DayCycle++;
+	DayTransistion();
+	PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
 }
 
 void ADayCycleManager::SpawnTreeEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Spawned Cube!"));
-	if(TreeMesh)
+	if(CubeMesh)
 	{
 		AStaticMeshActor* CubeActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnTreeLocation, SpawnRotation);
 		if(CubeActor)
 		{
 			UE_LOG(LogTemp, Display, TEXT("Ran inner function"));
 			CubeActor->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
-			CubeActor->GetStaticMeshComponent()->SetStaticMesh(TreeMesh);
+			CubeActor->GetStaticMeshComponent()->SetStaticMesh(CubeMesh);
 			
 			CubeActor->SetActorScale3D(FVector(1.0f, 1.0f, 1.0f));
 		}
@@ -310,15 +284,11 @@ void ADayCycleManager::ApplyInsanity()
 	}
 }
 
-void ADayCycleManager::SetNoteActive()
+void ADayCycleManager::RemoveTutorialBarrier()
 {
-	if (NoteMesh)
+	for (AActor* Actor : ActorsBarrier)
 	{
-		NoteMesh->SetActorHiddenInGame(false);
-		NoteMesh->SetActorEnableCollision(true); 
-	}else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Notemesh är nullptr"));
+		Actor->Destroy();
 	}
 }
 
@@ -326,3 +296,5 @@ float ADayCycleManager::GetElapsedTime() const
 {
 	return ElapsedTime;
 }
+
+

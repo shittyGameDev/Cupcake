@@ -80,18 +80,25 @@ void AEnemyCharacter::DoSweepAttack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Sweep attack"));
 	if (!Weapon) return;
-    
+
 	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
 	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
 	{
-		//Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
+		// Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
 		UE_LOG(LogTemp, Warning, TEXT("Attached"));
 	}
 	Weapon->EnableWeapon(); // Enable the weapon
 
+	FRotator OriginalRotation = GetActorRotation(); // Store the original rotation
+
+	// Anticipated rotation: Turn the character slightly to the right
+	FRotator AnticipatedRotation = OriginalRotation;
+	AnticipatedRotation.Yaw += 30.0f; // Adjust this value as needed for the desired amount of rotation
+	SetActorRotation(AnticipatedRotation);
+
 	// Set a timer to disable the weapon after a short duration, simulating an attack duration
 	// Assuming an attack takes 1 second; adjust this duration as needed
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.2f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.3f, false);
 }
 
 void AEnemyCharacter::OnAttackFinished()

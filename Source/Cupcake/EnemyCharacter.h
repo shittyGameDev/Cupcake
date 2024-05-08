@@ -21,7 +21,6 @@ public:
 	
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void OnDeath_Implementation() override;
-	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -30,8 +29,9 @@ protected:
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
 
 	FTimerHandle TimerHandle_AttackFinished;
-
-public:	
+	FTimerHandle TimerHandle_RestoreRotation;
+	
+public:
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
 	void DoAttack();

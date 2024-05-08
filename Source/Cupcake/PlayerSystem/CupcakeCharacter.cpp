@@ -83,7 +83,7 @@ ACupcakeCharacter::ACupcakeCharacter()
 
 void ACupcakeCharacter::BeginPlay()
 {
-	// Call the base class  d
+	// Call the base class
 	Super::BeginPlay();
 
 	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
@@ -104,10 +104,6 @@ void ACupcakeCharacter::BeginPlay()
 
 		// Optionally, attach the weapon to the character
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
-
-		FRotator CurrentRotation = Weapon->GetActorRotation();
-		CurrentRotation.Yaw += 90.0f;
-		Weapon->SetActorRotation(CurrentRotation);
 		
 		Weapon->ShowWeapon();
 	} else

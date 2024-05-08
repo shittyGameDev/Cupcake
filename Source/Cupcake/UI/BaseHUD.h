@@ -53,7 +53,7 @@ public:
 
 	void ToggleMenu();
 
-	void DisplayPickup(const UBaseItem* ItemRef);
+	void DisplayPickup(UBaseItem* ItemRef);
 
 	void ShowInteractionWidget() const;
 	void HideInteractionWidget() const;

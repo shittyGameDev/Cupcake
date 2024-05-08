@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Cupcake/Items/BaseItem.h"
 #include "NewInventoryComponent.generated.h"
 
+class ABaseHUD;
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
 DECLARE_MULTICAST_DELEGATE(FOnKeyItemAdded);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*);
 
 class UBaseItem;
 
@@ -75,6 +78,7 @@ public:
 
 	FOnKeyItemAdded OnKeyItemAdded;
 	FOnInventoryUpdated OnInventoryUpdated;
+	FOnPickup OnPickup;
 	
 	UNewInventoryComponent();
 

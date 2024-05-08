@@ -19,6 +19,7 @@ ATree::ATree() : IDamageableInterface(Attributes)
 float ATree::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
+	
 	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 

@@ -36,7 +36,7 @@ void ABaseHUD::BeginPlay()
 	if(PlayerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("I found the player"));
-		PlayerCharacter->GetInventory()->OnPickup.AddUObject(this, &ABaseHUD::DisplayPickup);
+		//PlayerCharacter->GetInventory()->OnPickup.AddDynamic(this, FName)
 	}
 }
 

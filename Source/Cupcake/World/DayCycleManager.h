@@ -10,6 +10,7 @@
 #include "DayCycleManager.generated.h"
 
 class ACupcakeCharacter;
+class AStaticMeshActor;
 
 
 DECLARE_DYNAMIC_DELEGATE(FTimeSpecificEvent);
@@ -68,7 +69,7 @@ protected:
 	TSubclassOf<UUserWidget> BlackScreenWidgetClass;
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> DayTransitionWidgetClass;
-	UPROPERTY(EditAnywhere, Category= "Insanity");
+	UPROPERTY(EditAnywhere, Category= "Insanity")
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Management")
 	TArray<FTimeEvent> TimeEvents;

@@ -73,6 +73,10 @@ void AGangAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AActor* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	if(!Player)
+	{
+		return;
+	}
 	float DistanceToPlayer = FVector::Dist(Player->GetActorLocation(), GetActorLocation());
 
 	if (bIsChasing)
@@ -88,11 +92,12 @@ void AGangAICharacter::Tick(float DeltaTime)
 			UE_LOG(LogTemp, Warning, TEXT("Preparing to attack - AI is standing still"));
 			GetCharacterMovement()->StopMovementImmediately();
 			GetCharacterMovement()->DisableMovement();
+			TargetAttackPosition = Player->GetActorLocation();
 			NiagaraComponent->SetActive(true);
 			// Set a timer to call DoAttack after a 0.5 second delay
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 0.5f, false);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 1.f, false);
 		}
-		else if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack))
+		else if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack) && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_Cooldown))
 		{
 			// If not within attack range and not preparing an attack, continue chasing
 			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -175,8 +180,8 @@ void AGangAICharacter::DoAttack()
 	AAIController* AIController = Cast<AGangAIController>(GetController());
 	// Enable movement and dash towards the player
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	AIController->MoveToLocation(Player->GetActorLocation(), 1.0f, true);
+	GetCharacterMovement()->MaxWalkSpeed = 800.f;
+	AIController->MoveToLocation(TargetAttackPosition, 1.0f, true);
 	NiagaraComponent->SetActive(false);
 	// Assuming the weapon should be enabled
 	if (Weapon)
@@ -209,6 +214,13 @@ void AGangAICharacter::OnAttackFinished()
 	{
 		Weapon->DisableWeapon(); // Disable the weapon after the attack is complete
 	}
+	
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Cooldown, this, &AGangAICharacter::EnableChasing, 2.0f, false);
+}
+
+void AGangAICharacter::EnableChasing()
+{
+	bIsChasing = true;
 }
 
 

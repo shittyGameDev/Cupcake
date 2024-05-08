@@ -79,7 +79,7 @@ void AGangAICharacter::Tick(float DeltaTime)
 	}
 	float DistanceToPlayer = FVector::Dist(Player->GetActorLocation(), GetActorLocation());
 
-	if (bIsChasing)
+	if (bIsChasing && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_Cooldown))
 	{
 		if (DistanceToPlayer > ChaseDistance)
 		{
@@ -97,7 +97,7 @@ void AGangAICharacter::Tick(float DeltaTime)
 			// Set a timer to call DoAttack after a 0.5 second delay
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 1.f, false);
 		}
-		else if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack) && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_Cooldown))
+		else if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack))
 		{
 			// If not within attack range and not preparing an attack, continue chasing
 			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);

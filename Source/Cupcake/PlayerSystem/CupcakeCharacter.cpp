@@ -83,7 +83,7 @@ ACupcakeCharacter::ACupcakeCharacter()
 
 void ACupcakeCharacter::BeginPlay()
 {
-	// Call the base class  
+	// Call the base class  d
 	Super::BeginPlay();
 
 	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);

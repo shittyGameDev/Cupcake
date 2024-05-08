@@ -46,6 +46,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnAttackFinished();
 
+	UFUNCTION(BlueprintCallable)
+	void EnableChasing();
+
 	bool IsChasing() const { return bIsChasing; }
 
 	FVector GetRandomPatrolPoint();
@@ -67,7 +70,10 @@ public:
 	
 	FTimerHandle TimerHandle_PreAttack; 
 	FTimerHandle TimerHandle_AttackFinished;
+	FTimerHandle TimerHandle_Cooldown;
 
+	FVector TargetAttackPosition;
+	
 	UPROPERTY(EditAnywhere)
 	UNiagaraComponent* NiagaraComponent; 
 

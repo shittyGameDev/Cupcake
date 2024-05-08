@@ -54,7 +54,7 @@ void AGangAICharacter::BeginPlay()
 
 		Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 
-		Weapon->DisableWeapon();
+		Weapon->HideWeapon();
 	}
 	if (FoundManagers.Num() > 0)
 	{
@@ -188,7 +188,7 @@ void AGangAICharacter::DoAttack()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Weapon is not null"));
 		Weapon->SetOwner(this);
-		Weapon->EnableWeapon();
+		Weapon->ShowWeapon();
 	}
 
 	// Set a timer to stop the attack
@@ -212,7 +212,7 @@ void AGangAICharacter::OnAttackFinished()
 	bIsAttacking = false;
 	if (Weapon)
 	{
-		Weapon->DisableWeapon(); // Disable the weapon after the attack is complete
+		Weapon->HideWeapon();
 	}
 	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Cooldown, this, &AGangAICharacter::EnableChasing, 2.0f, false);

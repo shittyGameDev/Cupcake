@@ -6,6 +6,9 @@
 #include "GameFramework/HUD.h"
 #include "BaseHUD.generated.h"
 
+class ACupcakeCharacter;
+class UBaseItem;
+class UPickupWidget;
 struct FInteractableData;
 class UInteractionWidget;
 class UMainMenu;
@@ -28,6 +31,10 @@ public:
 	//Håller bara den visuella komponent av denna widget i editorn
 	UPROPERTY(EditDefaultsOnly, Category="Widgets")
 	TSubclassOf<UInteractionWidget> InteractionWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category="Widgets")
+	TSubclassOf<UPickupWidget> PickupWidgetClass;
+	UPROPERTY()
+	ACupcakeCharacter* PlayerCharacter;
 
 	bool bIsMenuVisible;
 
@@ -46,6 +53,8 @@ public:
 
 	void ToggleMenu();
 
+	void DisplayPickup(const UBaseItem* ItemRef);
+
 	void ShowInteractionWidget() const;
 	void HideInteractionWidget() const;
 	void UpdateInteractionWidget(const FInteractableData* InteractableData) const;
@@ -55,6 +64,8 @@ public:
 	UMainMenu* MainMenuWidget;
 	UPROPERTY()
 	UInteractionWidget* InteractionWidget;
+	UPROPERTY(BlueprintReadWrite)
+	UPickupWidget* PickupWidget;
 
 protected:
 	

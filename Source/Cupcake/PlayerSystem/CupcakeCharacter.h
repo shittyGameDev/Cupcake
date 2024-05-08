@@ -97,7 +97,7 @@ public:
 	void ToggleMapViaKey();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
-	USphereComponent* InteractionSphere;
+	UBoxComponent* InteractionBox;
 
 	UFUNCTION()
 	ATheMapObject* FindMapObject();

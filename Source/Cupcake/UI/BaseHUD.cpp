@@ -35,6 +35,8 @@ void ABaseHUD::DisplayMenu()
 	if(MainMenuWidget)
 	{
 		bIsMenuVisible = true;
+		OpenMenu.Broadcast();
+		AnimateOpenMenu();
 		//MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
@@ -43,7 +45,9 @@ void ABaseHUD::HideMenu()
 {
 	if(MainMenuWidget)
 	{
+		OpenMenu.Broadcast();
 		bIsMenuVisible = false;
+		AnimateCloseMenu();
 		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }

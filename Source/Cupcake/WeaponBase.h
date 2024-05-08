@@ -8,7 +8,7 @@
 #include "WeaponBase.generated.h"
 
 UCLASS()
-class CUPCAKE_API AWeaponBase : public APickup
+class CUPCAKE_API AWeaponBase : public AActor
 {
 	GENERATED_BODY()
 	

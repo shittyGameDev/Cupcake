@@ -31,23 +31,12 @@ protected:
 
 	FTimerHandle TimerHandle_AttackFinished;
 
-
-	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
-	UDataTable* ItemDataTable;
-
-	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
-	FName DesiredItemID;
-
-	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
-	int32 ItemQuantity;
-	
-	UPROPERTY(VisibleAnywhere, Category= "Drop | Item Reference")
-	UBaseItem* ItemReference;
-
 public:	
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
 	void DoAttack();
+	UFUNCTION(BlueprintCallable)
+	void DoSweepAttack();
 	void OnAttackFinished();
 
 };

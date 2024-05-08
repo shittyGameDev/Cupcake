@@ -17,6 +17,7 @@
 #include "Cupcake/UI/BaseHUD.h"
 #include "Cupcake/World/Pickup.h"
 #include "EngineUtils.h"  
+#include "Components/BoxComponent.h"
 #include "Cupcake/TheMapObject.h"
 #include "Cupcake/Actors/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -59,10 +60,9 @@ ACupcakeCharacter::ACupcakeCharacter()
 	PlayerInventory = CreateDefaultSubobject<UNewInventoryComponent>("PlayerInventory");
 	PlayerInventory->SetSlotsCapacity(20);
 
-	InteractionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionSphere"));
-	InteractionSphere->SetupAttachment(RootComponent);
-	InteractionSphere->SetSphereRadius(150.f);  // Set as needed for your interaction range
-	InteractionSphere->SetCollisionProfileName(TEXT("Trigger"));
+	InteractionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionSphere"));
+	InteractionBox->SetupAttachment(RootComponent);
+	InteractionBox->SetCollisionProfileName(TEXT("Trigger"));
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -131,8 +131,8 @@ void ACupcakeCharacter::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
-	InteractionSphere->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
-	InteractionSphere->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
+	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
+	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
 
 
 	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());

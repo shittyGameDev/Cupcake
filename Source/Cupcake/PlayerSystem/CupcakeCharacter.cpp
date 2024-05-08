@@ -90,8 +90,6 @@ void ACupcakeCharacter::BeginPlay()
 	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
 
 	InteractionBox->SetBoxExtent(FVector(100.f, 50.f, 150.f));
-	
-
 
 	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());
 	HUD = Cast<ABaseHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
@@ -99,16 +97,18 @@ void ACupcakeCharacter::BeginPlay()
 	// Create Weapon
 	if (WeaponBlueprint)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Created weapo"));
 		// Spawn the weapon
 		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
 
 		// Optionally, attach the weapon to the character
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
-		
-		Weapon->ShowWeapon();
+		Weapon->SetOwner(this);
+		Weapon->Unequip();
+		Weapon->HideWeapon();
 	} else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player: Missing Weapon!"));
+		UE_LOG(LogTemp, Warning, TEXT("Player: Missing Weapon Blueprint!"));
 	}
 
 	//Add Input Mapping Context
@@ -153,27 +153,20 @@ void ACupcakeCharacter::Attack()
 
 	if (!PlayerInventory->HasItemByID("axe")) return;
 
-	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
-	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
-	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
-		//Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
-		UE_LOG(LogTemp, Warning, TEXT("Attached"));
-	}
+	Weapon->ShowWeapon();
+	Weapon->Equip();
 
-	Weapon->SetOwner(this);
-	Weapon->Equip(); // Enable the weapon
-
-	// Set a timer to disable the weapon after a short duration, simulating an attack duration
-	// Assuming an attack takes 1 second; adjust this duration as needed
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 0.2f, false);
+	// Attack duration
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 1.f, false);
 }
 
 void ACupcakeCharacter::OnAttackFinished()
 {
 	if (Weapon)
 	{
-		Weapon->HideWeapon(); // Disable the weapon after the attack is complete
+		// Unequip weapon
+		Weapon->Unequip();
+		Weapon->HideWeapon();
 	}
 }
 

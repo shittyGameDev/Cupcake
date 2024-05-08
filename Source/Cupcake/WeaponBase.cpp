@@ -58,21 +58,24 @@ void AWeaponBase::OnWeaponEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 void AWeaponBase::Equip()
 {
 	// Should show weapon and enable collision
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WeaponBox->SetActive(true);
 }
 
 void AWeaponBase::Unequip()
 {
-	// Can still be shown but shoudlnt deal damage, therefore disable collison
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void AWeaponBase::HideWeapon()
-{
-	SetActorHiddenInGame(false);
+	// Can still be shown but shouldn't deal damage, therefore disable collison
+	WeaponBox->SetActive(false);
 }
 
 void AWeaponBase::ShowWeapon()
 {
+	SetActorHiddenInGame(false);
+	WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+
+void AWeaponBase::HideWeapon()
+{
 	SetActorHiddenInGame(true);
+	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

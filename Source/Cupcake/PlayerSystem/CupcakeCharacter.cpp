@@ -60,7 +60,7 @@ ACupcakeCharacter::ACupcakeCharacter()
 	PlayerInventory = CreateDefaultSubobject<UNewInventoryComponent>("PlayerInventory");
 	PlayerInventory->SetSlotsCapacity(20);
 
-	InteractionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionSphere"));
+	InteractionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionBox"));
 	InteractionBox->SetupAttachment(RootComponent);
 	InteractionBox->SetCollisionProfileName(TEXT("Trigger"));
 
@@ -133,6 +133,9 @@ void ACupcakeCharacter::BeginPlay()
 
 	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
 	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
+
+	InteractionBox->SetBoxExtent(FVector(100.f, 50.f, 150.f));
+	
 
 
 	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());
@@ -405,8 +408,9 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void ACupcakeCharacter::DisableMovement()
 {
-	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->DisableMovement();
+
 	bUseControllerRotationYaw = false;
 }
 

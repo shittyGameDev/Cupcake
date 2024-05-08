@@ -174,6 +174,7 @@ void AGangAICharacter::DoAttack()
 	// Assuming the weapon should be enabled
 	if (Weapon)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Weapon is not null"));
 		Weapon->SetOwner(this);
 		Weapon->EnableWeapon();
 	}

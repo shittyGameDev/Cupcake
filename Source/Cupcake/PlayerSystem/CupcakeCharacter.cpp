@@ -81,6 +81,60 @@ ACupcakeCharacter::ACupcakeCharacter()
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 }
 
+void ACupcakeCharacter::BeginPlay()
+{
+	// Call the base class  
+	Super::BeginPlay();
+
+	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
+	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
+
+
+	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());
+	HUD = Cast<ABaseHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+
+	// Create Weapon
+	if (WeaponBlueprint)
+	{
+		// Spawn the weapon
+		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
+
+		// Optionally, attach the weapon to the character
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+
+		FRotator CurrentRotation = Weapon->GetActorRotation();
+		CurrentRotation.Yaw += 90.0f;
+		Weapon->SetActorRotation(CurrentRotation);
+		
+		Weapon->ShowWeapon();
+	} else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player: Missing Weapon!"));
+	}
+
+	//Add Input Mapping Context
+	PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController)
+	{
+		PlayerController->bShowMouseCursor = true;
+		PlayerController->bEnableClickEvents = true; 
+		PlayerController->bEnableMouseOverEvents = true;
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			
+		}
+	}
+	
+}
+
+void ACupcakeCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	//UpdateFacingDirection();
+}
+
 float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
@@ -110,7 +164,7 @@ void ACupcakeCharacter::Attack()
 	}
 	
 	Weapon->SetOwner(this);
-	Weapon->EnableWeapon(); // Enable the weapon
+	Weapon->Equip(); // Enable the weapon
 
 	// Set a timer to disable the weapon after a short duration, simulating an attack duration
 	// Assuming an attack takes 1 second; adjust this duration as needed
@@ -122,59 +176,8 @@ void ACupcakeCharacter::OnAttackFinished()
 {
 	if (Weapon)
 	{
-		Weapon->DisableWeapon(); // Disable the weapon after the attack is complete
+		Weapon->HideWeapon(); // Disable the weapon after the attack is complete
 	}
-}
-
-void ACupcakeCharacter::BeginPlay()
-{
-	// Call the base class  
-	Super::BeginPlay();
-
-	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
-	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
-
-
-	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());
-	HUD = Cast<ABaseHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
-
-	// Create Weapon
-	if (WeaponBlueprint)
-	{
-		// Spawn the weapon
-		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
-
-		// Optionally, attach the weapon to the character
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
-
-		FRotator CurrentRotation = Weapon->GetActorRotation();
-		CurrentRotation.Yaw += 90.0f;
-		Weapon->SetActorRotation(CurrentRotation);
-		
-		Weapon->DisableWeapon();
-	}
-
-	//Add Input Mapping Context
-	PlayerController = Cast<APlayerController>(Controller);
-	if (PlayerController)
-	{
-		PlayerController->bShowMouseCursor = true;
-		PlayerController->bEnableClickEvents = true; 
-		PlayerController->bEnableMouseOverEvents = true;
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-			
-		}
-	}
-	
-}
-
-void ACupcakeCharacter::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	//UpdateFacingDirection();
 }
 
 void ACupcakeCharacter::UpdateFacingDirection()

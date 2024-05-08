@@ -37,6 +37,5 @@ public:
 	void DoAttack();
 	UFUNCTION(BlueprintCallable)
 	void DoSweepAttack();
-	void OnAttackFinished();
-
+	void OnAttackFinished() const;
 };

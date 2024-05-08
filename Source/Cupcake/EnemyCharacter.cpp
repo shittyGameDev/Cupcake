@@ -41,14 +41,24 @@ void AEnemyCharacter::BeginPlay()
 	{
 		// Spawn the weapon
 		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
+		Weapon->SetOwner(this);
+		Weapon->ShowWeapon();
 
-		// Optionally, attach the weapon to the character
-		//Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+		// Attach the weapon to the mannequin's socket with the same rotation
+		if (GetMesh()->DoesSocketExist(TEXT("WeaponSocket")))
+		{
+			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+		}
+		else
+		{
+			Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		}
 
 		Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
-
-		Weapon->DisableWeapon();
-		Weapon->SetOwner(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing Weapon!"), *GetActorLabel());
 	}
 }
 
@@ -60,44 +70,34 @@ void AEnemyCharacter::Tick(float DeltaTime)
 
 void AEnemyCharacter::DoAttack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
 	if (!Weapon) return;
-    
-	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
-	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
-	{
-		//Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
-		UE_LOG(LogTemp, Warning, TEXT("Attached"));
-	}
-	Weapon->EnableWeapon(); // Enable the weapon
+	
+	Weapon->Equip();
 
-	// Set a timer to disable the weapon after a short duration, simulating an attack duration
-	// Assuming an attack takes 1 second; adjust this duration as needed
+	UE_LOG(LogTemp, Warning, TEXT("Swing"));
+
+	// The attack logic
+	
+	// Duration for attack
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.2f, false);
 }
 
 void AEnemyCharacter::DoSweepAttack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Sweep attack"));
 	if (!Weapon) return;
-    
-	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
-	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
-	{
-		//Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
-		UE_LOG(LogTemp, Warning, TEXT("Attached"));
-	}
-	Weapon->EnableWeapon(); // Enable the weapon
 
-	// Set a timer to disable the weapon after a short duration, simulating an attack duration
-	// Assuming an attack takes 1 second; adjust this duration as needed
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.2f, false);
+	Weapon->Equip();
+
+	UE_LOG(LogTemp, Warning, TEXT("Sweep"));
+	
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.3f, false);
 }
 
-void AEnemyCharacter::OnAttackFinished()
+void AEnemyCharacter::OnAttackFinished() const
 {
 	if (Weapon)
 	{
-		Weapon->DisableWeapon(); // Disable the weapon after the attack is complete
+		// Disable weapon collider
+		Weapon->Unequip();
 	}
 }

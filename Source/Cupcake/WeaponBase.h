@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "World/Pickup.h"
-#include "Components/SphereComponent.h"
 #include "WeaponBase.generated.h"
+
+class UBoxComponent;
 
 UCLASS()
 class CUPCAKE_API AWeaponBase : public AActor
@@ -15,25 +15,35 @@ class CUPCAKE_API AWeaponBase : public AActor
 public:	
 	AWeaponBase();
 
-	AActor* OwningActor = nullptr;
-
-	UPROPERTY(EditAnywhere, Category="Weapon Stats")
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	float DamageAmount;
-	
-	UPROPERTY(EditAnywhere, Category="Collision")
-	USphereComponent* CollisionComponent;
+
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
+	UStaticMeshComponent* WeaponMesh;
 
 protected:
-	virtual void BeginPlay();
-	void Equip(AActor* NewOwner);
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	virtual void OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	virtual void OnWeaponEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+private:
+	UPROPERTY(VisibleAnywhere, Category="Weapon Properties")
+	UBoxComponent* WeaponBox;
+
+public:
+	// Enable collision
+	UFUNCTION()
+	void Equip();
+	// Disable collision
+	UFUNCTION()
 	void Unequip();
 
 	UFUNCTION()
-	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void HideWeapon();
 	UFUNCTION()
-	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-public:	
-	void EnableWeapon();
-	void DisableWeapon();
+	void ShowWeapon();
 };

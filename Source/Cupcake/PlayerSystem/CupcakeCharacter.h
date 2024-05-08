@@ -87,16 +87,16 @@ public:
 	UFUNCTION()
 	void OnAttackFinished();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void EnableMovement();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void DisableMovement();
 
 	UFUNCTION()
 	void ToggleMapViaKey();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
+	UPROPERTY(EditAnywhere, Category = "Interaction")
 	UBoxComponent* InteractionBox;
 
 	UFUNCTION()

@@ -237,7 +237,7 @@ void UNewInventoryComponent::AddNewItem(UBaseItem* Item, const int32 AmountToAdd
 {
 	UBaseItem* NewItem;
 
-	if(Item->ID.IsEqual("axe"))
+	if(Item->ID.IsEqual("forestItem"))
 	{
 		OnKeyItemAdded.Broadcast();
 	} else if (Item->ID.IsEqual("caveItem"))

@@ -81,51 +81,6 @@ ACupcakeCharacter::ACupcakeCharacter()
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 }
 
-float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
-{
-	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-}
-
-void ACupcakeCharacter::OnDeath_Implementation()
-{
-	IDamageableInterface::OnDeath_Implementation();
-	
-	Destroy();
-}
-
-void ACupcakeCharacter::Attack()
-{	
-	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
-	if (!Weapon) return;
-
-	if (!PlayerInventory->HasItemByID("axe")) return;
-    
-	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
-	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
-	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
-		//Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
-		UE_LOG(LogTemp, Warning, TEXT("Attached"));
-	}
-	
-	Weapon->SetOwner(this);
-	Weapon->EnableWeapon(); // Enable the weapon
-
-	// Set a timer to disable the weapon after a short duration, simulating an attack duration
-	// Assuming an attack takes 1 second; adjust this duration as needed
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 0.2f, false);
-}
-
-
-void ACupcakeCharacter::OnAttackFinished()
-{
-	if (Weapon)
-	{
-		Weapon->DisableWeapon(); // Disable the weapon after the attack is complete
-	}
-}
-
 void ACupcakeCharacter::BeginPlay()
 {
 	// Call the base class  
@@ -154,7 +109,10 @@ void ACupcakeCharacter::BeginPlay()
 		CurrentRotation.Yaw += 90.0f;
 		Weapon->SetActorRotation(CurrentRotation);
 		
-		Weapon->DisableWeapon();
+		Weapon->ShowWeapon();
+	} else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player: Missing Weapon!"));
 	}
 
 	//Add Input Mapping Context
@@ -177,6 +135,50 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	//UpdateFacingDirection();
+}
+
+float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void ACupcakeCharacter::OnDeath_Implementation()
+{
+	IDamageableInterface::OnDeath_Implementation();
+
+	Destroy();
+}
+
+void ACupcakeCharacter::Attack()
+{	
+	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
+	if (!Weapon) return;
+
+	if (!PlayerInventory->HasItemByID("axe")) return;
+
+	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
+	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
+	{
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
+		//Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		UE_LOG(LogTemp, Warning, TEXT("Attached"));
+	}
+
+	Weapon->SetOwner(this);
+	Weapon->Equip(); // Enable the weapon
+
+	// Set a timer to disable the weapon after a short duration, simulating an attack duration
+	// Assuming an attack takes 1 second; adjust this duration as needed
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 0.2f, false);
+}
+
+void ACupcakeCharacter::OnAttackFinished()
+{
+	if (Weapon)
+	{
+		Weapon->HideWeapon(); // Disable the weapon after the attack is complete
+	}
 }
 
 void ACupcakeCharacter::UpdateFacingDirection()

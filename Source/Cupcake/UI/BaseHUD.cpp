@@ -78,7 +78,7 @@ void ABaseHUD::ToggleMenu()
 	}
 }
 
-void ABaseHUD::DisplayPickup(const UBaseItem* ItemRef)
+void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 {
 	// Create the pickup widget and add it to the viewport with a high priority.
 	PickupWidget = CreateWidget<UPickupWidget>(GetWorld(), PickupWidgetClass);

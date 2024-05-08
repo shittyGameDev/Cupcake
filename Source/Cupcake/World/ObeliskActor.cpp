@@ -121,6 +121,7 @@ bool AObeliskActor::CheckIfDonationReached(const int32 ItemsDonated)
 		NiagaraComponent->SetActive(true);
 		OnDonationGoalReached.Broadcast();
 		return DonationGoalReached = true;
+		//Call custom event, actor move.
 	}
 	return DonationGoalReached = false;
 }

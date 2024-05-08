@@ -6,6 +6,7 @@
 #include "GangAIController.h"
 #include "GangAIManager.h"
 #include "NavigationSystem.h"
+#include "NiagaraComponent.h"
 #include "Cupcake/EnemyCharacter.h"
 #include "Cupcake/WeaponBase.h"
 #include "Cupcake/Actors/AttributeComponent.h"
@@ -27,6 +28,11 @@ AGangAICharacter::AGangAICharacter()
 	bIsAttacking = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ChargeFX"));
+	NiagaraComponent->SetupAttachment(RootComponent);
+
+
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +40,7 @@ void AGangAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	SpawnLocation = GetActorLocation();
+	NiagaraComponent->SetActive(false);
 	
 	TArray<AActor*> FoundManagers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGangAIManager::StaticClass(), FoundManagers);
@@ -81,7 +88,7 @@ void AGangAICharacter::Tick(float DeltaTime)
 			UE_LOG(LogTemp, Warning, TEXT("Preparing to attack - AI is standing still"));
 			GetCharacterMovement()->StopMovementImmediately();
 			GetCharacterMovement()->DisableMovement();
-
+			NiagaraComponent->SetActive(true);
 			// Set a timer to call DoAttack after a 0.5 second delay
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 0.5f, false);
 		}
@@ -170,7 +177,7 @@ void AGangAICharacter::DoAttack()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	AIController->MoveToLocation(Player->GetActorLocation(), 1.0f, true);
-
+	NiagaraComponent->SetActive(false);
 	// Assuming the weapon should be enabled
 	if (Weapon)
 	{

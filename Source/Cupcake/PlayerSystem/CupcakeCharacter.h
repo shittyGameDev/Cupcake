@@ -87,10 +87,10 @@ public:
 	UFUNCTION()
 	void OnAttackFinished();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void EnableMovement();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void DisableMovement();
 
 	UFUNCTION()

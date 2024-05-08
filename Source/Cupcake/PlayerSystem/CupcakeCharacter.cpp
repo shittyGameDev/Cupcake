@@ -405,8 +405,9 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void ACupcakeCharacter::DisableMovement()
 {
-	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->DisableMovement();
+
 	bUseControllerRotationYaw = false;
 }
 

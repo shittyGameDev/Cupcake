@@ -4,26 +4,24 @@
 #include "WeaponBase.h"
 
 #include "Actors/AttributeComponent.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 AWeaponBase::AWeaponBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Set origo position
-	USphereComponent* OrigoPosition = CreateDefaultSubobject<USphereComponent>(TEXT("Origo"));
-	OrigoPosition->InitSphereRadius(10.f);
-	RootComponent = OrigoPosition;
+	// Weapon Mesh component
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	RootComponent = WeaponMesh;
 
-	// Collision component
-	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
-	CollisionComponent->SetupAttachment(RootComponent);
-	CollisionComponent->InitSphereRadius(50.0f);
-	CollisionComponent->SetCollisionProfileName(TEXT("Trigger"));
+	// Weapon Collision component
+	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
+	WeaponBox->SetupAttachment(GetRootComponent());
+	WeaponBox->SetCollisionProfileName(TEXT("Trigger"));
 
-	CollisionComponent->SetVisibility(true); // Set visibility to true
-
-	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnSphereOverlap);
+	// Bind overlap event
+	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnWeaponOverlap);
 }
 
 void AWeaponBase::BeginPlay()
@@ -31,38 +29,50 @@ void AWeaponBase::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AWeaponBase::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void AWeaponBase::OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
+	if (OtherActor != nullptr && OtherActor != this && OtherComp != nullptr)
 	{
 		if (OtherActor->GetComponentByClass<UAttributeComponent>())
 		{
-			UGameplayStatics::ApplyDamage(
-				OtherActor,
-				DamageAmount,
-				GetOwner()->GetInstigatorController(),
-				this,
-				UDamageType::StaticClass()
-			);
+			if (GetOwner() != nullptr && GetOwner() != OtherActor)
+			{
+				UGameplayStatics::ApplyDamage(
+					OtherActor,
+					DamageAmount,
+					GetOwner()->GetInstigatorController(),
+					this,
+					UDamageType::StaticClass()
+				);
+			}
 		}
 	}
 }
 
-void AWeaponBase::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AWeaponBase::OnWeaponEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	
 }
 
-void AWeaponBase::EnableWeapon()
+void AWeaponBase::Equip()
+{
+	// Should show weapon and enable collision
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void AWeaponBase::Unequip()
+{
+	// Can still be shown but shoudlnt deal damage, therefore disable collison
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AWeaponBase::HideWeapon()
 {
 	SetActorHiddenInGame(false);
-	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void AWeaponBase::DisableWeapon()
+void AWeaponBase::ShowWeapon()
 {
 	SetActorHiddenInGame(true);
-	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

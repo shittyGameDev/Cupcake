@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GangAIController.h"
 #include "GangAIManager.h"
 #include "Cupcake/Actors/DamageableInterface.h"
 #include "GameFramework/Character.h"
@@ -11,7 +10,7 @@
 #include "GangAICharacter.generated.h"
 
 class UAIPerceptionComponent;
-
+class UNiagaraComponent;
 UCLASS()
 class AGangAICharacter : public ACharacter,  public IDamageableInterface
 {
@@ -67,7 +66,10 @@ public:
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
 	
 	FTimerHandle TimerHandle_PreAttack; 
-	FTimerHandle TimerHandle_AttackFinished; 
+	FTimerHandle TimerHandle_AttackFinished;
+
+	UPROPERTY(EditAnywhere)
+	UNiagaraComponent* NiagaraComponent; 
 
 protected:
 	//AAIController* AIController;

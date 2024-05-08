@@ -96,7 +96,7 @@ public:
 	UFUNCTION()
 	void ToggleMapViaKey();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
+	UPROPERTY(EditAnywhere, Category = "Interaction")
 	UBoxComponent* InteractionBox;
 
 	UFUNCTION()

@@ -95,6 +95,9 @@
 		<property name="volume">
 			<value>5</value>
 		</property>
+		<property name="pitch">
+			<value>-6.5</value>
+		</property>
 		<relationship name="modulators">
 			<destination>{997fb321-b3b6-40b0-b3bf-7fadd286539e}</destination>
 			<destination>{54bf8042-9230-421f-949b-574ac1c7f8c7}</destination>
@@ -131,7 +134,7 @@
 			<value>pitch</value>
 		</property>
 		<property name="amount">
-			<value>11</value>
+			<value>7</value>
 		</property>
 	</object>
 	<object class="RandomizerModulator" id="{54bf8042-9230-421f-949b-574ac1c7f8c7}">

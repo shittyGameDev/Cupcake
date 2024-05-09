@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "ObeliskActor.generated.h"
 
+class URepairWidget;
 class UNiagaraComponent;
 class UBaseItem;
 class UNewInventoryComponent;
@@ -49,6 +50,24 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category= "Craft | Item Reference")
 	UBaseItem* ItemReference;
 
+	UPROPERTY(EditInstanceOnly, Category= "Iron | Item Initialization")
+	FName RepairItemID;
+
+	UPROPERTY(EditInstanceOnly, Category= "Iron | Item Initialization")
+	int32 RepairItemQuantity;
+	
+	UPROPERTY(VisibleAnywhere, Category= "Iron | Item Reference")
+	UBaseItem* RepairItemReference;
+
+	UPROPERTY(EditInstanceOnly, Category= "Stone | Item Initialization")
+	FName RepairingDesiredItemID;
+
+	UPROPERTY(EditInstanceOnly, Category= "Stone | Item Initialization")
+	int32 RepairingItemQuantity;
+	
+	UPROPERTY(VisibleAnywhere, Category= "Stone | Item Reference")
+	UBaseItem* RepairingItemReference;
+
 	UPROPERTY()
 	UNewInventoryComponent* InventoryReference;
 
@@ -56,16 +75,29 @@ protected:
 	int32 DonationGoal = 1;
 	
 	UPROPERTY(VisibleAnywhere, Category="Donation")
-	int32 NumberOfItemsDonated;
+	int32 NumberOfWoodItemsDonated;
+
+	UPROPERTY(VisibleAnywhere, Category="Donation")
+	int32 NumberOfStoneItemsDonated;
+
+	UPROPERTY(VisibleAnywhere, Category="Donation")
+	int32 NumberOfIronItemsDonated;
 
 	UPROPERTY(EditAnywhere, Category= "Forage | Visual")
 	UNiagaraComponent* NiagaraComponent;
+
+
+	UPROPERTY(EditDefaultsOnly, Category="Widgets")
+	TSubclassOf<URepairWidget> RepairWidgetClass;
+
+	UPROPERTY()
+	URepairWidget* RepairWidget;
 
 	
 	
 	
 	UFUNCTION(BlueprintCallable ,Category="Donation")
-	bool CheckIfDonationReached(int32 ItemsDonated);
+	bool CheckIfDonationReached();
 
 
 public:	

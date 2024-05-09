@@ -41,6 +41,10 @@ bool AGangAIManager::CanAttack(AGangAICharacter* RequestingAI)
 
 	// Sort AI characters by their distance to the player
 	AActor* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	if(!Player)
+	{
+		return false;
+	}
 	RegisteredAICharacters.Sort([Player](const AGangAICharacter& A, const AGangAICharacter& B) {
 		return FVector::Dist(A.GetActorLocation(), Player->GetActorLocation()) <
 			   FVector::Dist(B.GetActorLocation(), Player->GetActorLocation());

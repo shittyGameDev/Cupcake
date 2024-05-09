@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UImage;
+class UWidgetAnimation;
 /**
  * 
  */
@@ -21,14 +22,22 @@ public:
 	UImage* StoneImage;
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* StoneQuantity;
+	UPROPERTY(Transient,BlueprintReadOnly, meta = (BindWidgetAnim))
+	UWidgetAnimation* StoneAnim;
+	
 	UPROPERTY(meta=(BindWidget))
 	UImage* IronImage;
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* IronQuantity;
+	UPROPERTY(Transient,BlueprintReadOnly, meta = (BindWidgetAnim))
+	UWidgetAnimation* IronAnim;
+	
 	UPROPERTY(meta=(BindWidget))
 	UImage* WoodImage;
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* WoodQuantity;
+	UPROPERTY(Transient,BlueprintReadOnly, meta = (BindWidgetAnim))
+	UWidgetAnimation* WoodAnim;
 
 
 	void IncreaseWoodQuantity(int NewWoodQuantity);

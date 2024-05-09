@@ -20,6 +20,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	UPROPERTY()
+	UUserWidget* ActivePickupNotificationWidget;
 
 public:	
 	// Called every frame
@@ -34,6 +36,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	UTheMapHandler* TheMapHandler;
 
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+	TSubclassOf<UUserWidget> PickupNotificationWidgetClass;
+	
 	UPROPERTY(EditInstanceOnly)
 	int32 id;
 };

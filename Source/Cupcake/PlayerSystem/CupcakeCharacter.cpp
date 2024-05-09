@@ -166,6 +166,7 @@ void ACupcakeCharacter::Attack()
 
 	if (!PlayerInventory->HasItemByID("axe")) return;
 
+	DoAttack();
 	Weapon->ShowWeapon();
 	Weapon->Equip();
 

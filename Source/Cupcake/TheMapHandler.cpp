@@ -23,7 +23,7 @@ void UTheMapHandler::HideImage(int32 ImageIndex)
 	case 4:
 		if (Image4)
 			Image4->SetVisibility(ESlateVisibility::Collapsed);
-			Image4->SetVisibility(ESlateVisibility::Collapsed);
+			
 		break;
 	default:
 		break;

@@ -8,25 +8,28 @@
 
 void URepairWidget::IncreaseWoodQuantity(int NewWoodQuantity)
 {
-	if (WoodQuantity)
+	if (WoodQuantity && WoodImage && WoodAnim)
 	{
 		WoodQuantity->SetText(FText::AsNumber(NewWoodQuantity));
+		PlayAnimation(WoodAnim);
 	}
 
 }
 
 void URepairWidget::IncreaseStoneQuantity(int NewStoneQuantity)
 {
-	if (StoneQuantity)
+	if (StoneQuantity && StoneImage && StoneAnim)
 	{
 		StoneQuantity->SetText(FText::AsNumber(NewStoneQuantity));
+		PlayAnimation(StoneAnim);
 	}
 }
 
 void URepairWidget::IncreaseIronQuantity(int NewIronQuantity)
 {
-	if (IronQuantity)
+	if (IronQuantity && IronImage && IronAnim)
 	{
 		IronQuantity->SetText(FText::AsNumber(NewIronQuantity));
+		PlayAnimation(IronAnim);
 	}
 }

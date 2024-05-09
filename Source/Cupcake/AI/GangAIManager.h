@@ -19,6 +19,8 @@ public:
 
 	void RegisterAICharacter(AGangAICharacter* AICharacter);
 
+	bool CanAttack(AGangAICharacter* RequestingAI);
+
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	//UBillboardComponent* BillboardComponent;
 };

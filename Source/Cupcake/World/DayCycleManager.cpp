@@ -233,8 +233,16 @@ void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
 void ADayCycleManager::ShiftDay()
 {
 	DayCycle++;
-	DayTransistion();
-	PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
+	ApplyInsanity();
+
+	// Delay DayTransition to allow ApplyInsanity effects to complete
+	FTimerHandle DayTransitionTimerHandle;
+	float delayDuration = 3.0f; // Set this duration based on the longest effect duration in ApplyInsanity
+	GetWorld()->GetTimerManager().SetTimer(DayTransitionTimerHandle, [this]()
+	{
+		DayTransistion();
+		PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
+	}, delayDuration, false);
 }
 
 void ADayCycleManager::SpawnTreeEvent()

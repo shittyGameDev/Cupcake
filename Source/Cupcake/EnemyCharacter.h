@@ -21,7 +21,6 @@ public:
 	
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void OnDeath_Implementation() override;
-	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -30,23 +29,13 @@ protected:
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
 
 	FTimerHandle TimerHandle_AttackFinished;
-
-
-	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
-	UDataTable* ItemDataTable;
-
-	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
-	FName DesiredItemID;
-
-	UPROPERTY(EditAnywhere, Category= "Drop | Item Initialization")
-	int32 ItemQuantity;
+	FTimerHandle TimerHandle_RestoreRotation;
 	
-	UPROPERTY(VisibleAnywhere, Category= "Drop | Item Reference")
-	UBaseItem* ItemReference;
-
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
 	void DoAttack();
-	void OnAttackFinished();
+	UFUNCTION(BlueprintCallable)
+	void DoSweepAttack();
+	void OnAttackFinished() const;
 };

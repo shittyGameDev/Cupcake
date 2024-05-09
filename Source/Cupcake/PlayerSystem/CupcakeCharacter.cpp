@@ -17,8 +17,10 @@
 #include "Cupcake/UI/BaseHUD.h"
 #include "Cupcake/World/Pickup.h"
 #include "EngineUtils.h"  
+#include "Components/BoxComponent.h"
 #include "Cupcake/TheMapObject.h"
 #include "Cupcake/Actors/AttributeComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -58,10 +60,9 @@ ACupcakeCharacter::ACupcakeCharacter()
 	PlayerInventory = CreateDefaultSubobject<UNewInventoryComponent>("PlayerInventory");
 	PlayerInventory->SetSlotsCapacity(20);
 
-	InteractionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionSphere"));
-	InteractionSphere->SetupAttachment(RootComponent);
-	InteractionSphere->SetSphereRadius(150.f);  // Set as needed for your interaction range
-	InteractionSphere->SetCollisionProfileName(TEXT("Trigger"));
+	InteractionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionBox"));
+	InteractionBox->SetupAttachment(RootComponent);
+	InteractionBox->SetCollisionProfileName(TEXT("Trigger"));
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -80,59 +81,15 @@ ACupcakeCharacter::ACupcakeCharacter()
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 }
 
-float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
-{
-	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-}
-
-void ACupcakeCharacter::OnDeath_Implementation()
-{
-	IDamageableInterface::OnDeath_Implementation();
-	
-	Destroy();
-}
-
-void ACupcakeCharacter::Attack()
-{	
-	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
-	if (!Weapon) return;
-
-	if (!PlayerInventory->HasItemByID("axe")) return;
-    
-	// Attach the weapon to the character, assuming you have a socket named "WeaponSocket" on the character
-	if (!Weapon->GetRootComponent()->IsAttachedTo(GetMesh()))
-	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ik_hand_root"));
-		//Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
-		UE_LOG(LogTemp, Warning, TEXT("Attached"));
-	}
-	
-	Weapon->SetOwner(this);
-	Weapon->EnableWeapon(); // Enable the weapon
-
-	// Set a timer to disable the weapon after a short duration, simulating an attack duration
-	// Assuming an attack takes 1 second; adjust this duration as needed
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 0.2f, false);
-}
-
-
-void ACupcakeCharacter::OnAttackFinished()
-{
-	if (Weapon)
-	{
-		Weapon->DisableWeapon(); // Disable the weapon after the attack is complete
-	}
-}
-
 void ACupcakeCharacter::BeginPlay()
 {
-	// Call the base class  
+	// Call the base class
 	Super::BeginPlay();
 
-	InteractionSphere->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
-	InteractionSphere->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
-
+	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
+	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
+	//InteractionBox->SetBoxExtent(FVector(0.f, 0.f, 0.f));
+	InteractionBox->SetBoxExtent(FVector(100.f, 50.f, 150.f));
 
 	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());
 	HUD = Cast<ABaseHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
@@ -140,17 +97,18 @@ void ACupcakeCharacter::BeginPlay()
 	// Create Weapon
 	if (WeaponBlueprint)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Created weapo"));
 		// Spawn the weapon
 		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
 
 		// Optionally, attach the weapon to the character
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
-
-		FRotator CurrentRotation = Weapon->GetActorRotation();
-		CurrentRotation.Yaw += 90.0f;
-		Weapon->SetActorRotation(CurrentRotation);
-		
-		Weapon->DisableWeapon();
+		Weapon->SetOwner(this);
+		Weapon->Unequip();
+		Weapon->HideWeapon();
+	} else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player: Missing Weapon Blueprint!"));
 	}
 
 	//Add Input Mapping Context
@@ -163,7 +121,6 @@ void ACupcakeCharacter::BeginPlay()
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-			
 		}
 	}
 	
@@ -173,18 +130,90 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (PlayerController)
-	{
-		FVector mouseLocation, mouseDirection;
-		PlayerController->DeprojectMousePositionToWorld(mouseLocation, mouseDirection);
-		
-		FRotator currentCharacterRotation = this->GetActorRotation();
-		FRotator targetRotation = mouseDirection.Rotation();
+	//UpdateFacingDirection();
+}
 
-		FRotator newRotation = FRotator(currentCharacterRotation.Pitch, targetRotation.Yaw, currentCharacterRotation.Roll);
-		this->SetActorRotation(newRotation);
+float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void ACupcakeCharacter::OnDeath_Implementation()
+{
+	IDamageableInterface::OnDeath_Implementation();
+
+	Destroy();
+}
+
+void ACupcakeCharacter::Attack()
+{	
+	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
+	if (!Weapon) return;
+
+	if (!PlayerInventory->HasItemByID("axe")) return;
+
+	Weapon->ShowWeapon();
+	Weapon->Equip();
+
+	// Attack duration
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 1.f, false);
+}
+
+void ACupcakeCharacter::OnAttackFinished()
+{
+	if (Weapon)
+	{
+		// Unequip weapon
+		Weapon->Unequip();
+		Weapon->HideWeapon();
 	}
 }
+
+void ACupcakeCharacter::UpdateFacingDirection()
+{
+	if (!GetController())
+		return;
+
+	// Retrieve the player controller
+	if (!PlayerController)
+		return;
+
+	// Get the mouse position on the screen
+	float MouseX, MouseY;
+	if (!PlayerController->GetMousePosition(MouseX, MouseY))
+		return;
+
+	// Convert the mouse position to a world direction
+	FVector WorldDirection;
+	FVector WorldLocation;
+	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), OUT WorldLocation, OUT WorldDirection))
+		return;
+
+	// Calculate the point in the world the mouse is pointing at
+	FVector StartLocation = FollowCamera->GetComponentLocation();
+	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend the direction to some far point
+
+	// Perform a line trace to ensure it does not hit anything before this point
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	GetWorld()->LineTraceSingleByChannel(OUT HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
+
+	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
+
+	// Calculate the direction from the character to the target point
+	FVector ToTarget = (TargetPoint - GetActorLocation()).GetSafeNormal();
+	FRotator TargetRotation = FRotationMatrix::MakeFromX(ToTarget).Rotator();
+
+	// Update the character rotation
+	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
+	NewRotation.Pitch = 0.0f; // Keep the pitch unchanged
+	NewRotation.Roll = 0.0f;  // Keep the roll unchanged
+	SetActorRotation(NewRotation);
+}
+
+
 
 void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -193,7 +222,6 @@ void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 		if (OtherActor != InteractionData.CurrentInteractable)
 		{
 			FoundInteractable(OtherActor);
-			return;
 		}
 	}
 }
@@ -371,8 +399,9 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void ACupcakeCharacter::DisableMovement()
 {
-	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->DisableMovement();
+
 	bUseControllerRotationYaw = false;
 }
 
@@ -485,6 +514,38 @@ void ACupcakeCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+
+FVector ACupcakeCharacter::GetMouseForwardDirection()
+{
+	if (!GetController())
+		return FVector::ZeroVector;
+	
+	if (!PlayerController)
+		return FVector::ZeroVector;
+
+	// Retrieve the player controller and get mouse position
+	float MouseX, MouseY;
+	if (!PlayerController->GetMousePosition(MouseX, MouseY))
+		return FVector::ZeroVector;
+
+	FVector WorldDirection;
+	FVector WorldLocation;
+	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), WorldLocation, WorldDirection))
+		return FVector::ZeroVector;
+
+	FVector StartLocation = FollowCamera->GetComponentLocation();
+	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend the direction to a far point
+
+	// Perform a line trace to determine where the mouse is pointing in the world
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
+
+	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
+	return (TargetPoint - GetActorLocation()).GetSafeNormal();
 }
 
 void ACupcakeCharacter::Look(const FInputActionValue& Value)

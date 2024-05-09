@@ -4,7 +4,10 @@
 #include "BaseHUD.h"
 #include "MainMenu.h"
 #include "InteractionWidget.h"
+#include "PickupWidget.h"
 #include "Components/ProgressBar.h"
+#include "Cupcake/Items/BaseItem.h"
+#include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 
 
 ABaseHUD::ABaseHUD()
@@ -28,6 +31,13 @@ void ABaseHUD::BeginPlay()
 		InteractionWidget->AddToViewport(-1);
 		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed); //Tydligen har Collapsed en bättre påverkan på performance än Hidden
 	}
+
+	PlayerCharacter = Cast<ACupcakeCharacter>(GetOwningPawn());
+	if(PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("I found the player"));
+		PlayerCharacter->GetInventory()->OnPickup.AddDynamic(this, &ABaseHUD::DisplayPickup);
+	}
 }
 
 void ABaseHUD::DisplayMenu()
@@ -35,7 +45,9 @@ void ABaseHUD::DisplayMenu()
 	if(MainMenuWidget)
 	{
 		bIsMenuVisible = true;
-		MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+		OpenMenu.Broadcast();
+		AnimateOpenMenu();
+		//MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -43,8 +55,10 @@ void ABaseHUD::HideMenu()
 {
 	if(MainMenuWidget)
 	{
+		OpenMenu.Broadcast();
 		bIsMenuVisible = false;
-		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		AnimateCloseMenu();
+		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -53,17 +67,38 @@ void ABaseHUD::ToggleMenu()
 	if(bIsMenuVisible)
 	{
 		HideMenu();
-
 		const FInputModeGameOnly InputMode;
 		GetOwningPlayerController()->SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(false);
 	}
 	else
 	{
 		DisplayMenu();
 		const FInputModeGameAndUI InputMode;
 		GetOwningPlayerController()->SetInputMode(InputMode);
-		GetOwningPlayerController()->SetShowMouseCursor(true);
+	}
+}
+
+void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
+{
+	// Create the pickup widget and add it to the viewport with a high priority.
+	PickupWidget = CreateWidget<UPickupWidget>(GetWorld(), PickupWidgetClass);
+	if (PickupWidget)
+	{
+		PickupWidget->AddToViewport(5);
+
+		if (ItemRef && ItemRef->AssetData.Icon) // Ensure the item and icon are valid.
+			{
+			FSlateBrush NewBrush;
+			NewBrush.SetResourceObject(ItemRef->AssetData.Icon);
+			NewBrush.ImageSize = PickupWidget->ItemIcon->GetBrush().ImageSize;
+			NewBrush.DrawAs = ESlateBrushDrawType::Image; // Specify how to draw this brush.
+
+			PickupWidget->ItemIcon->SetBrush(NewBrush);
+			}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to create the widget"));
 	}
 }
 

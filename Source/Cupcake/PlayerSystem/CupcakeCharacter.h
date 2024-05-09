@@ -11,6 +11,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UBoxComponent;
 class UBaseItem;
 class UNewInventoryComponent;
 class ABaseHUD;
@@ -86,17 +87,17 @@ public:
 	UFUNCTION()
 	void OnAttackFinished();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void EnableMovement();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void DisableMovement();
 
 	UFUNCTION()
 	void ToggleMapViaKey();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
-	USphereComponent* InteractionSphere;
+	UPROPERTY(EditAnywhere, Category = "Interaction")
+	UBoxComponent* InteractionBox;
 
 	UFUNCTION()
 	ATheMapObject* FindMapObject();
@@ -123,6 +124,7 @@ protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	FVector GetMouseForwardDirection();
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
@@ -174,6 +176,7 @@ protected:
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	void UpdateFacingDirection();
 
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
 

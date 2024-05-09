@@ -130,6 +130,8 @@ void AGangAICharacter::OnDeath_Implementation()
 
 void AGangAICharacter::OnDamage_Implementation()
 {
+	FVector ImpulseDirection = -GetActorForwardVector() + FVector(0, 0, 1); // Up and backward
+	GetMesh()->AddImpulse(ImpulseDirection * 50000.0f); // Apply an impulse
 	if (!bIsChasing)
 	{
 		bIsChasing = true;

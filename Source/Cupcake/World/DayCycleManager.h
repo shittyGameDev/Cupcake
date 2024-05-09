@@ -46,6 +46,9 @@ public:
 	// Sets default values for this actor's properties
 	ADayCycleManager();
 
+	UFUNCTION(BlueprintCallable)
+	FVector GetPlayerSpawnLocation() { return PlayerSpawnPoint; };
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

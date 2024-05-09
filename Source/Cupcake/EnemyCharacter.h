@@ -23,8 +23,13 @@ public:
 	virtual void OnDeath_Implementation() override;
 protected:
 	virtual void BeginPlay() override;
-	
+
+	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
 	AWeaponBase* Weapon;
+
+	UFUNCTION(BlueprintGetter)
+	AWeaponBase* GetWeapon() const { return Weapon; }
+	
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
 

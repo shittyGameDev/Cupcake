@@ -136,7 +136,20 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
+	if (!bCanTakeDamage) {
+		// Actor can't take damage currently
+		return 0.0f;
+	}
+	
+	bCanTakeDamage = false; // Disable damage taking
+	GetWorldTimerManager().SetTimer(DamageDelayTimerHandle, this, &ACupcakeCharacter::EnableDamageTaking, 0.5f, false);
+
 	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void ACupcakeCharacter::EnableDamageTaking()
+{
+	bCanTakeDamage = true;
 }
 
 void ACupcakeCharacter::OnDeath_Implementation()

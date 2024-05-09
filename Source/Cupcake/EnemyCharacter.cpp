@@ -43,6 +43,7 @@ void AEnemyCharacter::BeginPlay()
 		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
 		Weapon->SetOwner(this);
 		Weapon->HideWeapon();
+		Weapon->Unequip();
 
 		// Attach the weapon
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));

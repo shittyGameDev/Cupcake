@@ -88,7 +88,7 @@ void ACupcakeCharacter::BeginPlay()
 
 	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
 	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
-
+	//InteractionBox->SetBoxExtent(FVector(0.f, 0.f, 0.f));
 	InteractionBox->SetBoxExtent(FVector(100.f, 50.f, 150.f));
 
 	UE_LOG(LogTemp, Warning, TEXT("Inventory slots: %d"), PlayerInventory->GetSlotsCapacity());

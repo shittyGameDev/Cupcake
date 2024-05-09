@@ -64,6 +64,9 @@ void AGangAICharacter::BeginPlay()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("AImanager hittades"));
 			AIManager->RegisterAICharacter(this);
+		}else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AImanager hittas inte"));
 		}
 	}
 	Patrol();

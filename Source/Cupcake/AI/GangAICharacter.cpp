@@ -23,6 +23,7 @@ AGangAICharacter::AGangAICharacter()
 	//PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 	PatrolRadius = 500.0f;
 	AttackDistance = 200.0f;
+	DashDistance = 200.0f;
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 	bIsChasing = false;
 	bIsAttacking = false;
@@ -41,7 +42,7 @@ void AGangAICharacter::BeginPlay()
 	Super::BeginPlay();
 	SpawnLocation = GetActorLocation();
 	NiagaraComponent->SetActive(false);
-	
+	Player = UGameplayStatics::GetPlayerPawn(this, 0);
 	TArray<AActor*> FoundManagers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGangAIManager::StaticClass(), FoundManagers);
 	if (WeaponBlueprint)
@@ -72,13 +73,12 @@ void AGangAICharacter::BeginPlay()
 void AGangAICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AActor* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	
 	if(!Player)
 	{
 		return;
 	}
 	float DistanceToPlayer = FVector::Dist(Player->GetActorLocation(), GetActorLocation());
-
 	if (bIsChasing && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_Cooldown))
 	{
 		if (DistanceToPlayer > ChaseDistance)
@@ -87,17 +87,12 @@ void AGangAICharacter::Tick(float DeltaTime)
 		}
 		else if (DistanceToPlayer <= AttackDistance && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack) && !bIsAttacking)
 		{
-			// Log the attack initiation and disable movement
-			bIsAttacking = true;
-			UE_LOG(LogTemp, Warning, TEXT("Preparing to attack - AI is standing still"));
-			GetCharacterMovement()->StopMovementImmediately();
-			GetCharacterMovement()->DisableMovement();
-			TargetAttackPosition = Player->GetActorLocation();
-			NiagaraComponent->SetActive(true);
-			// Set a timer to call DoAttack after a 0.5 second delay
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 1.f, false);
+			if (AIManager && AIManager->CanAttack(this))
+			{
+				InitiateAttack(Player);
+			}
 		}
-		else if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack))
+		else if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack) && !bIsAttacking)
 		{
 			// If not within attack range and not preparing an attack, continue chasing
 			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
@@ -175,15 +170,24 @@ void AGangAICharacter::ReturnToPatrol()
 
 void AGangAICharacter::DoAttack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attacking - Dashing towards the target"));
-	AActor* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	UE_LOG(LogTemp, Warning, TEXT("Preparing to dash towards the target"));
+
+	
+	if (!Player) return; // Safety check to ensure the player exists
+
+	FVector Direction = Player->GetActorLocation() - GetActorLocation();
+	Direction.Normalize();  // Get the unit vector in the direction of the player
+
+	// Calculate the dash target position
+	FVector DashTarget = GetActorLocation() + Direction * DashDistance;
+
 	AAIController* AIController = Cast<AGangAIController>(GetController());
-	// Enable movement and dash towards the player
+	// Enable movement and dash towards the calculated target position
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	GetCharacterMovement()->MaxWalkSpeed = 800.f;
-	AIController->MoveToLocation(TargetAttackPosition, 1.0f, true);
+	GetCharacterMovement()->MaxWalkSpeed = 800.f; // Speed might be adjusted based on gameplay balance
+	AIController->MoveToLocation(DashTarget, 1.0f, true);  // Dash to the calculated point
+
 	NiagaraComponent->SetActive(false);
-	// Assuming the weapon should be enabled
 	if (Weapon)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Weapon is not null"));
@@ -215,12 +219,24 @@ void AGangAICharacter::OnAttackFinished()
 		Weapon->HideWeapon();
 	}
 	
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Cooldown, this, &AGangAICharacter::EnableChasing, 2.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Cooldown, this, &AGangAICharacter::EnableChasing, .5f, false);
 }
 
 void AGangAICharacter::EnableChasing()
 {
 	bIsChasing = true;
 }
+
+void AGangAICharacter::InitiateAttack(AActor* Actor)
+{
+	bIsAttacking = true;
+	UE_LOG(LogTemp, Warning, TEXT("Preparing to attack - AI is standing still"));
+	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->DisableMovement();
+	TargetAttackPosition = Actor->GetActorLocation();
+	NiagaraComponent->SetActive(true);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 1.f, false);
+}
+
 
 

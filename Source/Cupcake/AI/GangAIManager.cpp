@@ -25,7 +25,7 @@ void AGangAIManager::InitiateGroupChase()
 		if (AIChar)
 		{
 			AIChar->StartChasing(Player); // All AIs will start chasing the player
-			UE_LOG(LogTemp, Warning, TEXT("AI Character %s is now chasing"), *AIChar->GetName());
+			
 		}
 	}
 }

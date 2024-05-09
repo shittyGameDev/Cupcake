@@ -171,11 +171,11 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		if(ItemToDonate)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test"));
+			NumberOfStoneItemsDonated = ItemToDonate->Quantity;
 			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, RepairItemReference->Quantity);
-			NumberOfStoneItemsDonated++;
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
-			RepairWidget->IncreaseStoneQuantity(NumberOfIronItemsDonated);
+			RepairWidget->IncreaseStoneQuantity(NumberOfStoneItemsDonated);
 			return;
 		}
 		else
@@ -193,8 +193,8 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		if(ItemToDonate)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test"));
+			NumberOfIronItemsDonated = ItemToDonate->Quantity;
 			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, RepairingItemReference->Quantity);
-			NumberOfIronItemsDonated++;
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
 			RepairWidget->IncreaseIronQuantity(NumberOfIronItemsDonated);

@@ -40,7 +40,7 @@ void AObeliskActor::BeginPlay()
 	{
 		RepairWidget = CreateWidget<URepairWidget>(GetWorld(), RepairWidgetClass);
 		RepairWidget->AddToViewport(5);
-		RepairWidget->SetVisibility(ESlateVisibility::Visible); //Tydligen har Collapsed en bättre påverkan på performance än Hidden
+		RepairWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
 }
@@ -111,6 +111,11 @@ void AObeliskActor::BeginFocus()
 	{
 		Mesh->SetRenderCustomDepth(true);
 	}
+
+	if(RepairWidget)
+	{
+		RepairWidget->SetVisibility(ESlateVisibility::Visible); //Tydligen har Collapsed en bättre påverkan på performance än Hidden
+	}
 }
 
 void AObeliskActor::EndFocus()
@@ -118,6 +123,10 @@ void AObeliskActor::EndFocus()
 	if(Mesh)
 	{
 		Mesh->SetRenderCustomDepth(false);
+	}
+	if(RepairWidget)
+	{
+		RepairWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -140,10 +149,11 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		if(ItemToDonate)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test"));
+			NumberOfWoodItemsDonated = ItemToDonate->Quantity;
 			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemReference->Quantity);
-			NumberOfWoodItemsDonated++;
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
+			RepairWidget->IncreaseWoodQuantity(NumberOfWoodItemsDonated);
 			return;
 		}
 		else
@@ -165,6 +175,7 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 			NumberOfStoneItemsDonated++;
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
+			RepairWidget->IncreaseStoneQuantity(NumberOfIronItemsDonated);
 			return;
 		}
 		else
@@ -186,7 +197,7 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 			NumberOfIronItemsDonated++;
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
-			
+			RepairWidget->IncreaseIronQuantity(NumberOfIronItemsDonated);
 		}
 		else
 		{

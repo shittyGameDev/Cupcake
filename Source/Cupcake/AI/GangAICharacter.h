@@ -74,6 +74,10 @@ public:
 	AWeaponBase* Weapon;
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
+	UPROPERTY(EditDefaultsOnly, Category = "DamageEffects")
+	UMaterialInterface* HitMaterial;
+	UPROPERTY(EditDefaultsOnly, Category = "DamageEffects")
+	UMaterialInterface* NormalMaterial;
 	
 	FTimerHandle TimerHandle_PreAttack; 
 	FTimerHandle TimerHandle_AttackFinished;

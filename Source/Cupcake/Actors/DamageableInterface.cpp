@@ -9,7 +9,9 @@ float IDamageableInterface::TakeDamage(float DamageAmount, FDamageEvent const& D
 		UE_LOG(LogTemp, Warning, TEXT("IDamageableInterface::TakeDamage, Attributes is NULL"));
 		return 0.f;
 	}
+	
 	Attributes->ReceiveDamage(DamageAmount);
 	Execute_OnDamage(Attributes->GetOwner());
+
 	return DamageAmount;
 }

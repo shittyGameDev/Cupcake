@@ -86,7 +86,7 @@ void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 	{
 		PickupWidget->AddToViewport(5);
 
-		if (ItemRef && ItemRef->AssetData.Icon) // Ensure the item and icon are valid.
+		if (ItemRef && ItemRef->AssetData.Icon && ItemRef->Quantity) // Ensure the item and icon are valid.
 			{
 			FSlateBrush NewBrush;
 			NewBrush.SetResourceObject(ItemRef->AssetData.Icon);
@@ -94,6 +94,7 @@ void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 			NewBrush.DrawAs = ESlateBrushDrawType::Image; // Specify how to draw this brush.
 
 			PickupWidget->ItemIcon->SetBrush(NewBrush);
+			PickupWidget->ItemQuantity->SetText(FText::AsNumber(ItemRef->Quantity));
 			}
 	}
 	else
@@ -143,7 +144,3 @@ void ABaseHUD::UpdateInteractionProgress(float Progress) const
 		}
 	}
 }
-
-
-
-

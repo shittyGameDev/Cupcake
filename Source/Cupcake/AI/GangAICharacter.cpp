@@ -130,6 +130,12 @@ void AGangAICharacter::OnDeath_Implementation()
 
 void AGangAICharacter::OnDamage_Implementation()
 {
+	GetMesh()->SetMaterial(0, HitMaterial);
+	FTimerHandle TimerHandle_ResetMaterial;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ResetMaterial, [this]()
+	{
+		GetMesh()->SetMaterial(0, NormalMaterial);
+	}, 0.1f, false);
 	if (!bIsChasing)
 	{
 		bIsChasing = true;

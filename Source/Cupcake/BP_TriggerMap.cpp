@@ -29,6 +29,8 @@ ABP_TriggerMap::ABP_TriggerMap()
 void ABP_TriggerMap::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
 	
 	if(TheMapHandler)
 	{
@@ -51,23 +53,14 @@ void ABP_TriggerMap::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	ATheMapObject* MapObject = Cast<ATheMapObject>(UGameplayStatics::GetActorOfClass(GetWorld(), ATheMapObject::StaticClass()));
 	if (MapObject && OtherActor && OtherActor->IsA(ACupcakeCharacter::StaticClass()))
 	{
-		if(!ActivePickupNotificationWidget && PickupNotificationWidgetClass)
+		UTheMapHandler* MapHandler = Cast<UTheMapHandler>(MapObject->MapWidget); // Casta till din specifika widget klass
+		if (MapHandler)
 		{
-			ActivePickupNotificationWidget = CreateWidget<UUserWidget>(GetWorld(), PickupNotificationWidgetClass);
-			if (ActivePickupNotificationWidget)
-			{
-				ActivePickupNotificationWidget->AddToViewport(100);
-				UTheMapHandler* MapHandler = Cast<UTheMapHandler>(MapObject->MapWidget); // Casta till din specifika widget klass
-				if (MapHandler)
-				{
-					// Använd någon logik för att bestämma vilken bild som ska döljas baserat på 'id' eller annan logik
-					MapHandler->HideImage(id); // Antag att HideImage är en metod i UTheMapHandler som tar ett ID och döljer motsvarande bild.
-					UE_LOG(LogTemp, Warning, TEXT("Triggered image hide"));
-					Destroy();
-				}
-			}
+			// Använd någon logik för att bestämma vilken bild som ska döljas baserat på 'id' eller annan logik
+			MapHandler->HideImage(id); // Antag att HideImage är en metod i UTheMapHandler som tar ett ID och döljer motsvarande bild.
+			UE_LOG(LogTemp, Warning, TEXT("Triggered image hide"));
+			Destroy();
 		}
-
 	}
 }
 	

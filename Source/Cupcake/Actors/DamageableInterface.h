@@ -21,7 +21,8 @@ public:
 	explicit IDamageableInterface(UAttributeComponent* InAttributes) : Attributes(InAttributes) {}
 	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
-	
+	void ResetDamageCooldown();
+
 	UFUNCTION(BlueprintNativeEvent, Category = "Health")
 	void OnDeath();
 	
@@ -29,7 +30,4 @@ public:
 	void OnDamage();
 	
 	UAttributeComponent* Attributes;
-
-private:
-	FTimerHandle TimerHandle_DamageCooldown;
 };

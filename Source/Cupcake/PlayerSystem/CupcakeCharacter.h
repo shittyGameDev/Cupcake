@@ -185,5 +185,10 @@ public:
 	void DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop);
 
 	void RemoveItemFromInventory(UBaseItem* ItemToRemove, const int32 QuantityToRemove);
+
+private:
+	FTimerHandle DamageDelayTimerHandle;
+	void EnableDamageTaking();
+	bool bCanTakeDamage = true;
 };
 

@@ -44,17 +44,8 @@ void AEnemyCharacter::BeginPlay()
 		Weapon->SetOwner(this);
 		Weapon->ShowWeapon();
 
-		// Attach the weapon to the mannequin's socket with the same rotation
-		if (GetMesh()->DoesSocketExist(TEXT("WeaponSocket")))
-		{
-			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
-		}
-		else
-		{
-			Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
-		}
-
-		Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		// Attach the weapon
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
 	}
 	else
 	{
@@ -75,16 +66,12 @@ void AEnemyCharacter::Attack()
 	Weapon->Equip();
 
 	UE_LOG(LogTemp, Warning, TEXT("Attack"));
-	
-	// Duration for attack
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.2f, false);
 }
 
 void AEnemyCharacter::OnAttackFinished() const
 {
 	if (Weapon)
 	{
-		// Disable weapon collider
 		Weapon->Unequip();
 	}
 }

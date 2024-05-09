@@ -82,7 +82,11 @@ public:
 	UFUNCTION()
 	virtual void OnDeath_Implementation();
 
+	UFUNCTION()
 	void Attack();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DoAttack();
 
 	UFUNCTION()
 	void OnAttackFinished();

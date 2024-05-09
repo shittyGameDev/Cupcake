@@ -64,6 +64,9 @@ void AGangAICharacter::BeginPlay()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("AImanager hittades"));
 			AIManager->RegisterAICharacter(this);
+		}else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AImanager hittas inte"));
 		}
 	}
 	Patrol();
@@ -119,6 +122,14 @@ void AGangAICharacter::StartChasing(AActor* Target)
 float AGangAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
                                    AActor* DamageCauser)
 {
+	// Cast the DamageCauser to AGangAICharacter
+	AGangAICharacter* CausingCharacter = Cast<AGangAICharacter>(DamageCauser);
+    
+	// If the cast is successful, prevent damage between AI characters
+	if (CausingCharacter)
+	{
+		return 0.0f; // Prevent damage
+	}
 	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 

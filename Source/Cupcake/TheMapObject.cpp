@@ -58,6 +58,7 @@ void ATheMapObject::BeginPlay()
 		}
 	}
 	MapWidget->SetVisibility(ESlateVisibility::Collapsed);
+	
 }
 
 void ATheMapObject::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

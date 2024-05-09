@@ -36,14 +36,14 @@ private:
 
 public:
 	// Enable collision
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void Equip();
 	// Disable collision
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void Unequip();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void HideWeapon();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ShowWeapon();
 };

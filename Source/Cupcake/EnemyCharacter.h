@@ -39,8 +39,6 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
-	void DoAttack();
-	UFUNCTION(BlueprintCallable)
-	void DoSweepAttack();
+	void Attack();
 	void OnAttackFinished() const;
 };

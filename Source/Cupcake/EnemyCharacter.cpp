@@ -42,7 +42,7 @@ void AEnemyCharacter::BeginPlay()
 		// Spawn the weapon
 		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
 		Weapon->SetOwner(this);
-		Weapon->ShowWeapon();
+		Weapon->HideWeapon();
 
 		// Attach the weapon
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
@@ -63,7 +63,7 @@ void AEnemyCharacter::Attack()
 {
 	if (!Weapon) return;
 	
-	Weapon->Equip();
+	//Weapon->Equip();
 
 	UE_LOG(LogTemp, Warning, TEXT("Attack"));
 }

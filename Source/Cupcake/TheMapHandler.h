@@ -13,7 +13,6 @@ class CUPCAKE_API UTheMapHandler : public UUserWidget
 
 public:
 	
-	
 	UPROPERTY(meta = (BindWidget))
 	UImage* Image1;
 	UPROPERTY(meta = (BindWidget))

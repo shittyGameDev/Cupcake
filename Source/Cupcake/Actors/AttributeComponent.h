@@ -28,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetMaxHealth(float NewHealth);
 	
 	UFUNCTION(BlueprintCallable)
 	float GetMaxHealth() const;

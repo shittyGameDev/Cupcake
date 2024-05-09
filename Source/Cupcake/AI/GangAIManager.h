@@ -2,7 +2,6 @@
 #pragma once
 #include "GameFramework/Actor.h"
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "GangAIManager.generated.h"
 
 
@@ -20,6 +19,8 @@ public:
 
 	void RegisterAICharacter(AGangAICharacter* AICharacter);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	UBillboardComponent* BillboardComponent;
+	bool CanAttack(AGangAICharacter* RequestingAI);
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	//UBillboardComponent* BillboardComponent;
 };

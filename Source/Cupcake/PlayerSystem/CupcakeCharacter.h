@@ -11,6 +11,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UBoxComponent;
 class UBaseItem;
 class UNewInventoryComponent;
 class ABaseHUD;
@@ -41,6 +42,9 @@ class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
+	APlayerController* PlayerController;
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -66,10 +70,9 @@ class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 	UInventoryComponent* InventoryComponent;
 
 
-	/** Look Input Action 
+	//Look Input Action 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
-	*/
 
 public:
 	ACupcakeCharacter();
@@ -84,14 +87,17 @@ public:
 	UFUNCTION()
 	void OnAttackFinished();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void EnableMovement();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void DisableMovement();
 
 	UFUNCTION()
 	void ToggleMapViaKey();
+
+	UPROPERTY(EditAnywhere, Category = "Interaction")
+	UBoxComponent* InteractionBox;
 
 	UFUNCTION()
 	ATheMapObject* FindMapObject();
@@ -118,6 +124,7 @@ protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	FVector GetMouseForwardDirection();
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
@@ -138,6 +145,12 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	UPROPERTY(VisibleAnywhere, Category="Interaction")
 	TScriptInterface<IInteractionInterface> TargetInteractable;
 
@@ -153,7 +166,7 @@ protected:
 
 	FInteractionData InteractionData;
 
-	void PerformInteractionCheck();
+	//void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
 	void UpdateInteraction();
@@ -163,6 +176,7 @@ protected:
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	void UpdateFacingDirection();
 
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
 

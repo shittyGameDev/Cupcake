@@ -4,6 +4,7 @@
 #include "NewInventoryComponent.h"
 
 #include "Cupcake/Items/BaseItem.h"
+#include "Cupcake/UI/BaseHUD.h"
 
 // Sets default values for this component's properties
 UNewInventoryComponent::UNewInventoryComponent()
@@ -202,6 +203,7 @@ FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 
 		if(StackableAmountAdded == InitialRequestedAddAmount)
 		{
+			OnPickup.Broadcast(InputItem);
 			return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(
 				FText::FromString("Successfully added {0} {1}(s) to the inventory."),
 				InitialRequestedAddAmount,
@@ -210,6 +212,7 @@ FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 
 		if(StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
 		{
+			OnPickup.Broadcast(InputItem);
 			OnInventoryUpdated.Broadcast();
 			return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
 				FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
@@ -234,6 +237,18 @@ void UNewInventoryComponent::AddNewItem(UBaseItem* Item, const int32 AmountToAdd
 {
 	UBaseItem* NewItem;
 
+	if(Item->ID.IsEqual("forestItem"))
+	{
+		OnKeyItemAdded.Broadcast();
+	} else if (Item->ID.IsEqual("caveItem"))
+	{
+		OnKeyItemAdded.Broadcast();
+	}
+	else if (Item->ID.IsEqual("hillItem"))
+	{
+		OnKeyItemAdded.Broadcast();
+	}
+
 	if(Item->bIsCopy|| Item->bIsPickup)
 	{
 		//If the item is already a copy, or is a world pickup
@@ -249,6 +264,7 @@ void UNewInventoryComponent::AddNewItem(UBaseItem* Item, const int32 AmountToAdd
 	NewItem->OwningInventory = this;
 	NewItem->SetQuantity(AmountToAdd);
 
+	OnPickup.Broadcast(NewItem);
 	InventoryContents.Add(NewItem);
 	OnInventoryUpdated.Broadcast();
 }

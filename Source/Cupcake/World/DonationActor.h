@@ -16,6 +16,12 @@ class CUPCAKE_API ADonationActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADonationActor();
+	
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	UFUNCTION()
+	void DonationGoalAction();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,10 +33,23 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	UFUNCTION()
-	void DestroyActor();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
+	float MoveDistance = 100.0f;
+
+	// The time over which to move
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
+	float MoveDuration = 2.0f; 
+
+
+private:
+	// Target location for movement
+	UPROPERTY(EditAnywhere)
+	FVector TargetLocation;
+
+	UPROPERTY(EditAnywhere)
+	float MoveTimer;
+
+	UPROPERTY()
+	bool bIsMoving;
 
 };

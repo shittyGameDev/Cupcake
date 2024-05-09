@@ -4,9 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Cupcake/Items/BaseItem.h"
 #include "NewInventoryComponent.generated.h"
 
+class ABaseHUD;
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
+DECLARE_MULTICAST_DELEGATE(FOnKeyItemAdded);
+//DECLARE_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*, Item);
 
 class UBaseItem;
 
@@ -72,7 +77,9 @@ class CUPCAKE_API UNewInventoryComponent : public UActorComponent
 
 public:	
 
+	FOnKeyItemAdded OnKeyItemAdded;
 	FOnInventoryUpdated OnInventoryUpdated;
+	FOnPickup OnPickup;
 	
 	UNewInventoryComponent();
 

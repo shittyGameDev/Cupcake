@@ -21,14 +21,25 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	bool RegenerateHealth(float HealthAmount);
+	
+	void DoDamage(float DamageAmount);
+	void ReceiveDamage(float Damage);
+
+	UFUNCTION(BlueprintCallable)
+	float GetHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetMaxHealth(float NewHealth);
+	
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHealth() const;
+
 private:
 	// Current Health
-	UPROPERTY(EditAnywhere, Category="Actor Attributes")
+	UPROPERTY(Blueprintable, EditAnywhere, Category="Actor Attributes")
 	float Health = 100.f;
 	 
-	UPROPERTY(EditAnywhere, Category="Actor Attributes")
+	UPROPERTY(Blueprintable, EditAnywhere, Category="Actor Attributes")
 	float MaxHealth = 100.f;
-
-public:
-	void ReceiveDamage(float Damage);
 };

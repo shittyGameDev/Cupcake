@@ -130,8 +130,12 @@ void AGangAICharacter::OnDeath_Implementation()
 
 void AGangAICharacter::OnDamage_Implementation()
 {
-	FVector ImpulseDirection = -GetActorForwardVector() + FVector(0, 0, 1); // Up and backward
-	GetMesh()->AddImpulse(ImpulseDirection * 50000.0f); // Apply an impulse
+	GetMesh()->SetMaterial(0, HitMaterial);
+	FTimerHandle TimerHandle_ResetMaterial;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ResetMaterial, [this]()
+	{
+		GetMesh()->SetMaterial(0, NormalMaterial);
+	}, 0.1f, false);
 	if (!bIsChasing)
 	{
 		bIsChasing = true;

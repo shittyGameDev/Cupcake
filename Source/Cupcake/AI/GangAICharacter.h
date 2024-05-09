@@ -70,8 +70,11 @@ public:
 	float DashDistance;
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	FVector CurrentPatrolPoint;
-	UPROPERTY(EditAnywhere);
+	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
 	AWeaponBase* Weapon;
+
+	UFUNCTION(BlueprintGetter)
+	AWeaponBase* GetWeapon() const { return Weapon; }
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
 	UPROPERTY(EditDefaultsOnly, Category = "DamageEffects")

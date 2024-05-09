@@ -28,8 +28,8 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 void AEnemyCharacter::OnDeath_Implementation()
 {
+	Weapon->Destroy();
 	IDamageableInterface::OnDeath_Implementation();
-	
 	Destroy();
 }
 
@@ -58,7 +58,7 @@ void AEnemyCharacter::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing Weapon!"), *GetActorLabel());
+		UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing BP_Weapon!"), *GetActorLabel());
 	}
 }
 
@@ -74,7 +74,7 @@ void AEnemyCharacter::DoAttack()
 	
 	Weapon->Equip();
 
-	UE_LOG(LogTemp, Warning, TEXT("Swing"));
+	UE_LOG(LogTemp, Warning, TEXT("Attack"));
 
 	// The attack logic
 	
@@ -84,11 +84,7 @@ void AEnemyCharacter::DoAttack()
 
 void AEnemyCharacter::DoSweepAttack()
 {
-	if (!Weapon) return;
-
-	Weapon->Equip();
-
-	UE_LOG(LogTemp, Warning, TEXT("Sweep"));
+	DoAttack();
 	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.3f, false);
 }

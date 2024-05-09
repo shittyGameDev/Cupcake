@@ -49,7 +49,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EnableChasing();
 
+	UFUNCTION(BlueprintCallable)
+	void InitiateAttack(AActor* Actor);
+	
 	bool IsChasing() const { return bIsChasing; }
+
+	bool IsAttacking() const { return bIsAttacking; }
 
 	FVector GetRandomPatrolPoint();
 
@@ -61,6 +66,8 @@ public:
 	float ChaseDistance;
 	UPROPERTY(EditAnywhere, Category= "AI")
 	float AttackDistance;
+	UPROPERTY(EditAnywhere, Category= "AI")
+	float DashDistance;
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	FVector CurrentPatrolPoint;
 	UPROPERTY(EditAnywhere);
@@ -81,6 +88,7 @@ protected:
 	//AAIController* AIController;
 	bool bIsChasing;
 	bool bIsAttacking;
+	AActor* Player;
 	//PROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
 	//UAIPerceptionComponent* PerceptionComponent;
 

@@ -17,14 +17,15 @@ AGangAIManager::AGangAIManager()
 void AGangAIManager::InitiateGroupChase()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Initiating group chase for %d characters"), RegisteredAICharacters.Num());
+	AActor* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (!Player) return;
 
 	for (auto& AIChar : RegisteredAICharacters)
 	{
 		if (AIChar)
 		{
-			// Tvingar alla karaktärer att starta eller uppdatera sin jakt
+			AIChar->StartChasing(Player); // All AIs will start chasing the player
 			UE_LOG(LogTemp, Warning, TEXT("AI Character %s is now chasing"), *AIChar->GetName());
-			AIChar->StartChasing(UGameplayStatics::GetPlayerPawn(AIChar, 0));
 		}
 	}
 }
@@ -32,4 +33,18 @@ void AGangAIManager::InitiateGroupChase()
 void AGangAIManager::RegisterAICharacter(AGangAICharacter* AICharacter)
 {
 	RegisteredAICharacters.AddUnique(AICharacter);
+}
+
+bool AGangAIManager::CanAttack(AGangAICharacter* RequestingAI)
+{
+	if (!RegisteredAICharacters.Num()) return false;
+
+	// Sort AI characters by their distance to the player
+	AActor* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	RegisteredAICharacters.Sort([Player](const AGangAICharacter& A, const AGangAICharacter& B) {
+		return FVector::Dist(A.GetActorLocation(), Player->GetActorLocation()) <
+			   FVector::Dist(B.GetActorLocation(), Player->GetActorLocation());
+	});
+
+	return RegisteredAICharacters[0] == RequestingAI; // Only the closest AI can attack
 }

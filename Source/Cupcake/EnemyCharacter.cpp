@@ -68,25 +68,16 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	
 }
 
-void AEnemyCharacter::DoAttack()
+void AEnemyCharacter::Attack()
 {
 	if (!Weapon) return;
 	
 	Weapon->Equip();
 
 	UE_LOG(LogTemp, Warning, TEXT("Attack"));
-
-	// The attack logic
 	
 	// Duration for attack
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.2f, false);
-}
-
-void AEnemyCharacter::DoSweepAttack()
-{
-	DoAttack();
-	
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AEnemyCharacter::OnAttackFinished, 0.3f, false);
 }
 
 void AEnemyCharacter::OnAttackFinished() const

@@ -150,7 +150,7 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test"));
 			NumberOfWoodItemsDonated = ItemToDonate->Quantity;
-			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemReference->Quantity);
+			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemToDonate->Quantity);
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
 			RepairWidget->IncreaseWoodQuantity(NumberOfWoodItemsDonated);
@@ -172,7 +172,7 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test"));
 			NumberOfStoneItemsDonated = ItemToDonate->Quantity;
-			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, RepairItemReference->Quantity);
+			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemToDonate->Quantity);
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
 			RepairWidget->IncreaseStoneQuantity(NumberOfStoneItemsDonated);
@@ -194,7 +194,7 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test"));
 			NumberOfIronItemsDonated = ItemToDonate->Quantity;
-			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, RepairingItemReference->Quantity);
+			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemToDonate->Quantity);
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
 			RepairWidget->IncreaseIronQuantity(NumberOfIronItemsDonated);

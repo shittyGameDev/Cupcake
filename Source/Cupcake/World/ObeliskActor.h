@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "ObeliskActor.generated.h"
 
+class UEndScreen;
 class URepairWidget;
 class UNiagaraComponent;
 class UBaseItem;
@@ -92,6 +93,12 @@ protected:
 
 	UPROPERTY()
 	URepairWidget* RepairWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category="Widgets")
+	TSubclassOf<UEndScreen> EndScreenClass;
+
+	UPROPERTY(EditAnywhere)
+	UEndScreen* EndScreen;
 
 	
 	

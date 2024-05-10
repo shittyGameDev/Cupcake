@@ -8,6 +8,7 @@
 #include "Cupcake/Items/Data/ItemDataStructs.h"
 #include "Cupcake/UI/RepairWidget.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
+#include "Cupcake/UI/EndScreen.h"
 
 // Sets default values
 AObeliskActor::AObeliskActor()
@@ -41,6 +42,13 @@ void AObeliskActor::BeginPlay()
 		RepairWidget = CreateWidget<URepairWidget>(GetWorld(), RepairWidgetClass);
 		RepairWidget->AddToViewport(5);
 		RepairWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if(EndScreenClass)
+	{
+		EndScreen = CreateWidget<UEndScreen>(GetWorld(), EndScreenClass);
+		EndScreen->AddToViewport(5);
+		EndScreen->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
 }
@@ -212,11 +220,12 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 
 bool AObeliskActor::CheckIfDonationReached()
 {
-	if(NumberOfWoodItemsDonated && NumberOfIronItemsDonated && NumberOfStoneItemsDonated == 1)
+	if(NumberOfStoneItemsDonated && NumberOfIronItemsDonated == 1 && NumberOfWoodItemsDonated == 20)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Donation goal reached"));
 		NiagaraComponent->SetActive(true);
 		OnDonationGoalReached.Broadcast();
+		EndScreen->SetVisibility(ESlateVisibility::Visible);
 		return DonationGoalReached = true;
 		//Call custom event, actor move.
 	}

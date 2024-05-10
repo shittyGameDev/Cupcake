@@ -155,11 +155,16 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 	if(ItemReference)
 	{
 		UBaseItem* ItemToDonate = InventoryReference->FindMatchingItem(ItemReference);
-		if(ItemToDonate)
+		if(ItemToDonate && NumberOfWoodItemsDonated <= RequireAmountOfRepairItems)
 		{
+			int ToTake = ItemToDonate->Quantity;
+			if (NumberOfWoodItemsDonated + ItemToDonate->Quantity > RequireAmountOfRepairItems)
+			{
+				ToTake = RequireAmountOfRepairItems - NumberOfWoodItemsDonated;
+			}
 			UE_LOG(LogTemp, Warning, TEXT("Test"));
-			NumberOfWoodItemsDonated += ItemToDonate->Quantity;
-			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemToDonate->Quantity);
+			NumberOfWoodItemsDonated += ToTake;
+			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ToTake);
 			CheckIfDonationReached();
 			InventoryReference->OnInventoryUpdated.Broadcast();
 			RepairWidget->IncreaseWoodQuantity(NumberOfWoodItemsDonated);
@@ -221,7 +226,7 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 
 bool AObeliskActor::CheckIfDonationReached()
 {
-	if(NumberOfStoneItemsDonated && NumberOfIronItemsDonated == 1 && NumberOfWoodItemsDonated == 20)
+	if(NumberOfStoneItemsDonated && NumberOfIronItemsDonated == 1 && NumberOfWoodItemsDonated <= 20)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Donation goal reached"));
 		NiagaraComponent->SetActive(true);

@@ -91,6 +91,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Widgets")
 	TSubclassOf<URepairWidget> RepairWidgetClass;
 
+	UPROPERTY(EditAnywhere, Category="Donation")
+	int32 RequireAmountOfRepairItems;
+
 	UPROPERTY()
 	URepairWidget* RepairWidget;
 

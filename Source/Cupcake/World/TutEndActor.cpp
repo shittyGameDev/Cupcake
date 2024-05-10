@@ -18,7 +18,7 @@ ATutEndActor::ATutEndActor()
 void ATutEndActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	InteractableData = InstanceInteractableData;
 }
 
 // Called every frame

@@ -24,8 +24,8 @@ void ADayCycleManager::BeginPlay()
 	
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);
-	
+	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);	
+	DayCycle = 1;
 	for (FTimeEvent& Event : TimeEvents)
 	{
 		BindTimeEvent(Event);

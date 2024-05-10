@@ -46,9 +46,15 @@ bool AGangAIManager::CanAttack(AGangAICharacter* RequestingAI)
 		return false;
 	}
 	RegisteredAICharacters.Sort([Player](const AGangAICharacter& A, const AGangAICharacter& B) {
+		if (!A.IsValidLowLevel() || !B.IsValidLowLevel()) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid AI character reference during sorting."));
+		return false; // Handle invalid references however you see fit.
+	}
 		return FVector::Dist(A.GetActorLocation(), Player->GetActorLocation()) <
 			   FVector::Dist(B.GetActorLocation(), Player->GetActorLocation());
 	});
-
+	if (RegisteredAICharacters.IsEmpty() || !IsValid(RegisteredAICharacters[0])) {
+		return false;
+	}
 	return RegisteredAICharacters[0] == RequestingAI; // Only the closest AI can attack
 }

@@ -151,67 +151,36 @@ void AObeliskActor::EndInteract()
 
 void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 {
-	InventoryReference = PlayerCharacter->GetInventory();
-	if(ItemReference)
+    InventoryReference = PlayerCharacter->GetInventory();
+
+    // Process donations for each item type
+    ProcessDonation(ItemReference, NumberOfWoodItemsDonated, RequiredWoodItems, TEXT("wood"), PlayerCharacter);
+    ProcessDonation(RepairItemReference, NumberOfStoneItemsDonated, RequiredStoneItems, TEXT("stone"),PlayerCharacter);
+    ProcessDonation(RepairingItemReference, NumberOfIronItemsDonated, RequiredIronItems, TEXT("iron"),PlayerCharacter);
+
+    // Notify inventory update
+    InventoryReference->OnInventoryUpdated.Broadcast();
+}
+
+void AObeliskActor::ProcessDonation(UBaseItem* &ItemRef, int &ItemsDonated, int RequiredItems, const TCHAR* ItemType, ACupcakeCharacter* PlayerCharacter)
+{
+	if (ItemRef)
 	{
-		UBaseItem* ItemToDonate = InventoryReference->FindMatchingItem(ItemReference);
-		if(ItemToDonate && NumberOfWoodItemsDonated <= RequireAmountOfRepairItems)
+		UBaseItem* ItemToDonate = InventoryReference->FindMatchingItem(ItemRef);
+		if (ItemToDonate)
 		{
-			int ToTake = ItemToDonate->Quantity;
-			if (NumberOfWoodItemsDonated + ItemToDonate->Quantity > RequireAmountOfRepairItems)
+			int QuantityToDonate = FMath::Min(ItemToDonate->Quantity, RequiredItems - ItemsDonated);
+			if (QuantityToDonate > 0)
 			{
-				ToTake = RequireAmountOfRepairItems - NumberOfWoodItemsDonated;
+				PlayerCharacter->RemoveItemFromInventory(ItemToDonate, QuantityToDonate);
+				ItemsDonated += QuantityToDonate;
+				UpdateRepairWidget(ItemType, ItemsDonated);
+				CheckIfDonationReached();
 			}
-			UE_LOG(LogTemp, Warning, TEXT("Test"));
-			NumberOfWoodItemsDonated += ToTake;
-			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ToTake);
-			CheckIfDonationReached();
-			InventoryReference->OnInventoryUpdated.Broadcast();
-			RepairWidget->IncreaseWoodQuantity(NumberOfWoodItemsDonated);
-			return;
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("The obelisk does not want that."));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ItemRef was somehow null"));
-	}
-	if(RepairItemReference)
-	{
-		UBaseItem* ItemToDonate = InventoryReference->FindMatchingItem(RepairItemReference);
-		if(ItemToDonate)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Test"));
-			NumberOfStoneItemsDonated += ItemToDonate->Quantity;
-			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemToDonate->Quantity);
-			CheckIfDonationReached();
-			InventoryReference->OnInventoryUpdated.Broadcast();
-			RepairWidget->IncreaseStoneQuantity(NumberOfStoneItemsDonated);
-			return;
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("The obelisk does not want that."));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ItemRef was somehow null"));
-	}
-	if(RepairingItemReference)
-	{
-		UBaseItem* ItemToDonate = InventoryReference->FindMatchingItem(RepairingItemReference);
-		if(ItemToDonate)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Test"));
-			NumberOfIronItemsDonated += ItemToDonate->Quantity;
-			PlayerCharacter->RemoveItemFromInventory(ItemToDonate, ItemToDonate->Quantity);
-			CheckIfDonationReached();
-			InventoryReference->OnInventoryUpdated.Broadcast();
-			RepairWidget->IncreaseIronQuantity(NumberOfIronItemsDonated);
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("The obelisk does not need more %s items."), ItemType);
+			}
 		}
 		else
 		{
@@ -224,18 +193,47 @@ void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)
 	}
 }
 
+
+void AObeliskActor::UpdateRepairWidget(const TCHAR* ItemType, int Quantity)
+{
+    if (FCString::Stricmp(ItemType, TEXT("wood")) == 0)
+    {
+        RepairWidget->IncreaseWoodQuantity(Quantity);
+    }
+    else if (FCString::Stricmp(ItemType, TEXT("stone")) == 0)
+    {
+        RepairWidget->IncreaseStoneQuantity(Quantity);
+    }
+    else if (FCString::Stricmp(ItemType, TEXT("iron")) == 0)
+    {
+        RepairWidget->IncreaseIronQuantity(Quantity);
+    }
+}
+
+
 bool AObeliskActor::CheckIfDonationReached()
 {
-	if(NumberOfStoneItemsDonated && NumberOfIronItemsDonated == 1 && NumberOfWoodItemsDonated <= 20)
+	// Check if all conditions for donation completion are met
+	bool hasStoneDonation = NumberOfStoneItemsDonated >= RequiredStoneItems; // assuming RequiredStoneItems is defined
+	bool hasIronDonation = NumberOfIronItemsDonated >= RequiredIronItems;   // assuming RequiredIronItems is defined
+	bool hasWoodDonation = NumberOfWoodItemsDonated >= RequiredWoodItems;   // assuming RequiredWoodItems is defined
+
+	// All conditions must be true
+	if (hasStoneDonation && hasIronDonation && hasWoodDonation)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Donation goal reached"));
 		NiagaraComponent->SetActive(true);
 		OnDonationGoalReached.Broadcast();
 		EndScreen->SetVisibility(ESlateVisibility::Visible);
-		return DonationGoalReached = true;
-		//Call custom event, actor move.
+		DonationGoalReached = true; // Directly setting the state
 	}
-	return DonationGoalReached = false;
+	else
+	{
+		DonationGoalReached = false;
+	}
+
+	return DonationGoalReached;
 }
+
 
 

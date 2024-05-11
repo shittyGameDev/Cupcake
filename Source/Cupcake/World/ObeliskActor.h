@@ -23,7 +23,13 @@ class CUPCAKE_API AObeliskActor : public AActor, public IInteractionInterface
 	
 public:
 	FOnDonationGoalReached OnDonationGoalReached;
-	
+	UPROPERTY(EditAnywhere, Category="Donation")
+	int RequiredStoneItems;
+	UPROPERTY(EditAnywhere, Category="Donation")
+	int RequiredIronItems;
+	UPROPERTY(EditAnywhere, Category="Donation")
+	int32 RequiredWoodItems;
+
 	// Sets default values for this actor's properties
 	AObeliskActor();
 
@@ -91,8 +97,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Widgets")
 	TSubclassOf<URepairWidget> RepairWidgetClass;
 
-	UPROPERTY(EditAnywhere, Category="Donation")
-	int32 RequireAmountOfRepairItems;
+	
 
 	UPROPERTY()
 	URepairWidget* RepairWidget;
@@ -103,9 +108,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UEndScreen* EndScreen;
 
-	
-	
-	
+
+	void UpdateRepairWidget(const TCHAR* ItemType, int Quantity);
 	UFUNCTION(BlueprintCallable ,Category="Donation")
 	bool CheckIfDonationReached();
 
@@ -121,4 +125,5 @@ public:
 	virtual void BeginInteract() override;
 	virtual void EndInteract() override;
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
+	void ProcessDonation(UBaseItem*& ItemReference, int& ItemsDonated, int RequiredItems, const TCHAR* ItemType, ACupcakeCharacter* PlayerCharacter);
 };

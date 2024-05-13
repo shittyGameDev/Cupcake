@@ -64,7 +64,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float AccelerateTime = 72.f;
-
+	
 	UPROPERTY(EditAnywhere, Category = "UI")
 	UUserWidget* BlackScreenWidget = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -101,6 +101,7 @@ public:
 	void BindTimeEvent(FTimeEvent& Event);
 	void ShiftDay();
 	void RegisterTimeEvent(FTimeEvent& NewEvent);
+	void RestoreLightIntensity();
 	UFUNCTION()
 	void SpawnTreeEvent();
 	UFUNCTION()
@@ -116,10 +117,12 @@ private:
 	float ElapsedTime = 0.f;
 	float const SECONDS_IN_A_DAY = 86400.f;
 	int LastSleepDay = -1;
+	float OrginalIntensity = 3.f;
 	bool bHasSlept = false;
 	bool bSleepWidgetActive = false;
 	bool bDayTransistionScheduled = false;
 	bool bIsReactivationScheduled = false;
+	bool bDayTransitionTriggered = false;
 	APlayerController* PlayerController;
 	APawn* PlayerPawn;
 	ACupcakeCharacter* PlayerCharacter;

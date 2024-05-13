@@ -51,19 +51,26 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void AnimateCloseMenu();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void AnimateCloseInteractionWidget();
+	UFUNCTION(BlueprintImplementableEvent)
+	void AnimateOpenInteractionWidget();
+	
 	void ToggleMenu();
 
 	UFUNCTION()
 	void DisplayPickup(UBaseItem* ItemRef);
+	UFUNCTION()
+	void DisplayDrop(UBaseItem* ItemRef);
 
-	void ShowInteractionWidget() const;
-	void HideInteractionWidget() const;
-	void UpdateInteractionWidget(const FInteractableData* InteractableData) const;
+	void ShowInteractionWidget();
+	void HideInteractionWidget();
+	void UpdateInteractionWidget(const FInteractableData* InteractableData);
 	void UpdateInteractionProgress(float Progress) const;
 
 	UPROPERTY(BlueprintReadWrite)
 	UMainMenu* MainMenuWidget;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	UInteractionWidget* InteractionWidget;
 	UPROPERTY(BlueprintReadWrite)
 	UPickupWidget* PickupWidget;

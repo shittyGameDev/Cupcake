@@ -20,6 +20,8 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+
+
 USTRUCT()
 struct FInteractionData
 {
@@ -110,8 +112,12 @@ public:
 
 	void UpdateInteractionWidget() const;
 	
-	UPROPERTY()
+	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
 	AWeaponBase* Weapon;
+
+	UFUNCTION(BlueprintGetter)
+	AWeaponBase* GetWeapon() const { return Weapon; }
+	
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
 	

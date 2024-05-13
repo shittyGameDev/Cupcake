@@ -12,6 +12,7 @@ DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
 DECLARE_MULTICAST_DELEGATE(FOnKeyItemAdded);
 //DECLARE_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoveItem, UBaseItem*, DropItem);
 
 class UBaseItem;
 
@@ -77,9 +78,11 @@ class CUPCAKE_API UNewInventoryComponent : public UActorComponent
 
 public:	
 
+	//DELEGATER
 	FOnKeyItemAdded OnKeyItemAdded;
 	FOnInventoryUpdated OnInventoryUpdated;
 	FOnPickup OnPickup;
+	FOnRemoveItem OnRemoveItem;
 	
 	UNewInventoryComponent();
 

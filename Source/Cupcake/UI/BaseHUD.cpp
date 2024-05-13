@@ -20,34 +20,38 @@ void ABaseHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(MainMenuClass)
+	if (MainMenuClass)
 	{
 		MainMenuWidget = CreateWidget<UMainMenu>(GetWorld(), MainMenuClass);
 		MainMenuWidget->AddToViewport(5);
-		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed); //Tydligen har Collapsed en bättre påverkan på performance än Hidden
+		MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		//Tydligen har Collapsed en bättre påverkan på performance än Hidden
 	}
 
-	if(InteractionWidgetClass)
+	if (InteractionWidgetClass)
 	{
 		InteractionWidget = CreateWidget<UInteractionWidget>(GetWorld(), InteractionWidgetClass);
 		InteractionWidget->AddToViewport(-1);
-		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed); //Tydligen har Collapsed en bättre påverkan på performance än Hidden
+		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		//Tydligen har Collapsed en bättre påverkan på performance än Hidden
 	}
 
 	PlayerCharacter = Cast<ACupcakeCharacter>(GetOwningPawn());
-	if(PlayerCharacter)
+	if (PlayerCharacter)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("I found the player"));
 		PlayerCharacter->GetInventory()->OnPickup.AddDynamic(this, &ABaseHUD::DisplayPickup);
+		PlayerCharacter->GetInventory()->OnRemoveItem.AddDynamic(this, &ABaseHUD::DisplayDrop);
+		
 	}
 }
 
 void ABaseHUD::DisplayMenu()
 {
-	if(MainMenuWidget)
+	if (MainMenuWidget)
 	{
 		bIsMenuVisible = true;
-		OpenMenu.Broadcast();
+		//OpenMenu.Broadcast();
 		AnimateOpenMenu();
 		//MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	}
@@ -55,9 +59,9 @@ void ABaseHUD::DisplayMenu()
 
 void ABaseHUD::HideMenu()
 {
-	if(MainMenuWidget)
+	if (MainMenuWidget)
 	{
-		OpenMenu.Broadcast();
+		//OpenMenu.Broadcast();
 		bIsMenuVisible = false;
 		AnimateCloseMenu();
 		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
@@ -66,7 +70,7 @@ void ABaseHUD::HideMenu()
 
 void ABaseHUD::ToggleMenu()
 {
-	if(bIsMenuVisible)
+	if (bIsMenuVisible)
 	{
 		HideMenu();
 		const FInputModeGameOnly InputMode;
@@ -82,22 +86,22 @@ void ABaseHUD::ToggleMenu()
 
 void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 {
-	// Create the pickup widget and add it to the viewport with a high priority.
 	PickupWidget = CreateWidget<UPickupWidget>(GetWorld(), PickupWidgetClass);
 	if (PickupWidget)
 	{
 		PickupWidget->AddToViewport(5);
 
-		if (ItemRef && ItemRef->AssetData.Icon && ItemRef->Quantity) // Ensure the item and icon are valid.
-			{
+		if (ItemRef && ItemRef->AssetData.Icon && ItemRef->Quantity)
+		{
 			FSlateBrush NewBrush;
 			NewBrush.SetResourceObject(ItemRef->AssetData.Icon);
 			NewBrush.ImageSize = PickupWidget->ItemIcon->GetBrush().ImageSize;
-			NewBrush.DrawAs = ESlateBrushDrawType::Image; // Specify how to draw this brush.
+			NewBrush.DrawAs = ESlateBrushDrawType::Image;
 
 			PickupWidget->ItemIcon->SetBrush(NewBrush);
 			PickupWidget->ItemQuantity->SetText(FText::AsNumber(ItemRef->Quantity));
-			}
+			PickupWidget->PlusMinus->SetText(FText::FromString(TEXT("+")));
+		}
 	}
 	else
 	{
@@ -105,30 +109,57 @@ void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 	}
 }
 
-void ABaseHUD::ShowInteractionWidget() const
+void ABaseHUD::DisplayDrop(UBaseItem* ItemRef)
 {
-	if(InteractionWidget)
+	PickupWidget = CreateWidget<UPickupWidget>(GetWorld(), PickupWidgetClass);
+	if (PickupWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		PickupWidget->AddToViewport(5);
+
+		if (ItemRef && ItemRef->AssetData.Icon && ItemRef->Quantity)
+		{
+			FSlateBrush NewBrush;
+			NewBrush.SetResourceObject(ItemRef->AssetData.Icon);
+			NewBrush.ImageSize = PickupWidget->ItemIcon->GetBrush().ImageSize;
+			NewBrush.DrawAs = ESlateBrushDrawType::Image;
+
+			PickupWidget->ItemIcon->SetBrush(NewBrush);
+			PickupWidget->ItemQuantity->SetText(FText::AsNumber(ItemRef->Quantity));
+			PickupWidget->PlusMinus->SetText(FText::FromString(TEXT("-")));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to create the widget"));
 	}
 }
 
-void ABaseHUD::HideInteractionWidget() const
+void ABaseHUD::ShowInteractionWidget()
 {
-	if(InteractionWidget)
+	if (InteractionWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		//InteractionWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
-void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData) const
+void ABaseHUD::HideInteractionWidget()
+{
+	if (InteractionWidget)
+	{
+		//InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		AnimateCloseInteractionWidget();
+	}
+}
+
+void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Consider it updated"));
-	if(InteractionWidget)
+	if (InteractionWidget)
 	{
-		if(InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
+		if (InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
 		{
-			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+			//InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+			AnimateOpenInteractionWidget();
 			//InteractionWidget->InteractionProgressBar->SetPercent(0);
 		}
 		InteractionWidget->UpdateWidget(InteractableData);
@@ -137,10 +168,10 @@ void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData
 
 void ABaseHUD::UpdateInteractionProgress(float Progress) const
 {
-	if(InteractionWidget->InteractionProgressBar)
+	if (InteractionWidget->InteractionProgressBar)
 	{
 		InteractionWidget->InteractionProgressBar->SetPercent(Progress);
-		if(Progress == 1)
+		if (Progress == 1)
 		{
 			InteractionWidget->InteractionProgressBar->SetPercent(0);
 		}

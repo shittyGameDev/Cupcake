@@ -38,13 +38,17 @@ void AWeaponBase::OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		{
 			if (GetOwner() != nullptr && GetOwner() != OtherActor)
 			{
-				UGameplayStatics::ApplyDamage(
+				if (!DamagedActors.Contains(OtherActor))
+				{
+					UGameplayStatics::ApplyDamage(
 					OtherActor,
 					DamageAmount,
 					GetOwner()->GetInstigatorController(),
 					this,
 					UDamageType::StaticClass()
 				);
+					DamagedActors.Add(OtherActor);
+				}
 			}
 		}
 	}
@@ -55,16 +59,24 @@ void AWeaponBase::OnWeaponEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 }
 
+void AWeaponBase::ClearDamagedList()
+{
+	DamagedActors.Empty();
+}
+
 void AWeaponBase::Equip()
 {
 	// Should show weapon and enable collision
+	ShowWeapon();
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AWeaponBase::Unequip()
 {
 	// Can still be shown but shouldn't deal damage, therefore disable collison
+	HideWeapon();
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ClearDamagedList();
 }
 
 void AWeaponBase::ShowWeapon()

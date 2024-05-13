@@ -20,6 +20,8 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+
+
 USTRUCT()
 struct FInteractionData
 {

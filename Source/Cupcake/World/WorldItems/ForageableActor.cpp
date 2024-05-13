@@ -6,6 +6,7 @@
 #include "Pickup.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/Items/Data/ItemDataStructs.h"
+#include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 
 // Sets default values
 AForageableActor::AForageableActor()
@@ -84,29 +85,8 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 	{
 		if (ItemReference)
 		{
-			FActorSpawnParameters SpawnParameters;
-			SpawnParameters.Owner = this;
-			SpawnParameters.bNoFail = false;
-			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-			
-			if (!ItemReference->NumericData.bIsStackable && ItemQuantity > 1)
-			{
-				// Loopa och spawn varje objekt separat inom en cirkel
-				for (int i = 0; i < ItemQuantity; i++)
-				{
-					APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), CalculateSpawnPoint(), SpawnParameters);
-					Pickup->InitializeDrop(ItemReference, 1);
-					Pickup->StartScaling(Curve);
-					UE_LOG(LogTemp, Warning, TEXT("Dropped non-stackable item #%d"), i+1);
-				}
-			}
-			else
-			{
-				// Hantera stackbara objekt eller enstaka icke-stackbara objekt
-				APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), CalculateSpawnPoint(), SpawnParameters);
-				Pickup->InitializeDrop(ItemReference, ItemReference->Quantity);
-				Pickup->StartScaling(Curve);
-			}
+			InventoryComponent = PlayerCharacter->GetInventory();
+			InventoryComponent->HandleAddItem(ItemReference);
 			StartForagingTimer();
 		}
 		else

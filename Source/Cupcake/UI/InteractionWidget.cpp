@@ -49,7 +49,7 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 		break;
 		
 	case EInteractableType::Device:
-		KeyPressText->SetText(FText::FromString("Press"));
+		KeyPressText->SetText(FText::FromString("Hold"));
 		
 		QuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);

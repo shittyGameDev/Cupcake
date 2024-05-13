@@ -10,16 +10,14 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "Cupcake/Items/Interactable.h"
-#include "Cupcake/Items/Item.h"
 #include "DrawDebugHelpers.h"
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
-#include "Cupcake/World/Pickup.h"
 #include "EngineUtils.h"  
 #include "Components/BoxComponent.h"
-#include "Cupcake/TheMapObject.h"
 #include "Cupcake/Actors/AttributeComponent.h"
+#include "Cupcake/World/WorldItems/Pickup.h"
+#include "Cupcake/World/WorldSystem/TheMapObject.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -74,8 +72,6 @@ ACupcakeCharacter::ACupcakeCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
-
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
@@ -168,7 +164,6 @@ void ACupcakeCharacter::Attack()
 
 	DoAttack();
 	Weapon->ShowWeapon();
-	Weapon->Equip();
 
 	// Attack duration
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 1.f, false);
@@ -179,7 +174,6 @@ void ACupcakeCharacter::OnAttackFinished()
 	if (Weapon)
 	{
 		// Unequip weapon
-		Weapon->Unequip();
 		Weapon->HideWeapon();
 	}
 }
@@ -394,7 +388,6 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
 
 		//UI
-		PlayerInputComponent->BindAction("Hotbar", IE_Pressed, this, &ACupcakeCharacter::HighlightItem);
 		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
 		PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
 
@@ -426,47 +419,7 @@ void ACupcakeCharacter::EnableMovement()
 	bUseControllerRotationYaw = true;
 }
 
-void ACupcakeCharacter::OnRemoveItem()
-{
-	// Antag att du vill testa att ta bort det första itemet i inventoryt
-	if (InventoryComponent->InventoryItems.Num() > 0)
-	{
-		AItem* ItemToRemove = InventoryComponent->InventoryItems[0];
-		InventoryComponent->RemoveItem(ItemToRemove);
-	}
-}
 
-void ACupcakeCharacter::HighlightItem(FKey KeyPressed)
-{
-	InventoryComponent->HotbarWidget->HighLightUIItem(KeyPressed);
-}
-
-
-//Temporary function to Interact with items.
-void ACupcakeCharacter::OnInteractPressed()
-{
-	// Define raycast
-	FVector Start = GetActorLocation();
-	//Assume we want the raycast to be shot in the direction that the player looks
-	FVector ForwardVector = GetActorForwardVector();
-	FVector End = Start + (ForwardVector * 1000.f); // Justera detta värde för att kontrollera interaktionsavståndet
-
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this); // Ignore the player
-
-	//Shoot the raycast
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
-
-	// Controlling the hit
-	if (bHit && HitResult.GetActor() != nullptr)
-	{
-		if (HitResult.GetActor()->GetClass()->ImplementsInterface(UInteractable::StaticClass()))
-		{
-			IInteractable::Execute_Interact(HitResult.GetActor());
-		}
-	}
-}
 
 void ACupcakeCharacter::ToggleMenu()
 {
@@ -600,38 +553,3 @@ void ACupcakeCharacter::ToggleMapViaKey()
 		MapObject->ToggleMapVisibility();
 	}
 }
-
-// KOD ÄR BASICALY OBSELETE MEN SPARAR DET HÄR UTIFALL ATT.
-
-/*void ACupcakeCharacter::PerformInteractionCheck()
-{
-	InteractionData.LastInteractionCheckTime = GetWorld()->GetTimeSeconds();
-
-	//Anledningen till att vi använder oss av initialisering via {} är för att det garanterar typen som vi använder blir
-	//Initialiserade korrekt. Annars är koden väldigt basic linetrace skapande. (Victor)
-	FVector TraceStart{GetActorLocation()};
-	FVector ForwardVector = GetActorForwardVector();
-	FVector TraceEnd{TraceStart + (ForwardVector * InteractionCheckDistance)};
-
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
-	FHitResult TraceHit;
-
-	if (GetWorld()->LineTraceSingleByChannel(TraceHit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
-	{
-		if (TraceHit.GetActor()->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
-		{
-			if (TraceHit.GetActor() != InteractionData.CurrentInteractable)
-			{
-				FoundInteractable(TraceHit.GetActor());
-				return;
-			}
-
-			if (TraceHit.GetActor() == InteractionData.CurrentInteractable)
-			{
-				return;
-			}
-		}
-	}
-	NoInteractableFound();
-}*/

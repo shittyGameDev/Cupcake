@@ -3,16 +3,33 @@
 
 #include "RepairWidget.h"
 
+#include "Components/TextBlock.h"
+
 
 void URepairWidget::IncreaseWoodQuantity(int NewWoodQuantity)
 {
-	
+	if (WoodQuantity && WoodImage && WoodAnim)
+	{
+		WoodQuantity->SetText(FText::AsNumber(NewWoodQuantity));
+		PlayAnimation(WoodAnim);
+	}
+
 }
 
-void URepairWidget::IncreaseStoneQuantity(int NewWoodQuantity)
+void URepairWidget::IncreaseStoneQuantity(int NewStoneQuantity)
 {
+	if (StoneQuantity && StoneImage && StoneAnim)
+	{
+		StoneQuantity->SetText(FText::AsNumber(NewStoneQuantity));
+		PlayAnimation(StoneAnim);
+	}
 }
 
-void URepairWidget::IncreaseIronQuantity(int NewWoodQuantity)
+void URepairWidget::IncreaseIronQuantity(int NewIronQuantity)
 {
+	if (IronQuantity && IronImage && IronAnim)
+	{
+		IronQuantity->SetText(FText::AsNumber(NewIronQuantity));
+		PlayAnimation(IronAnim);
+	}
 }

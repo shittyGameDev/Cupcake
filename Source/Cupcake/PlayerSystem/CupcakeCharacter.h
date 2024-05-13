@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventoryComponent.h"
-#include "Cupcake/WeaponBase.h"
+#include "../Items/WeaponBase.h"
 #include "Cupcake/Actors/DamageableInterface.h"
 #include "Cupcake/Items/InteractionInterface.h"
 #include "GameFramework/Character.h"
@@ -65,11 +64,7 @@ class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
-
-	UPROPERTY(VisibleAnywhere, Category = "Inventory")
-	UInventoryComponent* InventoryComponent;
-
-
+	
 	//Look Input Action 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
@@ -115,8 +110,12 @@ public:
 
 	void UpdateInteractionWidget() const;
 	
-	UPROPERTY()
+	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
 	AWeaponBase* Weapon;
+
+	UFUNCTION(BlueprintGetter)
+	AWeaponBase* GetWeapon() const { return Weapon; }
+	
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
 	
@@ -132,16 +131,6 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-
-	// Handler for when "Interact" is pressed
-	UFUNCTION()
-	void OnInteractPressed();
-
-	UFUNCTION()
-	void OnRemoveItem();
-
-	UFUNCTION()
-	void HighlightItem(const FKey KeyPressed);
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

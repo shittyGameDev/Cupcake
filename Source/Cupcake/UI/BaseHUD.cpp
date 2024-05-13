@@ -5,7 +5,9 @@
 #include "MainMenu.h"
 #include "InteractionWidget.h"
 #include "PickupWidget.h"
+#include "Components/Image.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 
@@ -45,7 +47,7 @@ void ABaseHUD::DisplayMenu()
 	if(MainMenuWidget)
 	{
 		bIsMenuVisible = true;
-		OpenMenu.Broadcast();
+		//OpenMenu.Broadcast();
 		AnimateOpenMenu();
 		//MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	}
@@ -55,7 +57,7 @@ void ABaseHUD::HideMenu()
 {
 	if(MainMenuWidget)
 	{
-		OpenMenu.Broadcast();
+		//OpenMenu.Broadcast();
 		bIsMenuVisible = false;
 		AnimateCloseMenu();
 		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
@@ -86,7 +88,7 @@ void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 	{
 		PickupWidget->AddToViewport(5);
 
-		if (ItemRef && ItemRef->AssetData.Icon) // Ensure the item and icon are valid.
+		if (ItemRef && ItemRef->AssetData.Icon && ItemRef->Quantity) // Ensure the item and icon are valid.
 			{
 			FSlateBrush NewBrush;
 			NewBrush.SetResourceObject(ItemRef->AssetData.Icon);
@@ -94,6 +96,7 @@ void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 			NewBrush.DrawAs = ESlateBrushDrawType::Image; // Specify how to draw this brush.
 
 			PickupWidget->ItemIcon->SetBrush(NewBrush);
+			PickupWidget->ItemQuantity->SetText(FText::AsNumber(ItemRef->Quantity));
 			}
 	}
 	else
@@ -102,30 +105,33 @@ void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 	}
 }
 
-void ABaseHUD::ShowInteractionWidget() const
+void ABaseHUD::ShowInteractionWidget()
 {
 	if(InteractionWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		//InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		
 	}
 }
 
-void ABaseHUD::HideInteractionWidget() const
+void ABaseHUD::HideInteractionWidget()
 {
 	if(InteractionWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		//InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		AnimateCloseInteractionWidget();
 	}
 }
 
-void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData) const
+void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Consider it updated"));
 	if(InteractionWidget)
 	{
 		if(InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
 		{
-			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+			//InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+			AnimateOpenInteractionWidget();
 			//InteractionWidget->InteractionProgressBar->SetPercent(0);
 		}
 		InteractionWidget->UpdateWidget(InteractableData);
@@ -143,7 +149,3 @@ void ABaseHUD::UpdateInteractionProgress(float Progress) const
 		}
 	}
 }
-
-
-
-

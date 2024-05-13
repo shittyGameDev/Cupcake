@@ -90,8 +90,9 @@ void UNewInventoryComponent::RemoveSingleInstanceOfItem(UBaseItem* ItemToRemove)
 int32 UNewInventoryComponent::RemoveAmountOfItem(UBaseItem* ItemIn, int32 DesiredAmountToRemove)
 {
 	const int32 ActualAmountToRemove = FMath::Min(DesiredAmountToRemove, ItemIn->Quantity);
-
+	OnRemoveItem.Broadcast(ItemIn);
 	ItemIn->SetQuantity(ItemIn->Quantity - ActualAmountToRemove);
+
 
 	OnInventoryUpdated.Broadcast();
 

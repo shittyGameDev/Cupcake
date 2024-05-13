@@ -29,8 +29,12 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 	case EInteractableType::Pickup:
 		KeyPressText->SetText(FText::FromString("Press"));
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-
-		if(InteractableData->Quantity < 2)
+#if PLATFORM_WINDOWS
+		ActionButtonText->SetText(FText::FromString("E to"));
+#elif PLATFORM_XBOXONE
+		ActionButtonText->SetText(FText::FromString("A to"));
+#endif
+		if (InteractableData->Quantity < 2)
 		{
 			QuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		}
@@ -39,29 +43,34 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 			//Sätter argument 0 till InteractableData->Quantity.
 			//Enkelt sätt att "dynamiskt" ändra texten så att den stämmer överens med quantity.
 			QuantityText->SetText(FText::Format(FText::FromString("x{0}"),
-				InteractableData->Quantity));
+			                                    InteractableData->Quantity));
 			QuantityText->SetVisibility(ESlateVisibility::Visible);
-			
 		}
 		break;
-		
+
 	case EInteractableType::NonPlayerCharacter:
 		break;
-		
+
 	case EInteractableType::Device:
 		KeyPressText->SetText(FText::FromString("Hold"));
-		
+#if PLATFORM_WINDOWS
+		ActionButtonText->SetText(FText::FromString("E to"));
+#elif PLATFORM_XBOXONE
+		ActionButtonText->SetText(FText::FromString("A to"));
+
+#endif
+
 		QuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);
 		break;
-		
+
 	case EInteractableType::Toggle:
 		break;
-		
+
 	case EInteractableType::Container:
 		break;
 
-	default:;	
+	default: ;
 	}
 
 	ActionText->SetText(InteractableData->Action);
@@ -70,7 +79,4 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 
 void UInteractionWidget::UpdateInteractionProgress()
 {
-	
 }
-
-

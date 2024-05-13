@@ -256,7 +256,7 @@ void ACupcakeCharacter::FoundInteractable(AActor* NewInteractable)
 	}
 	InteractionData.CurrentInteractable = NewInteractable;
 	TargetInteractable = NewInteractable;
-
+	
 	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 
 	TargetInteractable->BeginFocus();
@@ -282,7 +282,7 @@ void ACupcakeCharacter::NoInteractableFound()
 	}
 }
 
-void ACupcakeCharacter::UpdateInteraction()
+void ACupcakeCharacter::UpdateInteraction() const
 {
 	if(TargetInteractable && InteractionData.CurrentInteractable)
 	{

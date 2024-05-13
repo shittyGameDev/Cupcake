@@ -164,7 +164,7 @@ protected:
 	//void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
-	void UpdateInteraction();
+	void UpdateInteraction() const;
 	void BeginInteract();
 	void EndInteract();
 	void Interact();

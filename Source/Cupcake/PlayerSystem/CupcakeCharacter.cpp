@@ -164,7 +164,6 @@ void ACupcakeCharacter::Attack()
 
 	DoAttack();
 	Weapon->ShowWeapon();
-	Weapon->Equip();
 
 	// Attack duration
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &ACupcakeCharacter::OnAttackFinished, 1.f, false);
@@ -175,7 +174,6 @@ void ACupcakeCharacter::OnAttackFinished()
 	if (Weapon)
 	{
 		// Unequip weapon
-		Weapon->Unequip();
 		Weapon->HideWeapon();
 	}
 }

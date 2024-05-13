@@ -30,6 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, Category="Donation")
 	int32 RequiredWoodItems;
 
+
 	// Sets default values for this actor's properties
 	AObeliskActor();
 

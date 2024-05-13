@@ -37,12 +37,7 @@ void AObeliskActor::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("InventoryReference: %p"), InventoryReference);
 	UE_LOG(LogTemp, Warning, TEXT("ItemReference: %p"), ItemReference);
 
-	if(RepairWidgetClass)
-	{
-		RepairWidget = CreateWidget<URepairWidget>(GetWorld(), RepairWidgetClass);
-		RepairWidget->AddToViewport(5);
-		RepairWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
+
 
 	if(EndScreenClass)
 	{
@@ -121,9 +116,11 @@ void AObeliskActor::BeginFocus()
 		Mesh->SetRenderCustomDepth(true);
 	}
 
-	if(RepairWidget)
+	if(RepairWidgetClass)
 	{
-		RepairWidget->SetVisibility(ESlateVisibility::Visible); //Tydligen har Collapsed en bättre påverkan på performance än Hidden
+		RepairWidget = CreateWidget<URepairWidget>(GetWorld(), RepairWidgetClass);
+		RepairWidget->AddToViewport(5);
+		RepairWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -135,7 +132,7 @@ void AObeliskActor::EndFocus()
 	}
 	if(RepairWidget)
 	{
-		RepairWidget->SetVisibility(ESlateVisibility::Collapsed);
+		RepairWidget->AnimateClose();
 	}
 }
 

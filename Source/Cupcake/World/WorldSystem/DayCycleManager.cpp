@@ -232,7 +232,7 @@ void ADayCycleManager::RestoreLightIntensity()
 {
 	if (DirectionalLight && DirectionalLight->GetLightComponent())
 	{
-		float IncreaseRate = 5.0f; // Justera detta värde efter behov för hur snabbt ljuset ska återställas.
+		float IncreaseRate = 3.f; // Justera detta värde efter behov för hur snabbt ljuset ska återställas.
 
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, &TimerHandle, IncreaseRate]() mutable

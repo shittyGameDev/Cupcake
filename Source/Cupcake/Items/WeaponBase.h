@@ -29,10 +29,14 @@ protected:
 	
 	UFUNCTION()
 	virtual void OnWeaponEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	void ClearDamagedList();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category="Weapon Properties")
 	UBoxComponent* WeaponBox;
+
+	UPROPERTY()
+	TArray<AActor*> DamagedActors;
 
 public:
 	// Enable collision

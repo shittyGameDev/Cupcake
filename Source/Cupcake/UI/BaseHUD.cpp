@@ -47,7 +47,7 @@ void ABaseHUD::DisplayMenu()
 	if(MainMenuWidget)
 	{
 		bIsMenuVisible = true;
-		OpenMenu.Broadcast();
+		//OpenMenu.Broadcast();
 		AnimateOpenMenu();
 		//MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	}
@@ -57,7 +57,7 @@ void ABaseHUD::HideMenu()
 {
 	if(MainMenuWidget)
 	{
-		OpenMenu.Broadcast();
+		//OpenMenu.Broadcast();
 		bIsMenuVisible = false;
 		AnimateCloseMenu();
 		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
@@ -105,30 +105,33 @@ void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 	}
 }
 
-void ABaseHUD::ShowInteractionWidget() const
+void ABaseHUD::ShowInteractionWidget()
 {
 	if(InteractionWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		//InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+		
 	}
 }
 
-void ABaseHUD::HideInteractionWidget() const
+void ABaseHUD::HideInteractionWidget()
 {
 	if(InteractionWidget)
 	{
-		InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		//InteractionWidget->SetVisibility(ESlateVisibility::Collapsed);
+		AnimateCloseInteractionWidget();
 	}
 }
 
-void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData) const
+void ABaseHUD::UpdateInteractionWidget(const FInteractableData* InteractableData)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Consider it updated"));
 	if(InteractionWidget)
 	{
 		if(InteractionWidget->GetVisibility() == ESlateVisibility::Collapsed)
 		{
-			InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+			//InteractionWidget->SetVisibility(ESlateVisibility::Visible);
+			AnimateOpenInteractionWidget();
 			//InteractionWidget->InteractionProgressBar->SetPercent(0);
 		}
 		InteractionWidget->UpdateWidget(InteractableData);

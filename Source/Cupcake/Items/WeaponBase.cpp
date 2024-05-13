@@ -3,7 +3,7 @@
 
 #include "WeaponBase.h"
 
-#include "Actors/AttributeComponent.h"
+#include "../Actors/AttributeComponent.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 

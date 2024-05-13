@@ -21,6 +21,9 @@ public:
 	UImage* ItemIcon;
 
 	UPROPERTY(meta=(BindWidget))
+	UTextBlock* PlusMinus;
+
+	UPROPERTY(meta=(BindWidget))
 	UTextBlock* ItemQuantity;
 
 	

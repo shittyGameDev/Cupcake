@@ -4,7 +4,7 @@
 #include "TheMapObject.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "PlayerSystem/CupcakeCharacter.h"
+#include "../../PlayerSystem/CupcakeCharacter.h"
 
 // Sets default values
 ATheMapObject::ATheMapObject()

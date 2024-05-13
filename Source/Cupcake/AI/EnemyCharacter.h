@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WeaponBase.h"
-#include "Actors/DamageableInterface.h"
+#include "../Items/WeaponBase.h"
+#include "../Actors/DamageableInterface.h"
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 

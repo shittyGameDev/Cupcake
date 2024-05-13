@@ -1,5 +1,6 @@
 #include "DayCycleManager.h"
 
+#include "Blueprint/UserWidget.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/TextBlock.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"

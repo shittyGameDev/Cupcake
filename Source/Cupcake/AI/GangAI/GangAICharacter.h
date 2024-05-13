@@ -6,9 +6,9 @@
 #include "GangAIManager.h"
 #include "Cupcake/Actors/DamageableInterface.h"
 #include "GameFramework/Character.h"
-#include "Cupcake/WeaponBase.h"
 #include "GangAICharacter.generated.h"
 
+class AWeaponBase;
 class UAIPerceptionComponent;
 class UNiagaraComponent;
 UCLASS()

@@ -5,7 +5,9 @@
 #include "MainMenu.h"
 #include "InteractionWidget.h"
 #include "PickupWidget.h"
+#include "Components/Image.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 

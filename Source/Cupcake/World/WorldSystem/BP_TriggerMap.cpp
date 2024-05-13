@@ -6,9 +6,7 @@
 #include "TheMapHandler.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/Image.h"
-#include "GameFramework/Character.h"
-#include "PlayerSystem/CupcakeCharacter.h"
+#include "../../PlayerSystem/CupcakeCharacter.h"
 
 
 // Sets default values

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Cupcake/Items/Interactable.h"
 #include "Engine/DirectionalLight.h"
 #include "GameFramework/Actor.h"
 #include "Engine/SkyLight.h"
@@ -37,7 +36,7 @@ public:
 
 
 UCLASS()
-class CUPCAKE_API ADayCycleManager : public AActor, public IInteractable
+class CUPCAKE_API ADayCycleManager : public AActor
 {
 	
 	GENERATED_BODY()

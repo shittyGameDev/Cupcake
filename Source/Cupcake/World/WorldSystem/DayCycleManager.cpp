@@ -1,6 +1,8 @@
 #include "DayCycleManager.h"
 
+#include "BlueprintEditor.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/LightComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/TextBlock.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"
@@ -217,9 +219,35 @@ void ADayCycleManager::DayTransistion()
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, DayTranistionWidget]()
 			{
 				DayTranistionWidget->RemoveFromParent();
-				//PlayerCharacter->EnableMovement();
+				UE_LOG(LogTemp, Warning, TEXT("Ta bort daytransition widgeten"));
+				PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+				bDayTransitionTriggered = false;
 			}, 3.0f, false);
+			RestoreLightIntensity();
 		}
+	}
+}
+
+void ADayCycleManager::RestoreLightIntensity()
+{
+	if (DirectionalLight && DirectionalLight->GetLightComponent())
+	{
+		float IncreaseRate = 5.0f; // Justera detta värde efter behov för hur snabbt ljuset ska återställas.
+
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, &TimerHandle, IncreaseRate]() mutable
+		{
+			float CurrentIntensity = DirectionalLight->GetLightComponent()->Intensity;
+			float NewIntensity = FMath::FInterpTo(CurrentIntensity, OrginalIntensity, GetWorld()->GetDeltaSeconds(), IncreaseRate);
+			DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
+
+			// Stoppa timern när ljusintensiteten är nära det ursprungliga värdet.
+			if (FMath::Abs(NewIntensity - OrginalIntensity) < 0.05f)
+			{
+				DirectionalLight->GetLightComponent()->SetIntensity(OrginalIntensity);
+				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+			}
+		}, 0.05f, true);
 	}
 }
 
@@ -233,17 +261,52 @@ void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
 
 void ADayCycleManager::ShiftDay()
 {
-	DayCycle++;
-	ApplyInsanity();
+	UE_LOG(LogTemp, Warning, TEXT("ShiftDay called. DayCycle: %d"), DayCycle);
 
-	// Delay DayTransition to allow ApplyInsanity effects to complete
-	FTimerHandle DayTransitionTimerHandle;
-	float delayDuration = 3.0f; // Set this duration based on the longest effect duration in ApplyInsanity
-	GetWorld()->GetTimerManager().SetTimer(DayTransitionTimerHandle, [this]()
+	if (bDayTransitionTriggered)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DayTransition already triggered for today."));
+		return; // Förhindra ytterligare körningar om redan utfört
+	}
+
+	ApplyInsanity();
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_None);
+	}
+
+	if (DirectionalLight && DirectionalLight->GetLightComponent())
+	{
+		float TargetIntensity = 0.0f;
+		float DecreaseRate = 5.0f;
+
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, &TimerHandle, TargetIntensity, DecreaseRate]() mutable
+		{
+			float CurrentIntensity = DirectionalLight->GetLightComponent()->Intensity;
+			float NewIntensity = FMath::FInterpTo(CurrentIntensity, TargetIntensity, GetWorld()->GetDeltaSeconds(), DecreaseRate);
+			DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
+
+			if (NewIntensity <= 0.05f)
+			{
+				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+				if (!bDayTransitionTriggered)
+				{
+					DayTransistion();
+					PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
+					bDayTransitionTriggered = true; // Sätt till true för att förhindra ytterligare körningar
+				}
+			}
+		}, 0.05f, true);
+	}
+	else
 	{
 		DayTransistion();
-		PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
-	}, delayDuration, false);
+		PlayerCharacter->EnableMovement();
+		bDayTransitionTriggered = true; // Sätt till true för att förhindra ytterligare körningar
+	}
+
+	DayCycle++;
 }
 
 void ADayCycleManager::SpawnTreeEvent()

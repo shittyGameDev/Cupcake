@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "ForageableActor.generated.h"
 
+class UNewInventoryComponent;
 class UImage;
 class UNiagaraSystem;
 class UBaseItem;
@@ -42,6 +43,9 @@ protected:
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
+
+	UPROPERTY()
+	UNewInventoryComponent* InventoryComponent;
 
 	
 

@@ -4,7 +4,6 @@
 #include "NewInventoryComponent.h"
 
 #include "Cupcake/Items/BaseItem.h"
-#include "Cupcake/UI/BaseHUD.h"
 
 // Sets default values for this component's properties
 UNewInventoryComponent::UNewInventoryComponent()

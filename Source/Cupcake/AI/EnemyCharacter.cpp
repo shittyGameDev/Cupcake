@@ -3,7 +3,7 @@
 
 #include "EnemyCharacter.h"
 
-#include "Actors/AttributeComponent.h"
+#include "Cupcake/Actors/AttributeComponent.h"
 #include "Perception/AIPerceptionSystem.h"
 #include "Perception/AISense_Damage.h"
 

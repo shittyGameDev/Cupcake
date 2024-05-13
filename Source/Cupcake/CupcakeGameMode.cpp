@@ -1,22 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CupcakeGameMode.h"
-#include "Engine.h" // Include this header for logging
-#include "MapUI.h"
-#include "Blueprint/UserWidget.h"
 
 void ACupcakeGameMode::BeginPlay()
 {
 	 Super::BeginPlay();
-
-    // Create an instance of your Widget Blueprint
-    UUserWidget* WidgetInstance = CreateWidget<UUserWidget>(GetWorld(), UMapUI::StaticClass());
-
-    // Add the widget to the viewport
-    if (WidgetInstance)
-    {
-        WidgetInstance->AddToViewport();
-    }
 }
 
 

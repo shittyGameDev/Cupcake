@@ -123,6 +123,12 @@ public:
 	
 	FTimerHandle TimerHandle_AttackFinished;
 
+	UFUNCTION(BlueprintCallable)
+	void SaveGame() const;
+
+	UFUNCTION(BlueprintCallable)
+	void LoadGame();
+
 protected:
 	UPROPERTY()
 	ABaseHUD* HUD;

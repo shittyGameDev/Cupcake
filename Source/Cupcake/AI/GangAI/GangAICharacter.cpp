@@ -54,6 +54,8 @@ void AGangAICharacter::BeginPlay()
 
 		Weapon->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
 
+		Weapon->SetOwner(this);
+
 		Weapon->HideWeapon();
 	}
 	if (FoundManagers.Num() > 0)
@@ -202,14 +204,8 @@ void AGangAICharacter::DoAttack()
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	GetCharacterMovement()->MaxWalkSpeed = 800.f; // Speed might be adjusted based on gameplay balance
 	AIController->MoveToLocation(DashTarget, 1.0f, true);  // Dash to the calculated point
-
+	
 	NiagaraComponent->SetActive(false);
-	if (Weapon)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Weapon is not null"));
-		Weapon->SetOwner(this);
-		Weapon->ShowWeapon();
-	}
 
 	// Set a timer to stop the attack
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AGangAICharacter::OnAttackFinished, 1.0f, false);
@@ -230,10 +226,6 @@ void AGangAICharacter::OnAttackFinished()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 	bIsAttacking = false;
-	if (Weapon)
-	{
-		Weapon->HideWeapon();
-	}
 	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_Cooldown, this, &AGangAICharacter::EnableChasing, .5f, false);
 }
@@ -251,6 +243,7 @@ void AGangAICharacter::InitiateAttack(AActor* Actor)
 	GetCharacterMovement()->DisableMovement();
 	TargetAttackPosition = Actor->GetActorLocation();
 	NiagaraComponent->SetActive(true);
+	StartAttack();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 1.f, false);
 }
 

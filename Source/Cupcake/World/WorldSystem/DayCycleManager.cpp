@@ -232,22 +232,27 @@ void ADayCycleManager::RestoreLightIntensity()
 {
 	if (DirectionalLight && DirectionalLight->GetLightComponent())
 	{
+		float TargetIntensity = 3.0f; // Använd den definierade OriginalIntensity
 		float IncreaseRate = 5.0f; // Justera detta värde efter behov för hur snabbt ljuset ska återställas.
 
 		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, &TimerHandle, IncreaseRate]() mutable
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, &TimerHandle, TargetIntensity, IncreaseRate]() mutable
 		{
 			float CurrentIntensity = DirectionalLight->GetLightComponent()->Intensity;
-			float NewIntensity = FMath::FInterpTo(CurrentIntensity, OrginalIntensity, GetWorld()->GetDeltaSeconds(), IncreaseRate);
+			float NewIntensity = FMath::FInterpTo(CurrentIntensity, TargetIntensity, GetWorld()->GetDeltaSeconds(), IncreaseRate);
 			DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
 
+			// Skriv ut nuvarande och nya intensitetsvärden för felsökning
+			UE_LOG(LogTemp, Warning, TEXT("CurrentIntensity: %f, NewIntensity: %f"), CurrentIntensity, NewIntensity);
+
 			// Stoppa timern när ljusintensiteten är nära det ursprungliga värdet.
-			if (FMath::Abs(NewIntensity - OrginalIntensity) < 0.05f)
+			if (FMath::Abs(NewIntensity - TargetIntensity) < 0.001f) // Gör toleransen mindre för mer precision
 			{
-				DirectionalLight->GetLightComponent()->SetIntensity(OrginalIntensity);
+				DirectionalLight->GetLightComponent()->SetIntensity(TargetIntensity);
 				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+				UE_LOG(LogTemp, Warning, TEXT("Light intensity restored to original value."));
 			}
-		}, 0.05f, true);
+		}, 0.01f, true);
 	}
 }
 

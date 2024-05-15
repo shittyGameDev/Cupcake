@@ -27,6 +27,7 @@ AGangAICharacter::AGangAICharacter()
 	bIsChasing = false;
 	bIsAttacking = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 360.f, 0.f);
 	GetCharacterMovement()->MaxWalkSpeed = 200.f;
 
 	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ChargeFX"));
@@ -111,6 +112,7 @@ void AGangAICharacter::Tick(float DeltaTime)
 		{
 			Patrol(); // Update to a new patrol point
 		}
+
 	}
 }
 
@@ -130,7 +132,9 @@ float AGangAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	if (CausingCharacter)
 	{
 		return 0.0f; // Prevent damage
+		UE_LOG(LogTemp, Warning, TEXT("Gör ingen skada"));
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Gör  skada"));
 	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
@@ -170,6 +174,18 @@ void AGangAICharacter::Patrol()
 			GetCharacterMovement()->MaxWalkSpeed = 100.f;
 			FVector PatrolPoint = GetRandomPatrolPoint();
 			CurrentPatrolPoint = PatrolPoint;
+
+			// Calculate the direction to the patrol point
+			FVector Direction = PatrolPoint - GetActorLocation();
+			FRotator NewRotation = FRotationMatrix::MakeFromX(Direction).Rotator();
+
+			// Smoothly interpolate rotation towards the patrol point
+			FRotator CurrentRotation = GetActorRotation();
+			FRotator InterpolatedRotation = FMath::RInterpTo(CurrentRotation, NewRotation, GetWorld()->GetDeltaSeconds(), 2.0f); // Adjust the interpolation speed as needed
+
+			SetActorRotation(InterpolatedRotation);
+
+			// Move to the patrol point
 			AIController->MoveToLocation(PatrolPoint, 1.0f, true, true, false, true, nullptr, true);
 		}
 	}

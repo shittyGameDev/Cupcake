@@ -20,13 +20,13 @@ struct FTimeEvent
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
-	int Day;
+	int Day = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
-	int Hour;
+	int Hour = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
-	int Minute;
+	int Minute = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Event")
 	FString FunctionName;

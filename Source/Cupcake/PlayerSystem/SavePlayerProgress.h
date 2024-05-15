@@ -17,10 +17,10 @@ struct FItemSaveData
 	FName ID;
 
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
-	int32 Quantity;
+	int32 Quantity = 0;
 
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
-	EItemType ItemType;
+	EItemType ItemType = EItemType::Misc;
 
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
 	FItemTextData TextData;

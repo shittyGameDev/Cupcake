@@ -232,27 +232,29 @@ void ADayCycleManager::RestoreLightIntensity()
 {
 	if (DirectionalLight && DirectionalLight->GetLightComponent())
 	{
-		float TargetIntensity = 3.0f; // Använd den definierade OriginalIntensity
-		float IncreaseRate = 5.0f; // Justera detta värde efter behov för hur snabbt ljuset ska återställas.
+		float TargetIntensity = 8.0f; // Use the defined OriginalIntensity
+		float IncreaseRate = 50.f; // Adjust this value as needed for how quickly the light should restore.
+		float UpdateInterval = 0.01f; // Timer tick interval
 
 		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, &TimerHandle, TargetIntensity, IncreaseRate]() mutable
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, TargetIntensity, IncreaseRate, UpdateInterval, TimerHandle]() mutable
 		{
 			float CurrentIntensity = DirectionalLight->GetLightComponent()->Intensity;
-			float NewIntensity = FMath::FInterpTo(CurrentIntensity, TargetIntensity, GetWorld()->GetDeltaSeconds(), IncreaseRate);
+			float NewIntensity = FMath::FInterpTo(CurrentIntensity, TargetIntensity, UpdateInterval, IncreaseRate);
+
 			DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
 
-			// Skriv ut nuvarande och nya intensitetsvärden för felsökning
+			// Log current and new intensity values for debugging
 			UE_LOG(LogTemp, Warning, TEXT("CurrentIntensity: %f, NewIntensity: %f"), CurrentIntensity, NewIntensity);
 
-			// Stoppa timern när ljusintensiteten är nära det ursprungliga värdet.
-			if (FMath::Abs(NewIntensity - TargetIntensity) < 0.001f) // Gör toleransen mindre för mer precision
+			// Stop the timer when the light intensity is close to the original value
+			if (FMath::Abs(NewIntensity - TargetIntensity) < 0.f) // Use a smaller tolerance for more precision
 			{
 				DirectionalLight->GetLightComponent()->SetIntensity(TargetIntensity);
 				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 				UE_LOG(LogTemp, Warning, TEXT("Light intensity restored to original value."));
 			}
-		}, 0.01f, true);
+		}, UpdateInterval, true);
 	}
 }
 

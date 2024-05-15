@@ -43,7 +43,7 @@ void AObeliskActor::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EndScreen set"));
 		EndScreen = CreateWidget<UEndScreen>(GetWorld(), EndScreenClass);
-		EndScreen->AddToViewport(5);
+		EndScreen->AddToViewport(999);
 		EndScreen->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	

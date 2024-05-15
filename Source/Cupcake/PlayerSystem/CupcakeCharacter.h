@@ -20,6 +20,8 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+
+
 USTRUCT()
 struct FInteractionData
 {
@@ -121,6 +123,12 @@ public:
 	
 	FTimerHandle TimerHandle_AttackFinished;
 
+	UFUNCTION(BlueprintCallable)
+	void SaveGame();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadGame();
+
 protected:
 	UPROPERTY()
 	ABaseHUD* HUD;
@@ -162,7 +170,7 @@ protected:
 	//void PerformInteractionCheck();
 	void FoundInteractable(AActor* NewInteractable);
 	void NoInteractableFound();
-	void UpdateInteraction();
+	void UpdateInteraction() const;
 	void BeginInteract();
 	void EndInteract();
 	void Interact();

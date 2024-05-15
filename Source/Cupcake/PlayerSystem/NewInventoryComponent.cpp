@@ -90,8 +90,9 @@ void UNewInventoryComponent::RemoveSingleInstanceOfItem(UBaseItem* ItemToRemove)
 int32 UNewInventoryComponent::RemoveAmountOfItem(UBaseItem* ItemIn, int32 DesiredAmountToRemove)
 {
 	const int32 ActualAmountToRemove = FMath::Min(DesiredAmountToRemove, ItemIn->Quantity);
-
+	OnRemoveItem.Broadcast(ItemIn);
 	ItemIn->SetQuantity(ItemIn->Quantity - ActualAmountToRemove);
+
 
 	OnInventoryUpdated.Broadcast();
 
@@ -186,6 +187,7 @@ int32 UNewInventoryComponent::HandleStackableItems(UBaseItem* InputItem, int32 R
 
 FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 {
+	UE_LOG(LogTemp, Warning, TEXT("HandleAddItem: %p"), InputItem);
 	// Check for valid owner (Victor)
 	if(GetOwner())
 	{

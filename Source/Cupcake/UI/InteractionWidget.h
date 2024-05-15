@@ -43,6 +43,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
 	UTextBlock* KeyPressText;
+	
+	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
+	UTextBlock* ActionButtonText;
 
 
 

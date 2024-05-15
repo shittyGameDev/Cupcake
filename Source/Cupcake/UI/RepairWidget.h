@@ -39,6 +39,9 @@ public:
 	UPROPERTY(Transient,BlueprintReadOnly, meta = (BindWidgetAnim))
 	UWidgetAnimation* WoodAnim;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void AnimateClose();
+
 
 	void IncreaseWoodQuantity(int NewWoodQuantity);
 	void IncreaseStoneQuantity(int NewWoodQuantity);

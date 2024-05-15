@@ -4,6 +4,7 @@
 #include "InventoryPanel.h"
 
 #include "InventoryItemSlot.h"
+#include "Components/TextBlock.h"
 #include "Components/WrapBox.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/CupcakeCharacter.h"

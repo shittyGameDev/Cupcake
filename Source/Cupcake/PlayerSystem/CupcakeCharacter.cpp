@@ -585,7 +585,7 @@ UBaseItem* ConvertToBaseItem(UObject* Outer, const FItemSaveData& SaveData)
 	return Item;
 }
 
-void ACupcakeCharacter::SaveGame() const
+void ACupcakeCharacter::SaveGame()
 {
 	USavePlayerProgress* SaveGameInstance = Cast<USavePlayerProgress>(UGameplayStatics::CreateSaveGameObject(USavePlayerProgress::StaticClass()));
 

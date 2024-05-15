@@ -4,6 +4,7 @@
 #include "InteractionWidget.h"
 
 #include "Components/ProgressBar.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Cupcake/Items/InteractionInterface.h"
 
@@ -28,6 +29,7 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 	{
 	case EInteractableType::Pickup:
 		KeyPressText->SetText(FText::FromString("Press"));
+		InteractionSizeBox->SetVisibility(ESlateVisibility::Collapsed);
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 #if PLATFORM_WINDOWS
 		ActionButtonText->SetText(FText::FromString("E to"));
@@ -61,6 +63,7 @@ void UInteractionWidget::UpdateWidget(const FInteractableData* InteractableData)
 #endif
 
 		QuantityText->SetVisibility(ESlateVisibility::Collapsed);
+		InteractionSizeBox->SetVisibility(ESlateVisibility::Visible);
 		InteractionProgressBar->SetVisibility(ESlateVisibility::Visible);
 		break;
 

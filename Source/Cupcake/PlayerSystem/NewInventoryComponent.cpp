@@ -187,6 +187,7 @@ int32 UNewInventoryComponent::HandleStackableItems(UBaseItem* InputItem, int32 R
 
 FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 {
+	UE_LOG(LogTemp, Warning, TEXT("HandleAddItem: %p"), InputItem);
 	// Check for valid owner (Victor)
 	if(GetOwner())
 	{

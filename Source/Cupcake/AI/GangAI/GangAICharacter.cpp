@@ -130,7 +130,9 @@ float AGangAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	if (CausingCharacter)
 	{
 		return 0.0f; // Prevent damage
+		UE_LOG(LogTemp, Warning, TEXT("Gör ingen skada"));
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Gör  skada"));
 	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 

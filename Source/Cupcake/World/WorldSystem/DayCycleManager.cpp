@@ -237,7 +237,7 @@ void ADayCycleManager::RestoreLightIntensity()
 {
 	if (DirectionalLight && DirectionalLight->GetLightComponent())
 	{
-		float TargetIntensity = 8.0f; // Use the defined OriginalIntensity
+		float TargetIntensity = 3.0f; // Use the defined OriginalIntensity
 		float IncreaseRate = 50.f; // Adjust this value as needed for how quickly the light should restore.
 		float UpdateInterval = 0.01f; // Timer tick interval
 

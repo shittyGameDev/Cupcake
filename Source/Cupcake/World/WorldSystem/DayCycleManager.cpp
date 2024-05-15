@@ -224,6 +224,11 @@ void ADayCycleManager::DayTransistion()
 				bDayTransitionTriggered = false;
 			}, 3.0f, false);
 			RestoreLightIntensity();
+			if (DayCycle == 2)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("DayTransition incremented DayCycle to 2, calling RemoveTutorialBarrier"));
+				RemoveTutorialBarrier();
+			}
 		}
 	}
 }
@@ -232,7 +237,7 @@ void ADayCycleManager::RestoreLightIntensity()
 {
 	if (DirectionalLight && DirectionalLight->GetLightComponent())
 	{
-		float TargetIntensity = 8.0f; // Use the defined OriginalIntensity
+		float TargetIntensity = 3.0f; // Use the defined OriginalIntensity
 		float IncreaseRate = 50.f; // Adjust this value as needed for how quickly the light should restore.
 		float UpdateInterval = 0.01f; // Timer tick interval
 
@@ -245,7 +250,7 @@ void ADayCycleManager::RestoreLightIntensity()
 			DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
 
 			// Log current and new intensity values for debugging
-			UE_LOG(LogTemp, Warning, TEXT("CurrentIntensity: %f, NewIntensity: %f"), CurrentIntensity, NewIntensity);
+			//UE_LOG(LogTemp, Warning, TEXT("CurrentIntensity: %f, NewIntensity: %f"), CurrentIntensity, NewIntensity);
 
 			// Stop the timer when the light intensity is close to the original value
 			if (FMath::Abs(NewIntensity - TargetIntensity) < 0.f) // Use a smaller tolerance for more precision
@@ -314,6 +319,8 @@ void ADayCycleManager::ShiftDay()
 	}
 
 	DayCycle++;
+
+	UE_LOG(LogTemp, Warning, TEXT("Daycount: %d"), DayCycle);
 }
 
 void ADayCycleManager::SpawnTreeEvent()
@@ -365,6 +372,7 @@ void ADayCycleManager::ApplyInsanity()
 
 void ADayCycleManager::RemoveTutorialBarrier()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Förstör stenen"));
 	for (AActor* Actor : ActorsBarrier)
 	{
 		Actor->Destroy();

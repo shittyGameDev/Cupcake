@@ -124,7 +124,7 @@ public:
 	FTimerHandle TimerHandle_AttackFinished;
 
 	UFUNCTION(BlueprintCallable)
-	void SaveGame() const;
+	void SaveGame();
 
 	UFUNCTION(BlueprintCallable)
 	void LoadGame();

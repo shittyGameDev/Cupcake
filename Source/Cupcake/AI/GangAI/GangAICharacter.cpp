@@ -45,6 +45,7 @@ void AGangAICharacter::BeginPlay()
 	Player = UGameplayStatics::GetPlayerPawn(this, 0);
 	TArray<AActor*> FoundManagers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGangAIManager::StaticClass(), FoundManagers);
+	
 	if (WeaponBlueprint)
 	{
 		// Spawn the weapon
@@ -58,6 +59,7 @@ void AGangAICharacter::BeginPlay()
 		Weapon->SetOwner(this);
 
 		Weapon->HideWeapon();
+		Weapon->Unequip();
 	}
 	if (FoundManagers.Num() > 0)
 	{

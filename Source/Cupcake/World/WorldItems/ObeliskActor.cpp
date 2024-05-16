@@ -139,11 +139,15 @@ void AObeliskActor::EndFocus()
 void AObeliskActor::BeginInteract()
 {
 	IInteractionInterface::BeginInteract();
+	UE_LOG(LogTemp, Warning, TEXT("Test"));
+	PlayRepairSound();
 }
 
 void AObeliskActor::EndInteract()
 {
 	IInteractionInterface::EndInteract();
+	StopRepairSound();
+	UE_LOG(LogTemp, Warning, TEXT("Test again"));
 }
 
 void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)

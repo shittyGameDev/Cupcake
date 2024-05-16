@@ -43,6 +43,8 @@ protected:
 	virtual void BeginFocus() override;
 	virtual void EndFocus() override;
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayForageSound();
 
 	UPROPERTY()
 	UNewInventoryComponent* InventoryComponent;

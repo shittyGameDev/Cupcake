@@ -4,6 +4,7 @@
 #include "ObeliskActor.h"
 
 #include "NiagaraComponent.h"
+#include "Components/TextBlock.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/Items/Data/ItemDataStructs.h"
 #include "Cupcake/UI/RepairWidget.h"
@@ -120,6 +121,9 @@ void AObeliskActor::BeginFocus()
 	{
 		RepairWidget = CreateWidget<URepairWidget>(GetWorld(), RepairWidgetClass);
 		RepairWidget->AddToViewport(5);
+		RepairWidget->WoodQuantity->SetText(FText::AsNumber(NumberOfWoodItemsDonated));
+		RepairWidget->StoneQuantity->SetText(FText::AsNumber(NumberOfStoneItemsDonated));
+		RepairWidget->IronQuantity->SetText(FText::AsNumber(NumberOfIronItemsDonated));
 		RepairWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }

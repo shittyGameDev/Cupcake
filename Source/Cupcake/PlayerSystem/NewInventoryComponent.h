@@ -86,7 +86,7 @@ public:
 	
 	UNewInventoryComponent();
 
-	UFUNCTION(Category= "Inventory")
+	UFUNCTION(BlueprintCallable, Category= "Inventory")
 	FItemAddResult HandleAddItem(UBaseItem* InputItem);
 
 	UFUNCTION(Category= "Inventory")

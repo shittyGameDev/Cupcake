@@ -98,6 +98,7 @@ public:
 protected:
 	//AAIController* AIController;
 	bool bIsChasing;
+	bool bIsPatrolling = false; 
 	bool bIsAttacking;
 	AActor* Player;
 	//PROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")

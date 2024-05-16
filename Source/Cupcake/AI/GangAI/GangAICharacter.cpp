@@ -126,16 +126,15 @@ float AGangAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
                                    AActor* DamageCauser)
 {
 	// Cast the DamageCauser to AGangAICharacter
-	AGangAICharacter* CausingCharacter = Cast<AGangAICharacter>(DamageCauser);
+	AGangAICharacter* CausingCharacter = Cast<AGangAICharacter>(DamageCauser->Owner);
     
 	// If the cast is successful, prevent damage between AI characters
-	if (CausingCharacter)
+	if (!CausingCharacter)
 	{
-		return 0.0f; // Prevent damage
-		UE_LOG(LogTemp, Warning, TEXT("Gör ingen skada"));
+		UE_LOG(LogTemp, Warning, TEXT("Gör  skada"));
+		return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Gör  skada"));
-	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	return 0.f;
 }
 
 void AGangAICharacter::OnDeath_Implementation()

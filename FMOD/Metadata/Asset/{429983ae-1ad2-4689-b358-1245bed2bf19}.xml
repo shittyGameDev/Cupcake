@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="EncodableAsset" id="{8bc70d70-a86d-4240-9640-1d24bb82e3d8}">
+	<object class="EncodableAsset" id="{429983ae-1ad2-4689-b358-1245bed2bf19}">
 		<property name="assetPath">
-			<value>Foley/Footsteps_Grass(2)/</value>
+			<value>Foley/Eating/</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{5124e802-e417-4b78-a9a1-61e615bbc550}</destination>

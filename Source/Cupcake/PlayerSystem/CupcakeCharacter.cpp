@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CupcakeCharacter.h"
+
+#include "BlueprintEditor.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -31,12 +33,16 @@ ACupcakeCharacter::ACupcakeCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+
+	//Dash
+	bIsDashing = false;
+	bCanDash = true;
 		
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-
+	
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
@@ -49,7 +55,7 @@ ACupcakeCharacter::ACupcakeCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
-
+	
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -176,6 +182,53 @@ void ACupcakeCharacter::OnAttackFinished()
 	{
 		// Unequip weapon
 		Weapon->HideWeapon();
+	}
+}
+
+void ACupcakeCharacter::Dash()
+{
+	if (!bIsDashing && bCanDash)
+	{
+		// Start dashing
+		bIsDashing = true;
+		bCanDash = false; // Prevent further dashes until cooldown is over
+
+		// Calculate the dash force vector
+		FVector DashForce = GetActorForwardVector() * DashImpulseStrength;
+
+		// Enable physics simulation and constrain movement to the XY plane
+		GetCapsuleComponent()->SetSimulatePhysics(true);
+		GetCapsuleComponent()->SetConstraintMode(EDOFMode::XYPlane);
+
+		// Freeze rotation by setting angular velocity to zero and disabling rotation physics
+		GetCapsuleComponent()->BodyInstance.bLockXRotation = true;
+		GetCapsuleComponent()->BodyInstance.bLockYRotation = true;
+		GetCapsuleComponent()->BodyInstance.bLockZRotation = true;
+
+		GetCapsuleComponent()->AddImpulse(DashForce, NAME_None, true);
+
+		// Set a timer to stop the dash after the duration
+		GetWorldTimerManager().SetTimer(TimerHandle_Dash, [this]()
+		{
+			// Dash has ended
+			bIsDashing = false;
+
+			// Restore physics and rotation constraints
+			GetCapsuleComponent()->SetSimulatePhysics(false);
+			GetCapsuleComponent()->SetConstraintMode(EDOFMode::None);
+
+			// Unlock rotation constraints
+			GetCapsuleComponent()->BodyInstance.bLockXRotation = false;
+			GetCapsuleComponent()->BodyInstance.bLockYRotation = false;
+			GetCapsuleComponent()->BodyInstance.bLockZRotation = false;
+
+			// Start cooldown timer after dash ends
+			GetWorldTimerManager().SetTimer(TimerHandle_Cooldown, [this]()
+			{
+				bCanDash = true; // Allow dashing again after cooldown
+			}, DashCooldown, false);
+
+		}, DashDuration, false);
 	}
 }
 
@@ -383,6 +436,7 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
+		PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ACupcakeCharacter::Dash);
 
 		//Interact
 		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
@@ -394,7 +448,7 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		PlayerInputComponent->BindAction("SaveGame", IE_Pressed, this, &ACupcakeCharacter::SaveGame);
 		PlayerInputComponent->BindAction("LoadGame", IE_Pressed, this, &ACupcakeCharacter::LoadGame);
-
+		
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Look);

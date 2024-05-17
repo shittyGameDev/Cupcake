@@ -87,6 +87,7 @@ void AForageableActor::Interact(ACupcakeCharacter* PlayerCharacter)
 		{
 			InventoryComponent = PlayerCharacter->GetInventory();
 			InventoryComponent->HandleAddItem(ItemReference);
+			PlayForageSound();
 			StartForagingTimer();
 		}
 		else

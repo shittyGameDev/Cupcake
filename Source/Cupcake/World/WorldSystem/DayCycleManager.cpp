@@ -1,6 +1,5 @@
 #include "DayCycleManager.h"
 
-#include "BlueprintEditor.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/LightComponent.h"
 #include "Components/SkyLightComponent.h"
@@ -224,6 +223,11 @@ void ADayCycleManager::DayTransistion()
 				bDayTransitionTriggered = false;
 			}, 3.0f, false);
 			RestoreLightIntensity();
+			if (DayCycle == 2)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("DayTransition incremented DayCycle to 2, calling RemoveTutorialBarrier"));
+				RemoveTutorialBarrier();
+			}
 		}
 	}
 }
@@ -232,7 +236,7 @@ void ADayCycleManager::RestoreLightIntensity()
 {
 	if (DirectionalLight && DirectionalLight->GetLightComponent())
 	{
-		float TargetIntensity = 8.0f; // Use the defined OriginalIntensity
+		float TargetIntensity = 3.0f; // Use the defined OriginalIntensity
 		float IncreaseRate = 50.f; // Adjust this value as needed for how quickly the light should restore.
 		float UpdateInterval = 0.01f; // Timer tick interval
 
@@ -245,7 +249,7 @@ void ADayCycleManager::RestoreLightIntensity()
 			DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
 
 			// Log current and new intensity values for debugging
-			UE_LOG(LogTemp, Warning, TEXT("CurrentIntensity: %f, NewIntensity: %f"), CurrentIntensity, NewIntensity);
+			//UE_LOG(LogTemp, Warning, TEXT("CurrentIntensity: %f, NewIntensity: %f"), CurrentIntensity, NewIntensity);
 
 			// Stop the timer when the light intensity is close to the original value
 			if (FMath::Abs(NewIntensity - TargetIntensity) < 0.f) // Use a smaller tolerance for more precision
@@ -268,52 +272,65 @@ void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
 
 void ADayCycleManager::ShiftDay()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ShiftDay called. DayCycle: %d"), DayCycle);
+    UE_LOG(LogTemp, Warning, TEXT("ShiftDay called. DayCycle: %d"), DayCycle);
+	DayCycle++;
 
-	if (bDayTransitionTriggered)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DayTransition already triggered for today."));
-		return; // Förhindra ytterligare körningar om redan utfört
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Daycount: %d"), DayCycle);
+    if (bDayTransitionTriggered)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("DayTransition already triggered for today."));
+        return; // Prevent further executions if already done
+    }
 
-	ApplyInsanity();
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_None);
-	}
+    ApplyInsanity();
+    if (PlayerCharacter)
+    {
+        PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    }
 
-	if (DirectionalLight && DirectionalLight->GetLightComponent())
-	{
-		float TargetIntensity = 0.0f;
-		float DecreaseRate = 5.0f;
-
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, &TimerHandle, TargetIntensity, DecreaseRate]() mutable
-		{
-			float CurrentIntensity = DirectionalLight->GetLightComponent()->Intensity;
-			float NewIntensity = FMath::FInterpTo(CurrentIntensity, TargetIntensity, GetWorld()->GetDeltaSeconds(), DecreaseRate);
-			DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
-
-			if (NewIntensity <= 0.05f)
-			{
-				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-				if (!bDayTransitionTriggered)
-				{
-					DayTransistion();
-					PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
-					bDayTransitionTriggered = true; // Sätt till true för att förhindra ytterligare körningar
-				}
-			}
-		}, 0.05f, true);
-	}
-	else
+	if (!bDayTransitionTriggered)
 	{
 		DayTransistion();
-		PlayerCharacter->EnableMovement();
-		bDayTransitionTriggered = true; // Sätt till true för att förhindra ytterligare körningar
+		PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
+		bDayTransitionTriggered = true; // Set to true to prevent further executions
 	}
+/*
+    if (DirectionalLight && DirectionalLight->GetLightComponent())
+    {
+        const float TargetIntensity = 0.0f;
+        const float DecreaseAmount = 0.03f; // Adjust decrease amount to ensure it's perceivable each tick
 
-	DayCycle++;
+        FTimerHandle TimerHandle;
+        GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, &TimerHandle, TargetIntensity, DecreaseAmount]()
+        {
+            // Retrieve current intensity inside the lambda to ensure it's updated each tick
+            float CurrentIntensity = DirectionalLight->GetLightComponent()->Intensity;
+            float NewIntensity = FMath::Max(CurrentIntensity - DecreaseAmount, TargetIntensity);
+            DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
+
+            UE_LOG(LogTemp, Warning, TEXT("CurrentIntensity: %f, NewIntensity: %f"), CurrentIntensity, NewIntensity);
+
+            if (NewIntensity <= 0.05f || FMath::IsNearlyZero(NewIntensity, 0.01f))
+            {
+                GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+                UE_LOG(LogTemp, Warning, TEXT("Light intensity reached near zero, clearing timer."));
+                if (!bDayTransitionTriggered)
+                {
+                    DayTransistion();
+                    PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
+                    bDayTransitionTriggered = true; // Set to true to prevent further executions
+                }
+            }
+        }, 0.05f, true); // Timer interval set to 0.05 seconds
+    }
+    else
+    {
+        DayTransistion();
+        PlayerCharacter->EnableMovement();
+        bDayTransitionTriggered = true;
+    }*/
+
+
 }
 
 void ADayCycleManager::SpawnTreeEvent()
@@ -365,6 +382,7 @@ void ADayCycleManager::ApplyInsanity()
 
 void ADayCycleManager::RemoveTutorialBarrier()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Förstör stenen"));
 	for (AActor* Actor : ActorsBarrier)
 	{
 		Actor->Destroy();

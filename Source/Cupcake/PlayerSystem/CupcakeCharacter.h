@@ -107,7 +107,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
+	
 	FORCEINLINE UNewInventoryComponent* GetInventory() const { return PlayerInventory; }
 
 	void UpdateInteractionWidget() const;
@@ -155,7 +155,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Interaction")
 	TScriptInterface<IInteractionInterface> TargetInteractable;
 
-	UPROPERTY(VisibleAnywhere, Category="Character | Inventory")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Character | Inventory")
 	UNewInventoryComponent* PlayerInventory;
 
 	float InteractionCheckFrequency;

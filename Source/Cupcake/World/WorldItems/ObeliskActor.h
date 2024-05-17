@@ -126,5 +126,10 @@ public:
 	virtual void BeginInteract() override;
 	virtual void EndInteract() override;
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayRepairSound();
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopRepairSound();
 	void ProcessDonation(UBaseItem*& ItemReference, int& ItemsDonated, int RequiredItems, const TCHAR* ItemType, ACupcakeCharacter* PlayerCharacter);
 };

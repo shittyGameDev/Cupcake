@@ -4,6 +4,7 @@
 #include "ObeliskActor.h"
 
 #include "NiagaraComponent.h"
+#include "Components/TextBlock.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/Items/Data/ItemDataStructs.h"
 #include "Cupcake/UI/RepairWidget.h"
@@ -43,7 +44,7 @@ void AObeliskActor::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EndScreen set"));
 		EndScreen = CreateWidget<UEndScreen>(GetWorld(), EndScreenClass);
-		EndScreen->AddToViewport(5);
+		EndScreen->AddToViewport(999);
 		EndScreen->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	
@@ -120,6 +121,9 @@ void AObeliskActor::BeginFocus()
 	{
 		RepairWidget = CreateWidget<URepairWidget>(GetWorld(), RepairWidgetClass);
 		RepairWidget->AddToViewport(5);
+		RepairWidget->WoodQuantity->SetText(FText::AsNumber(NumberOfWoodItemsDonated));
+		RepairWidget->StoneQuantity->SetText(FText::AsNumber(NumberOfStoneItemsDonated));
+		RepairWidget->IronQuantity->SetText(FText::AsNumber(NumberOfIronItemsDonated));
 		RepairWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
@@ -139,11 +143,15 @@ void AObeliskActor::EndFocus()
 void AObeliskActor::BeginInteract()
 {
 	IInteractionInterface::BeginInteract();
+	UE_LOG(LogTemp, Warning, TEXT("Test"));
+	PlayRepairSound();
 }
 
 void AObeliskActor::EndInteract()
 {
 	IInteractionInterface::EndInteract();
+	StopRepairSound();
+	UE_LOG(LogTemp, Warning, TEXT("Test again"));
 }
 
 void AObeliskActor::Interact(ACupcakeCharacter* PlayerCharacter)

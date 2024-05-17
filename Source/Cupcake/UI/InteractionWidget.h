@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InteractionWidget.generated.h"
 
+class USizeBox;
 class UProgressBar;
 class UTextBlock;
 struct FInteractableData;
@@ -26,6 +27,9 @@ public:
 
 	UFUNCTION(Category= "Interaction")
 	void UpdateInteractionProgress();
+	
+	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
+	USizeBox* InteractionSizeBox;
 
 	UPROPERTY(VisibleAnywhere, meta = (BindWidget), Category= "Interactable Data")
 	UProgressBar* InteractionProgressBar;

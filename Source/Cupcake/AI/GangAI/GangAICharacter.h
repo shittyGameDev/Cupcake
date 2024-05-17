@@ -22,6 +22,7 @@ public:
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser);
 
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartAttack();
 	
@@ -97,6 +98,7 @@ public:
 protected:
 	//AAIController* AIController;
 	bool bIsChasing;
+	bool bIsPatrolling = false; 
 	bool bIsAttacking;
 	AActor* Player;
 	//PROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")

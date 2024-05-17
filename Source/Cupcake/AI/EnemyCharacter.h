@@ -26,7 +26,7 @@ protected:
 
 	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
 	AWeaponBase* Weapon;
-
+	
 	UFUNCTION(BlueprintGetter)
 	AWeaponBase* GetWeapon() const { return Weapon; }
 	

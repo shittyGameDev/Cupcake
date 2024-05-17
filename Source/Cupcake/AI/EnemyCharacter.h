@@ -24,14 +24,21 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	// Head weapon
 	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
 	AWeaponBase* Weapon;
-	
 	UFUNCTION(BlueprintGetter)
 	AWeaponBase* GetWeapon() const { return Weapon; }
-	
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
+
+	// Hand weapon
+	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
+	AWeaponBase* HandWeapon;
+	UFUNCTION(BlueprintGetter)
+	AWeaponBase* GetHandWeapon() const { return HandWeapon; }
+	UPROPERTY(EditAnywhere, Category="Weapon")
+	TSubclassOf<AWeaponBase> HandWeaponBlueprint;
 
 	FTimerHandle TimerHandle_AttackFinished;
 	FTimerHandle TimerHandle_RestoreRotation;

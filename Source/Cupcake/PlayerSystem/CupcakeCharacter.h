@@ -89,6 +89,9 @@ public:
 	void OnAttackFinished();
 
 	UFUNCTION(BlueprintCallable)
+	void Dash();
+
+	UFUNCTION(BlueprintCallable)
 	void EnableMovement();
 
 	UFUNCTION(BlueprintCallable)
@@ -191,5 +194,12 @@ private:
 	FTimerHandle DamageDelayTimerHandle;
 	void EnableDamageTaking();
 	bool bCanTakeDamage = true;
+	FTimerHandle TimerHandle_Dash;
+	FTimerHandle TimerHandle_Cooldown;
+	bool bIsDashing;
+	bool bCanDash; 
+	float DashImpulseStrength = 2000.f;
+	float DashDuration = 0.15f; 
+	float DashCooldown = 1.0f;
 };
 

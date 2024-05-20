@@ -208,23 +208,20 @@ void AGangAICharacter::DoAttack()
 	UE_LOG(LogTemp, Warning, TEXT("Preparing to dash towards the target"));
 
 	
-	if (!Player) return; // Safety check to ensure the player exists
+	if (!Player) return;
 
 	FVector Direction = Player->GetActorLocation() - GetActorLocation();
-	Direction.Normalize();  // Get the unit vector in the direction of the player
-
-	// Calculate the dash target position
+	Direction.Normalize();  
+	
 	FVector DashTarget = GetActorLocation() + Direction * DashDistance;
 
 	AAIController* AIController = Cast<AGangAIController>(GetController());
-	// Enable movement and dash towards the calculated target position
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	GetCharacterMovement()->MaxWalkSpeed = 800.f; // Speed might be adjusted based on gameplay balance
-	AIController->MoveToLocation(DashTarget, 1.0f, true);  // Dash to the calculated point
+	GetCharacterMovement()->MaxWalkSpeed = 800.f; 
+	AIController->MoveToLocation(DashTarget, 1.0f, true); 
 	
 	NiagaraComponent->SetActive(false);
-
-	// Set a timer to stop the attack
+	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AGangAICharacter::OnAttackFinished, 1.0f, false);
 }
 

@@ -223,27 +223,22 @@ void ACupcakeCharacter::UpdateFacingDirection()
 {
 	if (!GetController())
 		return;
-
-	// Retrieve the player controller
+	
 	if (!PlayerController)
 		return;
-
-	// Get the mouse position on the screen
+	
 	float MouseX, MouseY;
 	if (!PlayerController->GetMousePosition(MouseX, MouseY))
 		return;
-
-	// Convert the mouse position to a world direction
+	
 	FVector WorldDirection;
 	FVector WorldLocation;
 	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), OUT WorldLocation, OUT WorldDirection))
 		return;
 
-	// Calculate the point in the world the mouse is pointing at
 	FVector StartLocation = FollowCamera->GetComponentLocation();
-	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend the direction to some far point
+	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; 
 
-	// Perform a line trace to ensure it does not hit anything before this point
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -251,14 +246,12 @@ void ACupcakeCharacter::UpdateFacingDirection()
 
 	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
 
-	// Calculate the direction from the character to the target point
 	FVector ToTarget = (TargetPoint - GetActorLocation()).GetSafeNormal();
 	FRotator TargetRotation = FRotationMatrix::MakeFromX(ToTarget).Rotator();
 
-	// Update the character rotation
 	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
-	NewRotation.Pitch = 0.0f; // Keep the pitch unchanged
-	NewRotation.Roll = 0.0f;  // Keep the roll unchanged
+	NewRotation.Pitch = 0.0f; 
+	NewRotation.Roll = 0.0f; 
 	SetActorRotation(NewRotation);
 }
 

@@ -16,12 +16,12 @@ AWeaponBase::AWeaponBase()
 	RootComponent = WeaponMesh;
 
 	// Weapon Collision component
-	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
-	WeaponBox->SetupAttachment(GetRootComponent());
-	WeaponBox->SetCollisionProfileName(TEXT("Trigger"));
+	Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
+	Collider->SetupAttachment(GetRootComponent());
+	Collider->SetCollisionProfileName(TEXT("Trigger"));
 
 	// Bind overlap event
-	WeaponBox->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnWeaponOverlap);
+	Collider->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnWeaponOverlap);
 }
 
 void AWeaponBase::BeginPlay()
@@ -67,19 +67,19 @@ void AWeaponBase::ClearDamagedList()
 void AWeaponBase::Equip()
 {
 	// Should show weapon and enable collision
-	WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Collider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AWeaponBase::Unequip()
 {
 	// Can still be shown but shouldn't deal damage, therefore disable collison
-	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Collider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ClearDamagedList();
 }
 
 void AWeaponBase::ShowWeapon()
 {
-	WeaponBox->SetActive(true);
+	Collider->SetActive(true);
 	SetActorHiddenInGame(false);
 }
 

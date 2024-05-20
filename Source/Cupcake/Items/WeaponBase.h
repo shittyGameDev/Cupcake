@@ -33,7 +33,7 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category="Weapon Properties")
-	UBoxComponent* WeaponBox;
+	UPrimitiveComponent* Collider;
 
 	UPROPERTY()
 	TArray<AActor*> DamagedActors;

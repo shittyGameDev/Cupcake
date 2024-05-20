@@ -189,45 +189,32 @@ void ACupcakeCharacter::Dash()
 {
 	if (!bIsDashing && bCanDash)
 	{
-		// Start dashing
 		bIsDashing = true;
-		bCanDash = false; // Prevent further dashes until cooldown is over
-
-		// Calculate the dash force vector
+		bCanDash = false;
+		
 		FVector DashForce = GetActorForwardVector() * DashImpulseStrength;
-
-		// Enable physics simulation and constrain movement to the XY plane
 		GetCapsuleComponent()->SetSimulatePhysics(true);
 		GetCapsuleComponent()->SetConstraintMode(EDOFMode::XYPlane);
-
-		// Freeze rotation by setting angular velocity to zero and disabling rotation physics
 		GetCapsuleComponent()->BodyInstance.bLockXRotation = true;
 		GetCapsuleComponent()->BodyInstance.bLockYRotation = true;
 		GetCapsuleComponent()->BodyInstance.bLockZRotation = true;
-
 		GetCapsuleComponent()->AddImpulse(DashForce, NAME_None, true);
-
-		// Set a timer to stop the dash after the duration
+		
 		GetWorldTimerManager().SetTimer(TimerHandle_Dash, [this]()
 		{
-			// Dash has ended
 			bIsDashing = false;
-
-			// Restore physics and rotation constraints
+			
 			GetCapsuleComponent()->SetSimulatePhysics(false);
 			GetCapsuleComponent()->SetConstraintMode(EDOFMode::None);
-
-			// Unlock rotation constraints
 			GetCapsuleComponent()->BodyInstance.bLockXRotation = false;
 			GetCapsuleComponent()->BodyInstance.bLockYRotation = false;
 			GetCapsuleComponent()->BodyInstance.bLockZRotation = false;
-
-			// Start cooldown timer after dash ends
+			
 			GetWorldTimerManager().SetTimer(TimerHandle_Cooldown, [this]()
 			{
-				bCanDash = true; // Allow dashing again after cooldown
+				bCanDash = true; 
 			}, DashCooldown, false);
-
+			
 		}, DashDuration, false);
 	}
 }

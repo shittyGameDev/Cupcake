@@ -67,14 +67,12 @@ void AWeaponBase::ClearDamagedList()
 void AWeaponBase::Equip()
 {
 	// Should show weapon and enable collision
-	ShowWeapon();
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AWeaponBase::Unequip()
 {
 	// Can still be shown but shouldn't deal damage, therefore disable collison
-	HideWeapon();
 	WeaponBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ClearDamagedList();
 }

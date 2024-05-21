@@ -79,13 +79,13 @@ void AWeaponBase::Unequip()
 
 void AWeaponBase::ShowWeapon()
 {
-	Collider->SetActive(true);
+	WeaponMesh->SetActive(true);
 	SetActorHiddenInGame(false);
 }
 
 
 void AWeaponBase::HideWeapon()
 {
-	WeaponBox->SetActive(false);
+	WeaponMesh->SetActive(false);
 	SetActorHiddenInGame(true);
 }

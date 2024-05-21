@@ -221,7 +221,7 @@ void ADayCycleManager::DayTransistion()
 				UE_LOG(LogTemp, Warning, TEXT("Ta bort daytransition widgeten"));
 				PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 				bDayTransitionTriggered = false;
-			}, 3.0f, false);
+			}, 3.5f, false);
 			RestoreLightIntensity();
 			if (DayCycle == 2)
 			{

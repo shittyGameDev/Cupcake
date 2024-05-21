@@ -189,45 +189,32 @@ void ACupcakeCharacter::Dash()
 {
 	if (!bIsDashing && bCanDash)
 	{
-		// Start dashing
 		bIsDashing = true;
-		bCanDash = false; // Prevent further dashes until cooldown is over
-
-		// Calculate the dash force vector
+		bCanDash = false;
+		
 		FVector DashForce = GetActorForwardVector() * DashImpulseStrength;
-
-		// Enable physics simulation and constrain movement to the XY plane
 		GetCapsuleComponent()->SetSimulatePhysics(true);
 		GetCapsuleComponent()->SetConstraintMode(EDOFMode::XYPlane);
-
-		// Freeze rotation by setting angular velocity to zero and disabling rotation physics
 		GetCapsuleComponent()->BodyInstance.bLockXRotation = true;
 		GetCapsuleComponent()->BodyInstance.bLockYRotation = true;
 		GetCapsuleComponent()->BodyInstance.bLockZRotation = true;
-
 		GetCapsuleComponent()->AddImpulse(DashForce, NAME_None, true);
-
-		// Set a timer to stop the dash after the duration
+		
 		GetWorldTimerManager().SetTimer(TimerHandle_Dash, [this]()
 		{
-			// Dash has ended
 			bIsDashing = false;
-
-			// Restore physics and rotation constraints
+			
 			GetCapsuleComponent()->SetSimulatePhysics(false);
 			GetCapsuleComponent()->SetConstraintMode(EDOFMode::None);
-
-			// Unlock rotation constraints
 			GetCapsuleComponent()->BodyInstance.bLockXRotation = false;
 			GetCapsuleComponent()->BodyInstance.bLockYRotation = false;
 			GetCapsuleComponent()->BodyInstance.bLockZRotation = false;
-
-			// Start cooldown timer after dash ends
+			
 			GetWorldTimerManager().SetTimer(TimerHandle_Cooldown, [this]()
 			{
-				bCanDash = true; // Allow dashing again after cooldown
+				bCanDash = true; 
 			}, DashCooldown, false);
-
+			
 		}, DashDuration, false);
 	}
 }
@@ -236,27 +223,22 @@ void ACupcakeCharacter::UpdateFacingDirection()
 {
 	if (!GetController())
 		return;
-
-	// Retrieve the player controller
+	
 	if (!PlayerController)
 		return;
-
-	// Get the mouse position on the screen
+	
 	float MouseX, MouseY;
 	if (!PlayerController->GetMousePosition(MouseX, MouseY))
 		return;
-
-	// Convert the mouse position to a world direction
+	
 	FVector WorldDirection;
 	FVector WorldLocation;
 	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), OUT WorldLocation, OUT WorldDirection))
 		return;
 
-	// Calculate the point in the world the mouse is pointing at
 	FVector StartLocation = FollowCamera->GetComponentLocation();
-	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; // Extend the direction to some far point
+	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; 
 
-	// Perform a line trace to ensure it does not hit anything before this point
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -264,14 +246,12 @@ void ACupcakeCharacter::UpdateFacingDirection()
 
 	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
 
-	// Calculate the direction from the character to the target point
 	FVector ToTarget = (TargetPoint - GetActorLocation()).GetSafeNormal();
 	FRotator TargetRotation = FRotationMatrix::MakeFromX(ToTarget).Rotator();
 
-	// Update the character rotation
 	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
-	NewRotation.Pitch = 0.0f; // Keep the pitch unchanged
-	NewRotation.Roll = 0.0f;  // Keep the roll unchanged
+	NewRotation.Pitch = 0.0f; 
+	NewRotation.Roll = 0.0f; 
 	SetActorRotation(NewRotation);
 }
 

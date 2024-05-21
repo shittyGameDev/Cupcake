@@ -7,16 +7,12 @@ void ATreeEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HandWeaponBlueprint)
+	if (HandWeaponBlueprint && AoEWeaponBlueprint)
 	{
 		// Spawn
-		HandWeapon = GetWorld()->SpawnActor<AWeaponBase>(HandWeaponBlueprint, GetActorLocation(), GetActorRotation());
-		HandWeapon->SetOwner(this);
-		HandWeapon->Unequip();
-
-		// Attach the weapon
-		HandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("HandWeaponSocket"));
-
+		InitiateWeapon(HandWeapon, HandWeaponBlueprint, TEXT("HandWeaponSocket"), this);
+		InitiateWeapon(AoEWeapon, AoEWeaponBlueprint, TEXT("WeaponSocket"), this);
+		
 		// Hide weapons
 		Weapon->HideWeapon();
 		HandWeapon->HideWeapon();
@@ -25,6 +21,22 @@ void ATreeEnemy::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing BP_Weapon!"), *GetActorNameOrLabel());
 	}
+}
+
+bool ATreeEnemy::InitiateWeapon(AWeaponBase* Weapon, TSubclassOf<AWeaponBase> Blueprint, FName Socket, AActor* Owner) const
+{
+	// Create Weapon
+	Weapon = GetWorld()->SpawnActor<AWeaponBase>(Blueprint, GetActorLocation(), GetActorRotation());
+	Weapon->SetOwner(Owner);
+	Weapon->Unequip();
+
+	// Attach the weapon
+	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
+
+	// Hide weapon
+	Weapon->HideWeapon();
+	
+	return true;
 }
 
 void ATreeEnemy::SwipeAttack()
@@ -36,6 +48,11 @@ void ATreeEnemy::SwipeAttack()
 
 void ATreeEnemy::AreaDamage()
 {
+	if (!AoEWeapon) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Ran"));
+	
+	AoEWeapon->ShowWeapon();
 	AoEWeapon->Equip();
 
 	GetWorldTimerManager().SetTimer(TimerHandle_AoE, this, &ATreeEnemy::OnAreaDamageFinished, 1.0f, false, 2.0f);

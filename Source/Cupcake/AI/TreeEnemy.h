@@ -17,6 +17,8 @@ class CUPCAKE_API ATreeEnemy : public AEnemyCharacter
 private:
 	virtual void BeginPlay() override;
 	
+	bool InitiateWeapon(AWeaponBase* Weapon, TSubclassOf<AWeaponBase> Blueprint, FName Socket, AActor* Owner) const;
+
 	// Hand weapon
 	UPROPERTY(Blueprintable, BlueprintGetter=GetHandWeapon)
 	AWeaponBase* HandWeapon;

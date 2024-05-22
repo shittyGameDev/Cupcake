@@ -7,16 +7,12 @@ void ATreeEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HandWeaponBlueprint)
+	if (HandWeaponBlueprint && AoEWeaponBlueprint)
 	{
 		// Spawn
-		HandWeapon = GetWorld()->SpawnActor<AWeaponBase>(HandWeaponBlueprint, GetActorLocation(), GetActorRotation());
-		HandWeapon->SetOwner(this);
-		HandWeapon->Unequip();
-
-		// Attach the weapon
-		HandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("HandWeaponSocket"));
-
+		HandWeapon = InitiateWeapon(HandWeapon, HandWeaponBlueprint, TEXT("HandWeaponSocket"), this);
+		AoEWeapon = InitiateWeapon(AoEWeapon, AoEWeaponBlueprint, TEXT("WeaponSocket"), this);
+		
 		// Hide weapons
 		Weapon->HideWeapon();
 		HandWeapon->HideWeapon();
@@ -36,6 +32,11 @@ void ATreeEnemy::SwipeAttack()
 
 void ATreeEnemy::AreaDamage()
 {
+	if (!AoEWeapon) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Ran"));
+	
+	AoEWeapon->ShowWeapon();
 	AoEWeapon->Equip();
 
 	GetWorldTimerManager().SetTimer(TimerHandle_AoE, this, &ATreeEnemy::OnAreaDamageFinished, 1.0f, false, 2.0f);

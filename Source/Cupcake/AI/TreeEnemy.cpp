@@ -10,8 +10,8 @@ void ATreeEnemy::BeginPlay()
 	if (HandWeaponBlueprint && AoEWeaponBlueprint)
 	{
 		// Spawn
-		InitiateWeapon(HandWeapon, HandWeaponBlueprint, TEXT("HandWeaponSocket"), this);
-		InitiateWeapon(AoEWeapon, AoEWeaponBlueprint, TEXT("WeaponSocket"), this);
+		HandWeapon = InitiateWeapon(HandWeapon, HandWeaponBlueprint, TEXT("HandWeaponSocket"), this);
+		AoEWeapon = InitiateWeapon(AoEWeapon, AoEWeaponBlueprint, TEXT("WeaponSocket"), this);
 		
 		// Hide weapons
 		Weapon->HideWeapon();
@@ -21,22 +21,6 @@ void ATreeEnemy::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing BP_Weapon!"), *GetActorNameOrLabel());
 	}
-}
-
-bool ATreeEnemy::InitiateWeapon(AWeaponBase* Weapon, TSubclassOf<AWeaponBase> Blueprint, FName Socket, AActor* Owner) const
-{
-	// Create Weapon
-	Weapon = GetWorld()->SpawnActor<AWeaponBase>(Blueprint, GetActorLocation(), GetActorRotation());
-	Weapon->SetOwner(Owner);
-	Weapon->Unequip();
-
-	// Attach the weapon
-	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
-
-	// Hide weapon
-	Weapon->HideWeapon();
-	
-	return true;
 }
 
 void ATreeEnemy::SwipeAttack()

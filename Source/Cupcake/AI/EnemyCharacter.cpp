@@ -39,18 +39,36 @@ void AEnemyCharacter::BeginPlay()
 
 	if (WeaponBlueprint)
 	{
-		// Spawn the weapon
+		Weapon = InitiateWeapon(Weapon, WeaponBlueprint, FName("WeaponSocket"), this);
+		/* Spawn the weapon
 		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
 		Weapon->SetOwner(this);
 		Weapon->Unequip();
 
 		// Attach the weapon
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
+		*/
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing BP_Weapon!"), *GetActorNameOrLabel());
 	}
+}
+
+AWeaponBase* AEnemyCharacter::InitiateWeapon(AWeaponBase* weapon, TSubclassOf<AWeaponBase> blueprint, FName socket, AActor* owner) const
+{
+	// Create Weapon
+	weapon = GetWorld()->SpawnActor<AWeaponBase>(blueprint, GetActorLocation(), GetActorRotation());
+	weapon->SetOwner(owner);
+	weapon->Unequip();
+
+	// Attach the weapon
+	weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, socket);
+
+	// Hide weapon
+	weapon->HideWeapon();
+	
+	return weapon;
 }
 
 void AEnemyCharacter::Tick(float DeltaTime)

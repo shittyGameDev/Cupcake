@@ -261,40 +261,72 @@ void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 {
 	if (OtherActor && OtherActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 	{
-		if (OtherActor != InteractionData.CurrentInteractable)
+		if (!OverlappedInteractables.Contains(OtherActor))
 		{
-			FoundInteractable(OtherActor);
+			OverlappedInteractables.Add(OtherActor);
+			FoundInteractable(GetCurrentInteractable());
 		}
 	}
 }
 
 void ACupcakeCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor == InteractionData.CurrentInteractable)
+	if (OtherActor && OverlappedInteractables.Contains(OtherActor))
 	{
-		NoInteractableFound();
+		OverlappedInteractables.Remove(OtherActor);
+		FoundInteractable(GetCurrentInteractable());
 	}
 }
 
+AActor* ACupcakeCharacter::GetCurrentInteractable() const
+{
+	return OverlappedInteractables.Num() > 0 ? OverlappedInteractables.Last() : nullptr;
+}
 
 void ACupcakeCharacter::FoundInteractable(AActor* NewInteractable)
 {
-	if(IsInteracting())
+	if (IsInteracting())
 	{
 		EndInteract();
 	}
-	if(InteractionData.CurrentInteractable)
-	{
-		TargetInteractable = InteractionData.CurrentInteractable;
-		TargetInteractable->EndFocus();
-	}
-	InteractionData.CurrentInteractable = NewInteractable;
-	TargetInteractable = NewInteractable;
-	
-	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 
-	TargetInteractable->BeginFocus();
+	// Ensure current interactable ends focus
+	if (InteractionData.CurrentInteractable)
+	{
+		IInteractionInterface* CurrentInteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (CurrentInteractableInterface)
+		{
+			CurrentInteractableInterface->EndFocus();
+		}
+	}
+
+	// Update current interactable
+	InteractionData.CurrentInteractable = NewInteractable;
+
+	// Begin focus on the new interactable
+	if (InteractionData.CurrentInteractable)
+	{
+		IInteractionInterface* NewInteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (NewInteractableInterface)
+		{
+			NewInteractableInterface->BeginFocus();
+
+			if (HUD)
+			{
+				HUD->UpdateInteractionWidget(&NewInteractableInterface->InteractableData);
+			}
+		}
+	}
+	else
+	{
+		if (HUD)
+		{
+			HUD->HideInteractionWidget();
+		}
+	}
 }
+
+
 
 void ACupcakeCharacter::NoInteractableFound()
 {
@@ -334,49 +366,50 @@ void ACupcakeCharacter::UpdateInteraction() const
 
 void ACupcakeCharacter::BeginInteract()
 {
-	// verifiera att ingenting har ändrats med interactable state sedan vi började interaktionen.
-	//PerformInteractionCheck();
-	
-
 	if (InteractionData.CurrentInteractable)
 	{
-		if (IsValid(TargetInteractable.GetObject()))
+		IInteractionInterface* InteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (InteractableInterface)
 		{
-			TargetInteractable->BeginInteract();
-			
-			// om InteractionDuration nästan är 0 så kallar vi på Interact direkt.
-			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+			InteractableInterface->BeginInteract();
+
+			// If InteractionDuration is nearly zero, call Interact directly
+			if (FMath::IsNearlyZero(InteractableInterface->InteractableData.InteractionDuration, 0.1f))
 			{
 				Interact();
 			}
 			else
 			{
-				// om interactionduration är valid och över 0.1f så startar en timer
-				//När timern är klar så kallar vi på interact
+				// Start a timer if InteractionDuration is valid and above 0.1f
 				GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
-				                                this,
-				                                &ACupcakeCharacter::Interact,
-				                                TargetInteractable->InteractableData.InteractionDuration,
-				                                false);
+												this,
+												&ACupcakeCharacter::Interact,
+												InteractableInterface->InteractableData.InteractionDuration,
+												false);
 
 				GetWorldTimerManager().SetTimer(TimerHandle_ProgressUpdate,
 												this,
 												&ACupcakeCharacter::UpdateInteraction,
-												.01f,
+												0.01f,
 												true);
-				
 			}
 		}
 	}
 }
 
+
 void ACupcakeCharacter::EndInteract()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
 	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
-	if(IsValid(TargetInteractable.GetObject()))
+
+	if (InteractionData.CurrentInteractable)
 	{
-		TargetInteractable->EndInteract();
+		IInteractionInterface* InteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (InteractableInterface)
+		{
+			InteractableInterface->EndInteract();
+		}
 	}
 }
 
@@ -384,11 +417,17 @@ void ACupcakeCharacter::Interact()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
 	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
-	if(IsValid(TargetInteractable.GetObject()))
+
+	if (InteractionData.CurrentInteractable)
 	{
-		TargetInteractable->Interact(this);
+		IInteractionInterface* InteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (InteractableInterface)
+		{
+			InteractableInterface->Interact(this);
+		}
 	}
 }
+
 
 void ACupcakeCharacter::UpdateInteractionWidget() const
 {

@@ -1,8 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CupcakeCharacter.h"
-
-#include "BlueprintEditor.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -91,6 +89,7 @@ void ACupcakeCharacter::BeginPlay()
 
 	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
 	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
+	PlayerInventory->OnInventoryAdd.AddUObject(this, &ACupcakeCharacter::PlayAddSound);
 	//InteractionBox->SetBoxExtent(FVector(0.f, 0.f, 0.f));
 	InteractionBox->SetBoxExtent(FVector(100.f, 50.f, 150.f));
 
@@ -126,7 +125,6 @@ void ACupcakeCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	
 }
 
 void ACupcakeCharacter::Tick(float DeltaSeconds)
@@ -134,6 +132,14 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	//UpdateFacingDirection();
+}
+
+void ACupcakeCharacter::PlayAddSound() const
+{
+	if (AddSound)
+	{
+		UGameplayStatics::PlaySound2D(this, AddSound);
+	}
 }
 
 float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -163,7 +169,7 @@ void ACupcakeCharacter::OnDeath_Implementation()
 }
 
 void ACupcakeCharacter::Attack()
-{	
+{
 	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
 	if (!Weapon) return;
 
@@ -513,7 +519,7 @@ void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDr
 		//Kollar om itemet man försöker droppa kolliderar med något och flyttar isåfall itemet lite. (Victor)
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-		const FVector SpawnLocation{GetActorLocation() + (GetActorForwardVector() * 50.f)};
+		const FVector SpawnLocation{GetActorLocation() + (GetActorForwardVector() * 150.f)};
 		const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
 
 		const int32 RemovedQuantity = PlayerInventory->RemoveAmountOfItem(ItemToDrop, QuantityToDrop);
@@ -536,6 +542,7 @@ void ACupcakeCharacter::RemoveItemFromInventory(UBaseItem* ItemToRemove, const i
 		UE_LOG(LogTemp, Warning, TEXT("ItemToRemove: %p was successfully removed!"), ItemToRemove);
 	}
 }
+
 
 void ACupcakeCharacter::Move(const FInputActionValue& Value)
 {

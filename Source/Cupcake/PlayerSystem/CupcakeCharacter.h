@@ -10,6 +10,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UNiagaraComponent;
 class UBoxComponent;
 class UBaseItem;
 class UNewInventoryComponent;
@@ -133,6 +134,13 @@ public:
 	void LoadGame();
 
 protected:
+
+	UPROPERTY(EditAnywhere, Category="Sound")
+	USoundBase* AddSound;
+	
+	UFUNCTION()
+	void PlayAddSound() const;
+	
 	UPROPERTY()
 	ABaseHUD* HUD;
 
@@ -180,6 +188,7 @@ protected:
 	void Interact();
 
 public:
+	
 	virtual void Tick(float DeltaSeconds) override;
 	void UpdateFacingDirection();
 

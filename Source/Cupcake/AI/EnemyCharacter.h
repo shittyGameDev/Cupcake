@@ -22,16 +22,19 @@ public:
 	virtual void OnDeath_Implementation() override;
 protected:
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere, Category="Weapon")
+	TSubclassOf<AWeaponBase> WeaponBlueprint;
 
+	AWeaponBase* InitiateWeapon(AWeaponBase* weapon, TSubclassOf<AWeaponBase> blueprint, FName socket, AActor* owner) const;
+	
+public:
 	// Head weapon
 	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
 	AWeaponBase* Weapon;
 	UFUNCTION(BlueprintGetter)
 	AWeaponBase* GetWeapon() const { return Weapon; }
-	UPROPERTY(EditAnywhere, Category="Weapon")
-	TSubclassOf<AWeaponBase> WeaponBlueprint;
 	
-public:
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
 	void Attack();

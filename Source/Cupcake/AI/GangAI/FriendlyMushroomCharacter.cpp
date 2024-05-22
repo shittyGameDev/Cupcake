@@ -18,17 +18,13 @@ void AFriendlyMushroomCharacter::BeginPlay()
 	
 }
 
-// Called every frame
-void AFriendlyMushroomCharacter::Tick(float DeltaTime)
+
+void AFriendlyMushroomCharacter::MoveToLocation(const FVector& NewLocation)
 {
-	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void AFriendlyMushroomCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	AAIController* AIController = Cast<AAIController>(GetController());
+	if (AIController)
+	{
+		AIController->MoveToLocation(NewLocation);
+	}
 }
 

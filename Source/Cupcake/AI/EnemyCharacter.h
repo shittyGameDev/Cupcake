@@ -17,7 +17,6 @@ class CUPCAKE_API AEnemyCharacter : public ACharacter, public IDamageableInterfa
 
 public:
 	AEnemyCharacter();
-
 	
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void OnDeath_Implementation() override;
@@ -31,17 +30,6 @@ protected:
 	AWeaponBase* GetWeapon() const { return Weapon; }
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
-
-	// Hand weapon
-	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
-	AWeaponBase* HandWeapon;
-	UFUNCTION(BlueprintGetter)
-	AWeaponBase* GetHandWeapon() const { return HandWeapon; }
-	UPROPERTY(EditAnywhere, Category="Weapon")
-	TSubclassOf<AWeaponBase> HandWeaponBlueprint;
-
-	FTimerHandle TimerHandle_AttackFinished;
-	FTimerHandle TimerHandle_RestoreRotation;
 	
 public:
 	virtual void Tick(float DeltaTime) override;

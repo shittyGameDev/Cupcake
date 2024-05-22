@@ -29,7 +29,6 @@ float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 void AEnemyCharacter::OnDeath_Implementation()
 {
 	Weapon->Destroy();
-	HandWeapon->Destroy();
 	IDamageableInterface::OnDeath_Implementation();
 	Destroy();
 }
@@ -38,36 +37,25 @@ void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (WeaponBlueprint && HandWeaponBlueprint)
+	if (WeaponBlueprint)
 	{
 		// Spawn the weapon
 		Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponBlueprint, GetActorLocation(), GetActorRotation());
 		Weapon->SetOwner(this);
-		Weapon->HideWeapon();
 		Weapon->Unequip();
 
 		// Attach the weapon
 		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponSocket"));
-
-		// Spawn the hand weapon
-		HandWeapon = GetWorld()->SpawnActor<AWeaponBase>(HandWeaponBlueprint, GetActorLocation(), GetActorRotation());
-		HandWeapon->SetOwner(this);
-		HandWeapon->ShowWeapon();
-		HandWeapon->Unequip();
-
-		// Attach the weapon
-		HandWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("HandWeaponSocket"));
 	}
 	else
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing BP_Weapon!"), *GetActorLabel());
+		UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing BP_Weapon!"), *GetActorNameOrLabel());
 	}
 }
 
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 void AEnemyCharacter::Attack()

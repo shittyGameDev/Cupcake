@@ -154,6 +154,7 @@ protected:
 
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	AActor* GetCurrentInteractable() const;
 
 	UPROPERTY(VisibleAnywhere, Category="Interaction")
 	TScriptInterface<IInteractionInterface> TargetInteractable;
@@ -201,5 +202,8 @@ private:
 	float DashImpulseStrength = 2000.f;
 	float DashDuration = 0.15f; 
 	float DashCooldown = 1.0f;
+
+	UPROPERTY()
+	TArray<AActor*> OverlappedInteractables;
 };
 

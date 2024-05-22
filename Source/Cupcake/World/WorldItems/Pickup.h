@@ -23,15 +23,6 @@ public:
 	void InitializePickup(const TSubclassOf<UBaseItem> BaseClass, const int32 InQuantity);
 
 	void InitializeDrop(UBaseItem* ItemToDrop, const int32 InQuantity);
-
-	UFUNCTION()
-	void StartScaling(UCurveFloat* ScaleCurve);
-
-	UFUNCTION()
-	void HandleScaling(float Value);
-
-	UFUNCTION()
-	void FinishScaling() const;
 	
 	FORCEINLINE UBaseItem* GetItemData(){ return ItemReference;}
 

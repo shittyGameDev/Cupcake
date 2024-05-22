@@ -6,7 +6,7 @@
 #include "FriendlyMushroomCharacter.generated.h"
 
 UCLASS()
-class YOURGAMENAME_API AFriendlyMushroomCharacter : public ACharacter
+class CUPCAKE_API AFriendlyMushroomCharacter : public ACharacter
 {
 	GENERATED_BODY()
 

@@ -11,9 +11,8 @@ class ABaseHUD;
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
 DECLARE_MULTICAST_DELEGATE(FOnInventoryAdd);
 DECLARE_MULTICAST_DELEGATE(FOnKeyItemAdded);
-//DECLARE_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*, Item);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoveItem, UBaseItem*, DropItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRemoveItem, UBaseItem*, DropItem, int32, DropItemQuantity);
 
 class UBaseItem;
 

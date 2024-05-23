@@ -25,6 +25,8 @@ public:
 	// Ny medlemsvariabel för att spåra om spelaren kan interagera
 	bool bCanToggleMap = false;
 
+	FTimerHandle VisibilityTimerHandle;
+
 	// Hantering av spelarinteraktion
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
@@ -60,4 +62,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Map")
 	void OnMapVisibilityChanged(bool bIsVisible);
+
+	void HideMapWidget();
 };

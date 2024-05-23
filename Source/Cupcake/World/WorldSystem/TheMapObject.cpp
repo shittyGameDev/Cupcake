@@ -81,12 +81,12 @@ void ATheMapObject::ToggleMapVisibility()
 		if (bIsVisible)
 		{
 			MapWidget->SetVisibility(ESlateVisibility::Hidden);
-
+			OnMapVisibilityChanged(false);
 		}
 		else
 		{
 			MapWidget->SetVisibility(ESlateVisibility::Visible);
-
+			OnMapVisibilityChanged(true);
 		}
 	}
 }

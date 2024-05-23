@@ -55,5 +55,9 @@ public:
 	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// Function to toggle the visibility of the map widget
+	UFUNCTION(BlueprintCallable)
 	void ToggleMapVisibility();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Map")
+	void OnMapVisibilityChanged(bool bIsVisible);
 };

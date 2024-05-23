@@ -80,14 +80,23 @@ void ATheMapObject::ToggleMapVisibility()
 		ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 		if (bIsVisible)
 		{
-			MapWidget->SetVisibility(ESlateVisibility::Hidden);
 			OnMapVisibilityChanged(false);
+			GetWorld()->GetTimerManager().SetTimer(VisibilityTimerHandle, this, &ATheMapObject::HideMapWidget, 0.25f, false);
 		}
 		else
 		{
 			MapWidget->SetVisibility(ESlateVisibility::Visible);
 			OnMapVisibilityChanged(true);
 		}
+	}
+}
+
+void ATheMapObject::HideMapWidget()
+{
+	if (MapWidget)
+	{
+		MapWidget->SetVisibility(ESlateVisibility::Hidden);
+		
 	}
 }
 

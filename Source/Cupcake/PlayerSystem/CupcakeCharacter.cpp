@@ -682,7 +682,6 @@ void ACupcakeCharacter::SaveGame()
 			SaveGameInstance->InventoryItems.Add(ConvertToSaveData(Item));
 		}
 	}
-
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("PlayerSaveSlot"), 0);
 	UE_LOG(LogTemp, Warning, TEXT("Saving Game"));
 }
@@ -692,19 +691,25 @@ void ACupcakeCharacter::LoadGame()
 	USavePlayerProgress* LoadGameInstance = Cast<USavePlayerProgress>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerSaveSlot"), 0));
 
 	// Set everything we saved in the PlayerSaveSlot. Can be called in BP
-	if(LoadGameInstance)
+	if (LoadGameInstance)
 	{
+		// Set player position and rotation
 		SetActorLocation(LoadGameInstance->PlayerPosition);
-		if(PlayerInventory)
+		SetActorRotation(LoadGameInstance->PlayerRotation);
+
+		if (PlayerInventory)
 		{
-			PlayerInventory->GetInventoryContents().Empty();
+			// Clear the inventory first
+			PlayerInventory->ClearInventory();
+
+			// Load each item from the save data
 			for (const FItemSaveData& SaveData : LoadGameInstance->InventoryItems)
 			{
 				UBaseItem* NewItem = ConvertToBaseItem(this, SaveData);
-				PlayerInventory->HandleAddItem(NewItem);
+				PlayerInventory->HandleLoadItem(NewItem);
 			}
 		}
 	}
-
 	UE_LOG(LogTemp, Warning, TEXT("Loaded Save"));
 }
+

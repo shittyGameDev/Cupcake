@@ -11,7 +11,7 @@ void ATreeEnemy::BeginPlay()
 	{
 		// Spawn
 		HandWeapon = InitiateWeapon(HandWeapon, HandWeaponBlueprint, TEXT("HandWeaponSocket"), this);
-		AoEWeapon = InitiateWeapon(AoEWeapon, AoEWeaponBlueprint, TEXT("WeaponSocket"), this);
+		AoEWeapon = InitiateWeapon(AoEWeapon, AoEWeaponBlueprint, TEXT("AoEWeaponSocket"), this);
 		
 		// Hide weapons
 		Weapon->HideWeapon();

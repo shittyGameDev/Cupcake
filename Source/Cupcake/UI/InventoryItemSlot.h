@@ -25,7 +25,13 @@ class CUPCAKE_API UInventoryItemSlot : public UUserWidget
 public:
 	FORCEINLINE void SetItemReference(UBaseItem* ItemIn){ ItemReference = ItemIn; }
 	FORCEINLINE UBaseItem* GetItemReference() const { return ItemReference;}
-
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayHoverAnim();
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayHoverLeaveAnim();
+	UPROPERTY(VisibleAnywhere, Category="Inventory Slot",meta=(BindWidget))
+	UImage* ItemIcon;
 protected:
 
 	UPROPERTY()
@@ -46,8 +52,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Inventory Slot", meta=(BindWidget))
 	UBorder* ItemBorder;
 
-	UPROPERTY(VisibleAnywhere, Category="Inventory Slot",meta=(BindWidget))
-	UImage* ItemIcon;
+
 
 	UPROPERTY(VisibleAnywhere, Category="Inventory Slot",meta=(BindWidget))
 	UTextBlock* ItemQuantity;
@@ -61,4 +66,5 @@ protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 		UDragDropOperation* InOperation) override;
 	void OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 };

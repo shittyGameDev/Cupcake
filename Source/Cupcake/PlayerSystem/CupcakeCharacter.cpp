@@ -527,6 +527,7 @@ void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDr
 		APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParameters);
 
 		Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
+		PlayDropSound();
 	}
 	else
 	{
@@ -539,6 +540,7 @@ void ACupcakeCharacter::RemoveItemFromInventory(UBaseItem* ItemToRemove, const i
 	if(PlayerInventory->FindMatchingItem(ItemToRemove))
 	{
 		PlayerInventory->RemoveAmountOfItem(ItemToRemove, QuantityToRemove);
+
 		UE_LOG(LogTemp, Warning, TEXT("ItemToRemove: %p was successfully removed!"), ItemToRemove);
 	}
 }

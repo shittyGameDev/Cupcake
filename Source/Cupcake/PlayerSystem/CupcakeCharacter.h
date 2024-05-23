@@ -198,6 +198,9 @@ public:
 
 	void DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayDropSound();
+
 	void RemoveItemFromInventory(UBaseItem* ItemToRemove, const int32 QuantityToRemove);
 
 private:

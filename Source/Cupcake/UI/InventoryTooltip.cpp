@@ -4,6 +4,8 @@
 #include "InventoryTooltip.h"
 
 #include "InventoryItemSlot.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Cupcake/Items/BaseItem.h"
 
 void UInventoryTooltip::NativeConstruct()
@@ -28,7 +30,8 @@ void UInventoryTooltip::NativeConstruct()
 		ItemType->SetText(FText::FromString("Consumable"));
 		UsageText->SetVisibility(ESlateVisibility::Collapsed);
 		break;
-	default: ;
+	default:
+			;
 	}
 
 	ItemName->SetText(ItemBeingHovered->TextData.Name);

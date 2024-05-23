@@ -61,7 +61,7 @@ public:
 	UFUNCTION()
 	void DisplayPickup(UBaseItem* ItemRef);
 	UFUNCTION()
-	void DisplayDrop(UBaseItem* ItemRef);
+	void DisplayDrop(UBaseItem* ItemRef, int32 DropAmount);
 
 	void ShowInteractionWidget();
 	void HideInteractionWidget();

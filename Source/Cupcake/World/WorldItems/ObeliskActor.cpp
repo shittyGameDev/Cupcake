@@ -99,7 +99,6 @@ void AObeliskActor::InitializeObeliskItem(const TSubclassOf<UBaseItem> BaseClass
 		InQuantity <= 0 ? RepairingItemReference->SetQuantity(1) : RepairingItemReference->SetQuantity(InQuantity);
 
 		UE_LOG(LogTemp, Warning, TEXT("Init Iron Item"));
-
 	}
 }
 

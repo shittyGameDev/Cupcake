@@ -21,6 +21,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Movement")
 	TArray<AActor*> MoveLocations;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void RunRemoveComponent();
+
 protected:
 	virtual void BeginPlay() override;
 	void MoveTrigger();
@@ -49,7 +52,6 @@ public:
 	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
 
 	void InitMushroomItem(const TSubclassOf<UBaseItem> BaseClass, const int32 InQuantity);
-
 
 protected:
 	FVector Destination;

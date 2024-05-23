@@ -91,6 +91,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "Inventory")
 	FItemAddResult HandleAddItem(UBaseItem* InputItem);
 
+	UFUNCTION(BlueprintCallable, Category= "Inventory")
+	FItemAddResult HandleLoadItem(UBaseItem* InputItem);
+
+	UFUNCTION()
+	void ClearInventory();
+
 	UFUNCTION(Category= "Inventory")
 	UBaseItem* FindMatchingItem(UBaseItem* ItemIn) const;
 	UFUNCTION(Category= "Inventory")

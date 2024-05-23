@@ -87,17 +87,20 @@ void AFriendlyMushroomCharacter::Interact(ACupcakeCharacter* PlayerCharacter)
 {
 	IInteractionInterface::Interact(PlayerCharacter);
 
-	if (MoveLocations.IsEmpty())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No move locations"));
-		return;
-	}
-
 	// Get item from player
 	UBaseItem* ItemToTake = PlayerCharacter->GetInventory()->FindMatchingItem(ItemReference);
 	if (ItemToTake)
 	{
+		RunRemoveComponent();
+		
 		PlayerCharacter->GetInventory()->RemoveAmountOfItem(ItemToTake, ItemReference->Quantity);
+
+		if (MoveLocations.IsEmpty())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No move locations"));
+			return;
+		}
+		
 		MoveToNextLocation();
 	}
 }

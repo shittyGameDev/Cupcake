@@ -63,7 +63,7 @@ void APressurePlate::OnOverlapPlayerBegin(UPrimitiveComponent* OverlappedCompone
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	bIsPlayerTriggered = true;
-	if(!bIsDoorMoved)
+	if(!bIsDoorMoved && bIsMushroomTriggered)
 	{
 		UnlockDoor();
 		MovingDoorEffect->SetActive(true);

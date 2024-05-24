@@ -1,8 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Tree.h"
-
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Cupcake/Actors/AttributeComponent.h"
@@ -10,7 +6,7 @@
 
 ATree::ATree() : IDamageableInterface(Attributes)
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 
@@ -24,12 +20,9 @@ ATree::ATree() : IDamageableInterface(Attributes)
 	ShakeMagnitude = 2.0f;
 	ShakeTimeRemaining = 0.0f;
 	bIsShaking = false;
-
-	FallDirection = FVector::ForwardVector; // Default fall direction
 }
 
-float ATree::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
+float ATree::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	SpawnLeafParticle();
 	ShakeTree();
@@ -40,8 +33,9 @@ void ATree::ShakeTree()
 {
 	bIsShaking = true;
 	ShakeTimeRemaining = ShakeDuration;
+	OriginalPosition = GetActorLocation();
+	UE_LOG(LogTemp, Warning, TEXT("Shake is called"));
 }
-
 
 void ATree::BeginPlay()
 {
@@ -51,7 +45,7 @@ void ATree::BeginPlay()
 
 void ATree::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	
 	if (bIsShaking)
 	{
 		if (ShakeTimeRemaining > 0)
@@ -66,5 +60,5 @@ void ATree::Tick(float DeltaTime)
 			SetActorLocation(OriginalPosition);
 		}
 	}
+	Super::Tick(DeltaTime);
 }
-

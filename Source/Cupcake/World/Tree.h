@@ -30,25 +30,21 @@ private:
 	UPROPERTY(EditAnywhere, Category="Mesh")
 	UCapsuleComponent* Collider;
 
-	// Original position of the tree
 	FVector OriginalPosition;
 
-	// Duration of the shake
 	UPROPERTY(EditAnywhere, Category = "Shake")
 	float ShakeDuration;
 
-	// Magnitude of the shake
+
 	UPROPERTY(EditAnywhere, Category = "Shake")
 	float ShakeMagnitude;
 
-	// Remaining time for the shake
-	float ShakeTimeRemaining;
-
-	// Is the tree shaking
-	bool bIsShaking;
 
 	UPROPERTY()
-	FVector FallDirection;
+	float ShakeTimeRemaining;
+	
+	UPROPERTY()
+	bool bIsShaking;
 
 	UPROPERTY(EditAnywhere, Blueprintable, Category= "Hit | Visual")
 	UNiagaraComponent* NiagaraComponent;

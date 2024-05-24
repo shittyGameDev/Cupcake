@@ -16,6 +16,7 @@ void ATreeEnemy::BeginPlay()
 		// Hide weapons
 		Weapon->HideWeapon();
 		HandWeapon->HideWeapon();
+		AoEWeapon->HideWeapon();
 	}
 	else
 	{
@@ -36,7 +37,6 @@ void ATreeEnemy::AreaDamage()
 
 	UE_LOG(LogTemp, Warning, TEXT("Ran"));
 	
-	AoEWeapon->ShowWeapon();
 	AoEWeapon->Equip();
 
 	GetWorldTimerManager().SetTimer(TimerHandle_AoE, this, &ATreeEnemy::OnAreaDamageFinished, 1.0f, false, 2.0f);

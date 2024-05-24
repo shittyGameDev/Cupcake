@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "PressurePlate.generated.h"
 
+class UNiagaraComponent;
 class UBoxComponent;
 
 UCLASS()
@@ -17,7 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	APressurePlate();
 	
-	UPROPERTY(EditAnywhere, Category="TriggerBox")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TriggerBox")
 	UStaticMeshComponent* MushroomTriggerMesh;
 
 	UPROPERTY(EditAnywhere, Category="TriggerBox")
@@ -26,11 +27,14 @@ public:
 	UPROPERTY(EditAnywhere, Category="TriggerBox")
 	UBoxComponent* PlayerTrigger;
 
-	UPROPERTY(EditAnywhere, Category="TriggerBox")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TriggerBox")
 	UStaticMeshComponent* PlayerTriggerMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TriggerBox")
 	UStaticMeshComponent* DoorMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MovingDoorEffect")
+	UNiagaraComponent* MovingDoorEffect;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -56,6 +60,10 @@ public:
 	bool bIsPlayerTriggered = false;
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsMushroomTriggered = false;
+	UPROPERTY()
+	bool bIsDoorMoved = false;
+	
+	FVector OriginalDoorPosition;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void UnlockDoor();

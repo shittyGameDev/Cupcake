@@ -18,6 +18,9 @@ public:
 	UFUNCTION()
 	void MoveToLocation(const FVector& NewLocation);
 
+	UFUNCTION(BlueprintCallable)
+	void MoveToNextLocation();
+
 	UPROPERTY(EditAnywhere, Category="Movement")
 	TArray<AActor*> MoveLocations;
 
@@ -27,7 +30,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void MoveTrigger();
-	void MoveToNextLocation();
 
 	UPROPERTY(EditInstanceOnly, Category= "Craft | Item Initialization")
 	UDataTable* ItemDataTable;

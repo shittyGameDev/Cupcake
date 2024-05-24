@@ -21,13 +21,18 @@ APickup::APickup()
 		Timeline->SetAutoActivate(false);
 	}
 
+	bIsPickupable = false;
+
 }
+
+
 
 void APickup::BeginPlay()
 {
 	Super::BeginPlay();
 
 	InitializePickup(UBaseItem::StaticClass(), ItemQuantity);
+	GetWorld()->GetTimerManager().SetTimer(ValidationTimerHandle, this, &APickup::ValidateActors, 5.0f, true);
 }
 
 void APickup::Tick(float DeltaTime)
@@ -93,7 +98,7 @@ void APickup::EndFocus()
 
 void APickup::Interact(ACupcakeCharacter* PlayerCharacter)
 {
-	if(PlayerCharacter)
+	if(PlayerCharacter && bIsPickupable)
 	{
 		TakePickup(PlayerCharacter);
 	}
@@ -135,5 +140,23 @@ void APickup::TakePickup(const ACupcakeCharacter* Taker)
 			UE_LOG(LogTemp, Warning, TEXT("Puckip internal item reference was somehow null!"));
 		}
 	}
+}
+
+void APickup::ValidateActors()
+{
+	for (int32 i = ActorList.Num() - 1; i >= 0; --i)
+	{
+		if (!IsValid(ActorList[i]))
+		{
+			ActorList.RemoveAt(i);
+		}
+	}
+
+	if(ActorList.IsEmpty())
+	{
+		bIsPickupable = true;
+		DeactivateBarrier();
+	}
+
 }
 

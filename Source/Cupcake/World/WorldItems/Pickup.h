@@ -49,6 +49,21 @@ public:
 	
 	UPROPERTY(VisibleInstanceOnly, Category= "Pickup | Interaction")
 	FInteractableData InstanceInteractableData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup | Interaction")
+	bool bIsPickupable;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DeactivateBarrier();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup | Lock")
+	TArray<AActor*> ActorList;
+
+	UPROPERTY()
+	FTimerHandle ValidationTimerHandle;
+
+	UFUNCTION()
+	void ValidateActors();
 	
 	virtual void BeginPlay() override;
 

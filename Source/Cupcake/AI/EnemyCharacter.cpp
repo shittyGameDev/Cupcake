@@ -14,25 +14,6 @@ AEnemyCharacter::AEnemyCharacter() : IDamageableInterface(Attributes)
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 }
 
-float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
-{
-	UAIPerceptionSystem* PerceptionSystem = UAIPerceptionSystem::GetCurrent(GetWorld());
-	if (PerceptionSystem)
-	{
-		UAISense_Damage::ReportDamageEvent(GetWorld(), this, EventInstigator, DamageAmount, GetActorLocation(), GetActorLocation());
-	}
-	
-	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-}
-
-void AEnemyCharacter::OnDeath_Implementation()
-{
-	Weapon->Destroy();
-	IDamageableInterface::OnDeath_Implementation();
-	Destroy();
-}
-
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -53,6 +34,32 @@ void AEnemyCharacter::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy %s: Missing BP_Weapon!"), *GetActorNameOrLabel());
 	}
+}
+
+float AEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Before loop"));
+	while(DamageCauser->GetOwner() != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Updated Owner"));
+		DamageCauser = DamageCauser->GetOwner();
+	}
+	
+	UAIPerceptionSystem* PerceptionSystem = UAIPerceptionSystem::GetCurrent(GetWorld());
+	if (PerceptionSystem)
+	{
+		UAISense_Damage::ReportDamageEvent(GetWorld(), this, EventInstigator, DamageAmount, GetActorLocation(), GetActorLocation());
+	}
+	
+	return IDamageableInterface::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void AEnemyCharacter::OnDeath_Implementation()
+{
+	Weapon->Destroy();
+	IDamageableInterface::OnDeath_Implementation();
+	Destroy();
 }
 
 AWeaponBase* AEnemyCharacter::InitiateWeapon(AWeaponBase* weapon, TSubclassOf<AWeaponBase> blueprint, FName socket, AActor* owner) const

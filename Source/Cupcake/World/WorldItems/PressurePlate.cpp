@@ -3,6 +3,7 @@
 
 #include "PressurePlate.h"
 
+#include "NiagaraComponent.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
@@ -25,6 +26,9 @@ APressurePlate::APressurePlate()
 
 	DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Door"));
 	DoorMesh->SetupAttachment(RootComponent);
+
+	MovingDoorEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DoorFX"));
+	MovingDoorEffect->SetupAttachment(DoorMesh);
 	
 
 }
@@ -39,12 +43,13 @@ void APressurePlate::BeginPlay()
 
 	PlayerTrigger->OnComponentBeginOverlap.AddDynamic(this, &APressurePlate::OnOverlapPlayerBegin);
 	PlayerTrigger->OnComponentEndOverlap.AddDynamic(this, &APressurePlate::OnOverlapPlayerEnd);
+
+	MovingDoorEffect->SetActive(false);
 }
 
 void APressurePlate::OnOverlapMushroomBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Triggered the mushroom"));
 	bIsMushroomTriggered = true;
 }
 
@@ -58,8 +63,12 @@ void APressurePlate::OnOverlapPlayerBegin(UPrimitiveComponent* OverlappedCompone
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	bIsPlayerTriggered = true;
-	UE_LOG(LogTemp, Warning, TEXT("U Triggered the player"));
-	UnlockDoor();
+	if(!bIsDoorMoved)
+	{
+		UnlockDoor();
+		MovingDoorEffect->SetActive(true);
+		bIsDoorMoved = true;
+	}
 }
 
 void APressurePlate::OnOverlapPlayerEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

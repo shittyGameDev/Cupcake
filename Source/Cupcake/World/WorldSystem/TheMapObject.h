@@ -10,7 +10,7 @@
 /**
  * Klass som representerar objektet som aktiverar kartwidgeten när spelaren närmar sig och interagerar.
  */
-UCLASS()
+UCLASS(Blueprintable)
 class CUPCAKE_API ATheMapObject : public AActor
 {
 	GENERATED_BODY()
@@ -24,6 +24,13 @@ public:
 
 	// Ny medlemsvariabel för att spåra om spelaren kan interagera
 	bool bCanToggleMap = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State")
+	bool bIsVisibles;
+    
+	// Getter metod för bIsVisibles
+	UFUNCTION(BlueprintCallable, Category="State")
+	bool GetIsVisibles() const;
 
 	FTimerHandle VisibilityTimerHandle;
 

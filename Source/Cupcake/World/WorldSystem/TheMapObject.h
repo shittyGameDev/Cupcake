@@ -18,6 +18,19 @@ class CUPCAKE_API ATheMapObject : public AActor
 public:
 	// Sets default values for this actor's properties
 	ATheMapObject();
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMapVisibilityChanged);
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Map")
+	FOnMapVisibilityChanged OnMapOpened;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnMapOpen();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnMapClosedWidget();
+	// Event när kartan göms
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Map")
+	FOnMapVisibilityChanged OnMapClosed;
 	// Widget to show when the map object is interacted with
 	UPROPERTY(Transient)
 	UUserWidget* MapWidget;

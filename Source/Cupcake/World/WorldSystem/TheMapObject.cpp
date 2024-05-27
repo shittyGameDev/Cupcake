@@ -81,19 +81,20 @@ void ATheMapObject::ToggleMapVisibility()
 {
 	if (MapWidget)
 	{
-		bIsVisibles = MapWidget->IsVisible();
-		ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
-		if (bIsVisibles)
+		bool bIsVisible = MapWidget->IsVisible();
+		if (bIsVisible)
 		{
-			bIsVisibles = false;
-			OnMapVisibilityChanged(bIsVisibles);
-			UE_LOG(LogTemp, Warning, TEXT("Hide map: %s"), bIsVisibles ? TEXT("True") : TEXT("False"));
+			//MapWidget->SetVisibility(ESlateVisibility::Collapsed);
+			OnMapClosedWidget();
+			//OnMapClosed.Broadcast();
+			UE_LOG(LogTemp, Warning, TEXT("Hide map: False"));
 		}
 		else
 		{
-			bIsVisibles = true;
-			MapWidget->SetVisibility(ESlateVisibility::Visible);
-			OnMapVisibilityChanged(bIsVisibles);
+			//MapWidget->SetVisibility(ESlateVisibility::Visible);
+			//OnMapOpened.Broadcast();
+			OnMapOpen();
+			UE_LOG(LogTemp, Warning, TEXT("Show map: True"));
 		}
 	}
 }

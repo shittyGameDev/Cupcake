@@ -1,8 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CupcakeCharacter.h"
-
-#include "BlueprintEditor.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -91,6 +89,7 @@ void ACupcakeCharacter::BeginPlay()
 
 	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
 	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
+	PlayerInventory->OnInventoryAdd.AddUObject(this, &ACupcakeCharacter::PlayAddSound);
 	//InteractionBox->SetBoxExtent(FVector(0.f, 0.f, 0.f));
 	InteractionBox->SetBoxExtent(FVector(100.f, 50.f, 150.f));
 
@@ -126,7 +125,6 @@ void ACupcakeCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	
 }
 
 void ACupcakeCharacter::Tick(float DeltaSeconds)
@@ -134,6 +132,14 @@ void ACupcakeCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	//UpdateFacingDirection();
+}
+
+void ACupcakeCharacter::PlayAddSound() const
+{
+	if (AddSound)
+	{
+		UGameplayStatics::PlaySound2D(this, AddSound);
+	}
 }
 
 float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -163,7 +169,7 @@ void ACupcakeCharacter::OnDeath_Implementation()
 }
 
 void ACupcakeCharacter::Attack()
-{	
+{
 	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
 	if (!Weapon) return;
 
@@ -187,6 +193,16 @@ void ACupcakeCharacter::OnAttackFinished()
 
 void ACupcakeCharacter::Dash()
 {
+	if(!bIsDashing)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 800.f;
+		bIsDashing = true;
+	}else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		bIsDashing = false;
+	}
+	/*
 	if (!bIsDashing && bCanDash)
 	{
 		bIsDashing = true;
@@ -216,7 +232,7 @@ void ACupcakeCharacter::Dash()
 			}, DashCooldown, false);
 			
 		}, DashDuration, false);
-	}
+	}*/
 }
 
 void ACupcakeCharacter::UpdateFacingDirection()
@@ -261,40 +277,72 @@ void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 {
 	if (OtherActor && OtherActor->GetClass()->ImplementsInterface(UInteractionInterface::StaticClass()))
 	{
-		if (OtherActor != InteractionData.CurrentInteractable)
+		if (!OverlappedInteractables.Contains(OtherActor))
 		{
-			FoundInteractable(OtherActor);
+			OverlappedInteractables.Add(OtherActor);
+			FoundInteractable(GetCurrentInteractable());
 		}
 	}
 }
 
 void ACupcakeCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor == InteractionData.CurrentInteractable)
+	if (OtherActor && OverlappedInteractables.Contains(OtherActor))
 	{
-		NoInteractableFound();
+		OverlappedInteractables.Remove(OtherActor);
+		FoundInteractable(GetCurrentInteractable());
 	}
 }
 
+AActor* ACupcakeCharacter::GetCurrentInteractable() const
+{
+	return OverlappedInteractables.Num() > 0 ? OverlappedInteractables.Last() : nullptr;
+}
 
 void ACupcakeCharacter::FoundInteractable(AActor* NewInteractable)
 {
-	if(IsInteracting())
+	if (IsInteracting())
 	{
 		EndInteract();
 	}
-	if(InteractionData.CurrentInteractable)
-	{
-		TargetInteractable = InteractionData.CurrentInteractable;
-		TargetInteractable->EndFocus();
-	}
-	InteractionData.CurrentInteractable = NewInteractable;
-	TargetInteractable = NewInteractable;
-	
-	HUD->UpdateInteractionWidget(&TargetInteractable->InteractableData);
 
-	TargetInteractable->BeginFocus();
+	// Ensure current interactable ends focus
+	if (InteractionData.CurrentInteractable)
+	{
+		IInteractionInterface* CurrentInteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (CurrentInteractableInterface)
+		{
+			CurrentInteractableInterface->EndFocus();
+		}
+	}
+
+	// Update current interactable
+	InteractionData.CurrentInteractable = NewInteractable;
+
+	// Begin focus on the new interactable
+	if (InteractionData.CurrentInteractable)
+	{
+		IInteractionInterface* NewInteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (NewInteractableInterface)
+		{
+			NewInteractableInterface->BeginFocus();
+
+			if (HUD)
+			{
+				HUD->UpdateInteractionWidget(&NewInteractableInterface->InteractableData);
+			}
+		}
+	}
+	else
+	{
+		if (HUD)
+		{
+			HUD->HideInteractionWidget();
+		}
+	}
 }
+
+
 
 void ACupcakeCharacter::NoInteractableFound()
 {
@@ -334,49 +382,50 @@ void ACupcakeCharacter::UpdateInteraction() const
 
 void ACupcakeCharacter::BeginInteract()
 {
-	// verifiera att ingenting har ändrats med interactable state sedan vi började interaktionen.
-	//PerformInteractionCheck();
-	
-
 	if (InteractionData.CurrentInteractable)
 	{
-		if (IsValid(TargetInteractable.GetObject()))
+		IInteractionInterface* InteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (InteractableInterface)
 		{
-			TargetInteractable->BeginInteract();
-			
-			// om InteractionDuration nästan är 0 så kallar vi på Interact direkt.
-			if (FMath::IsNearlyZero(TargetInteractable->InteractableData.InteractionDuration, 0.1f))
+			InteractableInterface->BeginInteract();
+
+			// If InteractionDuration is nearly zero, call Interact directly
+			if (FMath::IsNearlyZero(InteractableInterface->InteractableData.InteractionDuration, 0.1f))
 			{
 				Interact();
 			}
 			else
 			{
-				// om interactionduration är valid och över 0.1f så startar en timer
-				//När timern är klar så kallar vi på interact
+				// Start a timer if InteractionDuration is valid and above 0.1f
 				GetWorldTimerManager().SetTimer(TimerHandle_Interaction,
-				                                this,
-				                                &ACupcakeCharacter::Interact,
-				                                TargetInteractable->InteractableData.InteractionDuration,
-				                                false);
+												this,
+												&ACupcakeCharacter::Interact,
+												InteractableInterface->InteractableData.InteractionDuration,
+												false);
 
 				GetWorldTimerManager().SetTimer(TimerHandle_ProgressUpdate,
 												this,
 												&ACupcakeCharacter::UpdateInteraction,
-												.01f,
+												0.01f,
 												true);
-				
 			}
 		}
 	}
 }
 
+
 void ACupcakeCharacter::EndInteract()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
 	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
-	if(IsValid(TargetInteractable.GetObject()))
+
+	if (InteractionData.CurrentInteractable)
 	{
-		TargetInteractable->EndInteract();
+		IInteractionInterface* InteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (InteractableInterface)
+		{
+			InteractableInterface->EndInteract();
+		}
 	}
 }
 
@@ -384,11 +433,17 @@ void ACupcakeCharacter::Interact()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_Interaction);
 	GetWorldTimerManager().ClearTimer(TimerHandle_ProgressUpdate);
-	if(IsValid(TargetInteractable.GetObject()))
+
+	if (InteractionData.CurrentInteractable)
 	{
-		TargetInteractable->Interact(this);
+		IInteractionInterface* InteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (InteractableInterface)
+		{
+			InteractableInterface->Interact(this);
+		}
 	}
 }
+
 
 void ACupcakeCharacter::UpdateInteractionWidget() const
 {
@@ -474,7 +529,7 @@ void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDr
 		//Kollar om itemet man försöker droppa kolliderar med något och flyttar isåfall itemet lite. (Victor)
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-		const FVector SpawnLocation{GetActorLocation() + (GetActorForwardVector() * 50.f)};
+		const FVector SpawnLocation{GetActorLocation() + (GetActorForwardVector() * 150.f)};
 		const FTransform SpawnTransform(GetActorRotation(), SpawnLocation);
 
 		const int32 RemovedQuantity = PlayerInventory->RemoveAmountOfItem(ItemToDrop, QuantityToDrop);
@@ -482,6 +537,7 @@ void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDr
 		APickup* Pickup = GetWorld()->SpawnActor<APickup>(APickup::StaticClass(), SpawnTransform, SpawnParameters);
 
 		Pickup->InitializeDrop(ItemToDrop, RemovedQuantity);
+		PlayDropSound();
 	}
 	else
 	{
@@ -494,9 +550,11 @@ void ACupcakeCharacter::RemoveItemFromInventory(UBaseItem* ItemToRemove, const i
 	if(PlayerInventory->FindMatchingItem(ItemToRemove))
 	{
 		PlayerInventory->RemoveAmountOfItem(ItemToRemove, QuantityToRemove);
+
 		UE_LOG(LogTemp, Warning, TEXT("ItemToRemove: %p was successfully removed!"), ItemToRemove);
 	}
 }
+
 
 void ACupcakeCharacter::Move(const FInputActionValue& Value)
 {
@@ -636,7 +694,6 @@ void ACupcakeCharacter::SaveGame()
 			SaveGameInstance->InventoryItems.Add(ConvertToSaveData(Item));
 		}
 	}
-
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("PlayerSaveSlot"), 0);
 	UE_LOG(LogTemp, Warning, TEXT("Saving Game"));
 }
@@ -646,19 +703,25 @@ void ACupcakeCharacter::LoadGame()
 	USavePlayerProgress* LoadGameInstance = Cast<USavePlayerProgress>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerSaveSlot"), 0));
 
 	// Set everything we saved in the PlayerSaveSlot. Can be called in BP
-	if(LoadGameInstance)
+	if (LoadGameInstance)
 	{
+		// Set player position and rotation
 		SetActorLocation(LoadGameInstance->PlayerPosition);
-		if(PlayerInventory)
+		SetActorRotation(LoadGameInstance->PlayerRotation);
+
+		if (PlayerInventory)
 		{
-			PlayerInventory->GetInventoryContents().Empty();
+			// Clear the inventory first
+			PlayerInventory->ClearInventory();
+
+			// Load each item from the save data
 			for (const FItemSaveData& SaveData : LoadGameInstance->InventoryItems)
 			{
 				UBaseItem* NewItem = ConvertToBaseItem(this, SaveData);
-				PlayerInventory->HandleAddItem(NewItem);
+				PlayerInventory->HandleLoadItem(NewItem);
 			}
 		}
 	}
-
 	UE_LOG(LogTemp, Warning, TEXT("Loaded Save"));
 }
+

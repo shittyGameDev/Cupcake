@@ -109,7 +109,7 @@ void ABaseHUD::DisplayPickup(UBaseItem* ItemRef)
 	}
 }
 
-void ABaseHUD::DisplayDrop(UBaseItem* ItemRef)
+void ABaseHUD::DisplayDrop(UBaseItem* ItemRef, int32 DropAmount)
 {
 	PickupWidget = CreateWidget<UPickupWidget>(GetWorld(), PickupWidgetClass);
 	if (PickupWidget)
@@ -124,7 +124,7 @@ void ABaseHUD::DisplayDrop(UBaseItem* ItemRef)
 			NewBrush.DrawAs = ESlateBrushDrawType::Image;
 
 			PickupWidget->ItemIcon->SetBrush(NewBrush);
-			PickupWidget->ItemQuantity->SetText(FText::AsNumber(ItemRef->Quantity));
+			PickupWidget->ItemQuantity->SetText(FText::AsNumber(DropAmount));
 			PickupWidget->PlusMinus->SetText(FText::FromString(TEXT("-")));
 		}
 	}

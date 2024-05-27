@@ -9,10 +9,10 @@
 
 class ABaseHUD;
 DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
+DECLARE_MULTICAST_DELEGATE(FOnInventoryAdd);
 DECLARE_MULTICAST_DELEGATE(FOnKeyItemAdded);
-//DECLARE_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickup, UBaseItem*, Item);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoveItem, UBaseItem*, DropItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRemoveItem, UBaseItem*, DropItem, int32, DropItemQuantity);
 
 class UBaseItem;
 
@@ -81,6 +81,7 @@ public:
 	//DELEGATER
 	FOnKeyItemAdded OnKeyItemAdded;
 	FOnInventoryUpdated OnInventoryUpdated;
+	FOnInventoryUpdated OnInventoryAdd;
 	FOnPickup OnPickup;
 	FOnRemoveItem OnRemoveItem;
 	
@@ -88,6 +89,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category= "Inventory")
 	FItemAddResult HandleAddItem(UBaseItem* InputItem);
+
+	UFUNCTION(BlueprintCallable, Category= "Inventory")
+	FItemAddResult HandleLoadItem(UBaseItem* InputItem);
+
+	UFUNCTION()
+	void ClearInventory();
 
 	UFUNCTION(Category= "Inventory")
 	UBaseItem* FindMatchingItem(UBaseItem* ItemIn) const;

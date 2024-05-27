@@ -23,15 +23,6 @@ public:
 	void InitializePickup(const TSubclassOf<UBaseItem> BaseClass, const int32 InQuantity);
 
 	void InitializeDrop(UBaseItem* ItemToDrop, const int32 InQuantity);
-
-	UFUNCTION()
-	void StartScaling(UCurveFloat* ScaleCurve);
-
-	UFUNCTION()
-	void HandleScaling(float Value);
-
-	UFUNCTION()
-	void FinishScaling() const;
 	
 	FORCEINLINE UBaseItem* GetItemData(){ return ItemReference;}
 
@@ -58,6 +49,21 @@ public:
 	
 	UPROPERTY(VisibleInstanceOnly, Category= "Pickup | Interaction")
 	FInteractableData InstanceInteractableData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup | Interaction")
+	bool bIsPickupable;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DeactivateBarrier();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup | Lock")
+	TArray<AActor*> ActorList;
+
+	UPROPERTY()
+	FTimerHandle ValidationTimerHandle;
+
+	UFUNCTION()
+	void ValidateActors();
 	
 	virtual void BeginPlay() override;
 

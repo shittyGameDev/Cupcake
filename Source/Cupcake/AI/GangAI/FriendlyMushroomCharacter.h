@@ -1,29 +1,60 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Cupcake/Items/InteractionInterface.h"
 #include "FriendlyMushroomCharacter.generated.h"
 
+class UBaseItem;
+
 UCLASS()
-class CUPCAKE_API AFriendlyMushroomCharacter : public ACharacter
+class CUPCAKE_API AFriendlyMushroomCharacter : public ACharacter, public IInteractionInterface
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AFriendlyMushroomCharacter();
 
+	UFUNCTION()
+	void MoveToLocation(const FVector& NewLocation);
+
+	UFUNCTION(BlueprintCallable)
+	void MoveToNextLocation();
+
+	UPROPERTY(EditAnywhere, Category="Movement")
+	TArray<AActor*> MoveLocations;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RunRemoveComponent();
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void MoveTrigger();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditInstanceOnly, Category= "Craft | Item Initialization")
+	UDataTable* ItemDataTable;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(EditInstanceOnly, Category= "Craft | Item Initialization")
+	FName DesiredItemID;
 
+	UPROPERTY(EditInstanceOnly, Category= "Craft | Item Initialization")
+	int32 ItemQuantity;
+	
+	UPROPERTY(VisibleAnywhere, Category= "Craft | Item Reference")
+	UBaseItem* ItemReference;
+	
+	UPROPERTY(EditInstanceOnly, Category="Interact Text")
+	FInteractableData InstanceInteractableData;
+
+public:
+	virtual void BeginFocus() override;
+	virtual void EndFocus() override;
+	virtual void BeginInteract() override;
+	virtual void EndInteract() override;
+	virtual void Interact(ACupcakeCharacter* PlayerCharacter) override;
+
+	void InitMushroomItem(const TSubclassOf<UBaseItem> BaseClass, const int32 InQuantity);
+
+protected:
+	FVector Destination;
 };

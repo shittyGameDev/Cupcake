@@ -71,6 +71,7 @@ FReply UInventoryItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 void UInventoryItemSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
+	this->PlayHoverLeaveAnim();
 }
 
 void UInventoryItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent,
@@ -114,10 +115,13 @@ void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, co
 			if(PlayerCharacter->Attributes->RegenerateHealth(10.f))
 			{
 				PlayerCharacter->RemoveItemFromInventory(ItemReference, 1);
-				UE_LOG(LogTemp, Warning, TEXT("New Health: %f"), PlayerCharacter->Attributes->GetHealth());
-				UE_LOG(LogTemp, Warning, TEXT("Used berry"));
 			}
 		}
 	}
+}
+
+void UInventoryItemSlot::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	this->PlayHoverAnim();
 }
 

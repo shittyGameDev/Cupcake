@@ -16,7 +16,7 @@ class CUPCAKE_API ATreeEnemy : public AEnemyCharacter
 	
 private:
 	virtual void BeginPlay() override;
-	
+
 	// Hand weapon
 	UPROPERTY(Blueprintable, BlueprintGetter=GetHandWeapon)
 	AWeaponBase* HandWeapon;

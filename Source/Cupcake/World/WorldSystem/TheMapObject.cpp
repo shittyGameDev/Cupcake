@@ -13,12 +13,17 @@ ATheMapObject::ATheMapObject()
 	PrimaryActorTick.bCanEverTick = true;
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
-
+	bIsVisibles = false;
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
 	CollisionComponent->SetupAttachment(RootComponent);
 	CollisionComponent->SetSphereRadius(100.f);
 	CollisionComponent->SetCollisionProfileName(TEXT("Trigger"));
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATheMapObject::OnOverlapBegin);
+}
+
+bool ATheMapObject::GetIsVisibles() const
+{
+	return bIsVisibles;
 }
 
 void ATheMapObject::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -77,17 +82,29 @@ void ATheMapObject::ToggleMapVisibility()
 	if (MapWidget)
 	{
 		bool bIsVisible = MapWidget->IsVisible();
-		ACupcakeCharacter* Player = Cast<ACupcakeCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 		if (bIsVisible)
 		{
-			MapWidget->SetVisibility(ESlateVisibility::Hidden);
-
+			//MapWidget->SetVisibility(ESlateVisibility::Collapsed);
+			OnMapClosedWidget();
+			//OnMapClosed.Broadcast();
+			UE_LOG(LogTemp, Warning, TEXT("Hide map: False"));
 		}
 		else
 		{
-			MapWidget->SetVisibility(ESlateVisibility::Visible);
-
+			//MapWidget->SetVisibility(ESlateVisibility::Visible);
+			//OnMapOpened.Broadcast();
+			OnMapOpen();
+			UE_LOG(LogTemp, Warning, TEXT("Show map: True"));
 		}
+	}
+}
+
+void ATheMapObject::HideMapWidget()
+{
+	if (MapWidget)
+	{
+		MapWidget->SetVisibility(ESlateVisibility::Hidden);
+		
 	}
 }
 

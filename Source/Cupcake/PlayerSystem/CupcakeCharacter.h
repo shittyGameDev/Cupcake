@@ -10,6 +10,7 @@
 #include "Logging/LogMacros.h"
 #include "CupcakeCharacter.generated.h"
 
+class UNiagaraComponent;
 class UBoxComponent;
 class UBaseItem;
 class UNewInventoryComponent;
@@ -133,6 +134,13 @@ public:
 	void LoadGame();
 
 protected:
+
+	UPROPERTY(EditAnywhere, Category="Sound")
+	USoundBase* AddSound;
+	
+	UFUNCTION()
+	void PlayAddSound() const;
+	
 	UPROPERTY()
 	ABaseHUD* HUD;
 
@@ -154,6 +162,7 @@ protected:
 
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	AActor* GetCurrentInteractable() const;
 
 	UPROPERTY(VisibleAnywhere, Category="Interaction")
 	TScriptInterface<IInteractionInterface> TargetInteractable;
@@ -179,6 +188,7 @@ protected:
 	void Interact();
 
 public:
+	
 	virtual void Tick(float DeltaSeconds) override;
 	void UpdateFacingDirection();
 
@@ -187,6 +197,9 @@ public:
 	void ToggleMenu();
 
 	void DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayDropSound();
 
 	void RemoveItemFromInventory(UBaseItem* ItemToRemove, const int32 QuantityToRemove);
 
@@ -201,5 +214,8 @@ private:
 	float DashImpulseStrength = 2000.f;
 	float DashDuration = 0.15f; 
 	float DashCooldown = 1.0f;
+
+	UPROPERTY()
+	TArray<AActor*> OverlappedInteractables;
 };
 

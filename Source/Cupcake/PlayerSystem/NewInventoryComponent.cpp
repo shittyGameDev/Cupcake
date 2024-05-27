@@ -90,7 +90,7 @@ void UNewInventoryComponent::RemoveSingleInstanceOfItem(UBaseItem* ItemToRemove)
 int32 UNewInventoryComponent::RemoveAmountOfItem(UBaseItem* ItemIn, int32 DesiredAmountToRemove)
 {
 	const int32 ActualAmountToRemove = FMath::Min(DesiredAmountToRemove, ItemIn->Quantity);
-	OnRemoveItem.Broadcast(ItemIn);
+	OnRemoveItem.Broadcast(ItemIn, ActualAmountToRemove);
 	ItemIn->SetQuantity(ItemIn->Quantity - ActualAmountToRemove);
 
 
@@ -164,6 +164,7 @@ int32 UNewInventoryComponent::HandleStackableItems(UBaseItem* InputItem, int32 R
 
 			if (AmountToDistribute == 0)
 			{
+				OnInventoryAdd.Broadcast();
 				OnInventoryUpdated.Broadcast();
 				return RequestedAddAmount;
 			}
@@ -176,6 +177,7 @@ int32 UNewInventoryComponent::HandleStackableItems(UBaseItem* InputItem, int32 R
 	if (AmountToDistribute > 0 && InventoryContents.Num() < InventorySlotsCapacity)
 	{
 		AddNewItem(InputItem, AmountToDistribute);
+		OnInventoryAdd.Broadcast();
 		OnInventoryUpdated.Broadcast();
 		return RequestedAddAmount;
 	}
@@ -204,6 +206,7 @@ FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 
 		if(StackableAmountAdded == InitialRequestedAddAmount)
 		{
+			
 			OnPickup.Broadcast(InputItem);
 			return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(
 				FText::FromString("Successfully added {0} {1}(s) to the inventory."),
@@ -214,6 +217,7 @@ FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 		if(StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
 		{
 			OnPickup.Broadcast(InputItem);
+			OnInventoryAdd.Broadcast();
 			OnInventoryUpdated.Broadcast();
 			return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
 				FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
@@ -232,6 +236,59 @@ FItemAddResult UNewInventoryComponent::HandleAddItem(UBaseItem* InputItem)
 
 	check(false);
 	return FItemAddResult::AddedNone(FText::FromString("TryAddItem fallthrough error. GetOwner() check somehow failed"));
+}
+
+FItemAddResult UNewInventoryComponent::HandleLoadItem(UBaseItem* InputItem)
+{
+	UE_LOG(LogTemp, Warning, TEXT("HandleAddItem: %p"), InputItem);
+	// Check for valid owner (Victor)
+	if(GetOwner())
+	{
+		const int32 InitialRequestedAddAmount = InputItem->Quantity;
+
+		// Handle non-stackable items (Victor)
+		if(!InputItem->NumericData.bIsStackable)
+		{
+			return HandleNonStackableItems(InputItem, InitialRequestedAddAmount);
+		}
+
+		// Handle stackable items (Victor)
+		const int32 StackableAmountAdded = HandleStackableItems(InputItem, InitialRequestedAddAmount);
+
+		if(StackableAmountAdded == InitialRequestedAddAmount)
+		{
+			
+			return FItemAddResult::AddedAll(InitialRequestedAddAmount, FText::Format(
+				FText::FromString("Successfully added {0} {1}(s) to the inventory."),
+				InitialRequestedAddAmount,
+				InputItem->TextData.Name));
+		}
+
+		if(StackableAmountAdded < InitialRequestedAddAmount && StackableAmountAdded > 0)
+		{
+			OnInventoryUpdated.Broadcast();
+			return FItemAddResult::AddedPartial(StackableAmountAdded, FText::Format(
+				FText::FromString("Partial amount of {0} added to the inventory. Number added = {1}"),
+				InputItem->TextData.Name,
+				StackableAmountAdded));
+			
+		}
+
+		if(StackableAmountAdded <= 0)
+		{
+			return FItemAddResult::AddedNone(FText::Format(
+				FText::FromString("Couldn't add {0} to the inventory. Inventory is full"),
+				InputItem->TextData.Name));
+		}
+	}
+
+	check(false);
+	return FItemAddResult::AddedNone(FText::FromString("TryAddItem fallthrough error. GetOwner() check somehow failed"));
+}
+
+void UNewInventoryComponent::ClearInventory()
+{
+	InventoryContents.Empty();
 }
 
 void UNewInventoryComponent::AddNewItem(UBaseItem* Item, const int32 AmountToAdd)
@@ -267,6 +324,7 @@ void UNewInventoryComponent::AddNewItem(UBaseItem* Item, const int32 AmountToAdd
 
 	OnPickup.Broadcast(NewItem);
 	InventoryContents.Add(NewItem);
+	OnInventoryAdd.Broadcast();
 	OnInventoryUpdated.Broadcast();
 }
 

@@ -21,13 +21,18 @@ APickup::APickup()
 		Timeline->SetAutoActivate(false);
 	}
 
+	bIsPickupable = false;
+
 }
+
+
 
 void APickup::BeginPlay()
 {
 	Super::BeginPlay();
 
 	InitializePickup(UBaseItem::StaticClass(), ItemQuantity);
+	GetWorld()->GetTimerManager().SetTimer(ValidationTimerHandle, this, &APickup::ValidateActors, 5.0f, true);
 }
 
 void APickup::Tick(float DeltaTime)
@@ -75,47 +80,6 @@ void APickup::InitializeDrop(UBaseItem* ItemToDrop, const int32 InQuantity)
 	UpdateInteractableData();
 }
 
-void APickup::StartScaling(UCurveFloat* ScaleCurve)
-{
-	if (ScaleCurve)
-	{
-		// Stänger av fysiken just nu för att senare felsöka.
-		//TODO: Felsök varför en massa errors uppstår om fysik är på.
-		PickupMesh->SetSimulatePhysics(false);
-
-		FOnTimelineFloat ProgressFunction;
-		ProgressFunction.BindUFunction(this, FName("HandleScaling"));
-		Timeline->AddInterpFloat(ScaleCurve, ProgressFunction);
-
-		FOnTimelineEvent TimelineFinishedFunction;
-		TimelineFinishedFunction.BindUFunction(this, FName("FinishScaling"));
-		Timeline->SetTimelineFinishedFunc(TimelineFinishedFunction);
-
-		UE_LOG(LogTemp, Warning, TEXT("Curve keys count: %d"), ScaleCurve->FloatCurve.Keys.Num());
-		Timeline->PlayFromStart();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ScaleCurve is NULL"));
-	}
-}
-
-void APickup::HandleScaling(float Value)
-{
-	// Förändrar skalan baserat på float curve.
-	SetActorScale3D(FVector(Value, Value, Value));
-}
-
-void APickup::FinishScaling() const
-{
-	// Just nu testar vi att inte slå på fysiken, saker flyger helt galet annars.
-	//PickupMesh->SetSimulatePhysics(true);
-
-	// Loggar bara för o se när scalingen slutar.
-	UE_LOG(LogTemp, Warning, TEXT("Scaling completed for %s"), *GetName());
-}
-
-
 void APickup::BeginFocus()
 {
 	if(PickupMesh)
@@ -134,7 +98,7 @@ void APickup::EndFocus()
 
 void APickup::Interact(ACupcakeCharacter* PlayerCharacter)
 {
-	if(PlayerCharacter)
+	if(PlayerCharacter && bIsPickupable)
 	{
 		TakePickup(PlayerCharacter);
 	}
@@ -176,5 +140,23 @@ void APickup::TakePickup(const ACupcakeCharacter* Taker)
 			UE_LOG(LogTemp, Warning, TEXT("Puckip internal item reference was somehow null!"));
 		}
 	}
+}
+
+void APickup::ValidateActors()
+{
+	for (int32 i = ActorList.Num() - 1; i >= 0; --i)
+	{
+		if (!IsValid(ActorList[i]))
+		{
+			ActorList.RemoveAt(i);
+		}
+	}
+
+	if(ActorList.IsEmpty())
+	{
+		bIsPickupable = true;
+		DeactivateBarrier();
+	}
+
 }
 

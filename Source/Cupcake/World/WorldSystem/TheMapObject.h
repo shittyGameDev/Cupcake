@@ -32,7 +32,7 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Map")
 	FOnMapVisibilityChanged OnMapClosed;
 	// Widget to show when the map object is interacted with
-	UPROPERTY(Transient)
+	UPROPERTY(Transient, BlueprintReadWrite)
 	UUserWidget* MapWidget;
 
 	// Ny medlemsvariabel för att spåra om spelaren kan interagera

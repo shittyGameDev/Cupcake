@@ -97,9 +97,16 @@ public:
 	//virtual void Interact_Implementation();
 
 	//bool CanSleep();
-	void DayTransistion();
+	void DayTransistion(int ZIndex = 1000);
 	void BindTimeEvent(FTimeEvent& Event);
-	void ShiftDay();
+
+	void ShiftDayBind()
+	{
+		ShiftDay();
+	}
+	UFUNCTION(BlueprintCallable)
+	void ShiftDay(int DayTransistionZIndex = 1000);
+	
 	void RegisterTimeEvent(FTimeEvent& NewEvent);
 	void RestoreLightIntensity();
 	UFUNCTION()
@@ -123,8 +130,11 @@ private:
 	bool bDayTransistionScheduled = false;
 	bool bIsReactivationScheduled = false;
 	bool bDayTransitionTriggered = false;
+	UPROPERTY()
 	APlayerController* PlayerController;
+	UPROPERTY()
 	APawn* PlayerPawn;
+	UPROPERTY()
 	ACupcakeCharacter* PlayerCharacter;
 	
 	

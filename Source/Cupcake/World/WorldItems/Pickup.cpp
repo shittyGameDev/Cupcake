@@ -32,7 +32,7 @@ void APickup::BeginPlay()
 	Super::BeginPlay();
 
 	InitializePickup(UBaseItem::StaticClass(), ItemQuantity);
-	GetWorld()->GetTimerManager().SetTimer(ValidationTimerHandle, this, &APickup::ValidateActors, 5.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(ValidationTimerHandle, this, &APickup::ValidateActors, 1.0f, true);
 }
 
 void APickup::Tick(float DeltaTime)

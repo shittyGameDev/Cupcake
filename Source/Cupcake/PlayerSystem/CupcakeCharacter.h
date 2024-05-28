@@ -127,12 +127,6 @@ public:
 	
 	FTimerHandle TimerHandle_AttackFinished;
 
-	UFUNCTION(BlueprintCallable)
-	void SaveGame();
-
-	UFUNCTION(BlueprintCallable)
-	void LoadGame();
-
 protected:
 
 	UPROPERTY(EditAnywhere, Category="Sound")

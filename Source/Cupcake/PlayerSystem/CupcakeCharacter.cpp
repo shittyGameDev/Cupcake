@@ -193,6 +193,16 @@ void ACupcakeCharacter::OnAttackFinished()
 
 void ACupcakeCharacter::Dash()
 {
+	if(!bIsDashing)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 800.f;
+		bIsDashing = true;
+	}else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		bIsDashing = false;
+	}
+	/*
 	if (!bIsDashing && bCanDash)
 	{
 		bIsDashing = true;
@@ -222,7 +232,7 @@ void ACupcakeCharacter::Dash()
 			}, DashCooldown, false);
 			
 		}, DashDuration, false);
-	}
+	}*/
 }
 
 void ACupcakeCharacter::UpdateFacingDirection()

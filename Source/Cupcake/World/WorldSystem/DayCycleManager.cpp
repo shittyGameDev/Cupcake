@@ -36,7 +36,7 @@ void ADayCycleManager::BeginPlay()
 	UNewInventoryComponent* InventoryComponent = PlayerCharacter->GetInventory();
 	if (InventoryComponent)
 	{
-		InventoryComponent->OnKeyItemAdded.AddUObject(this, &ADayCycleManager::ShiftDay);
+		InventoryComponent->OnKeyItemAdded.AddUObject(this, &ADayCycleManager::ShiftDayBind);
 	}
 }
 
@@ -198,9 +198,7 @@ void ADayCycleManager::RegisterTimeEvent(FTimeEvent& NewEvent)
 	BindTimeEvent(NewEvent);
 }
 
-
-
-void ADayCycleManager::DayTransistion()
+void ADayCycleManager::DayTransistion(int ZIndex)
 {
 	if (DayTransitionWidgetClass != nullptr)
 	{
@@ -208,7 +206,7 @@ void ADayCycleManager::DayTransistion()
 		if (DayTranistionWidget != nullptr)
 		{
 			//PlayerCharacter->DisableMovement();
-			DayTranistionWidget->AddToViewport(1000);
+			DayTranistionWidget->AddToViewport(ZIndex);
 			if(UTextBlock* DayText = Cast<UTextBlock>(DayTranistionWidget->GetWidgetFromName(TEXT("DayText"))))
 			{
 				DayText->SetText(FText::Format(NSLOCTEXT("Game", "DayText", "Day {0}"), FText::AsNumber(GetCurrentDayNumber())));
@@ -220,7 +218,7 @@ void ADayCycleManager::DayTransistion()
 				DayTranistionWidget->RemoveFromParent();
 				UE_LOG(LogTemp, Warning, TEXT("Ta bort daytransition widgeten"));
 				PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-				bDayTransitionTriggered = false;
+				//bDayTransitionTriggered = false;
 			}, 3.5f, false);
 			RestoreLightIntensity();
 			if (DayCycle == 2)
@@ -270,17 +268,17 @@ void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
 	}
 }
 
-void ADayCycleManager::ShiftDay()
+void ADayCycleManager::ShiftDay(int DayTransistionZIndex)
 {
     UE_LOG(LogTemp, Warning, TEXT("ShiftDay called. DayCycle: %d"), DayCycle);
 	DayCycle++;
 
 	UE_LOG(LogTemp, Warning, TEXT("Daycount: %d"), DayCycle);
-    if (bDayTransitionTriggered)
-    {
+    //if (bDayTransitionTriggered)
+    /*{
         UE_LOG(LogTemp, Warning, TEXT("DayTransition already triggered for today."));
         return; // Prevent further executions if already done
-    }
+    }*/
 
     ApplyInsanity();
     if (PlayerCharacter)
@@ -288,12 +286,12 @@ void ADayCycleManager::ShiftDay()
         PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_None);
     }
 
-	if (!bDayTransitionTriggered)
-	{
-		DayTransistion();
+	//if (!bDayTransitionTriggered)
+	//
+		DayTransistion(DayTransistionZIndex);
 		PlayerCharacter->SetActorLocation(PlayerSpawnPoint);
-		bDayTransitionTriggered = true; // Set to true to prevent further executions
-	}
+		//bDayTransitionTriggered = true; // Set to true to prevent further executions
+	//}
 /*
     if (DirectionalLight && DirectionalLight->GetLightComponent())
     {

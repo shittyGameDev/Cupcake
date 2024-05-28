@@ -48,4 +48,8 @@ public:
 	// Inventory contents
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
 	TArray<FItemSaveData> InventoryItems;
+
+	// Current Day
+	UPROPERTY(VisibleAnywhere, Category="SaveData")
+	int DayNumber;
 };

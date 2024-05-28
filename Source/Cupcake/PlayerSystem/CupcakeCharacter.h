@@ -137,6 +137,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Sound")
 	USoundBase* AddSound;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayEatSound();
 	
 	UFUNCTION()
 	void PlayAddSound() const;
@@ -152,8 +155,13 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	// APawn interface
+	UFUNCTION()
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+	UFUNCTION()
+	void BindGameplayInputs(UInputComponent* PlayerInputComponent);
+	UFUNCTION()
+	void BindMenuInputs(UInputComponent* PlayerInputComponent);
+
 	// To add mapping context
 	virtual void BeginPlay();
 
@@ -169,6 +177,17 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Character | Inventory")
 	UNewInventoryComponent* PlayerInventory;
+
+	UFUNCTION()
+	void CycleInventoryItems(int32 Direction);
+	void CycleInventoryLeft();
+	void CycleInventoryRight();
+	//Helper function
+	UFUNCTION()
+	void UseItem();
+
+	UPROPERTY(VisibleAnywhere)
+	UBaseItem* ItemBeingFocused;
 
 	float InteractionCheckFrequency;
 
@@ -190,13 +209,16 @@ protected:
 public:
 	
 	virtual void Tick(float DeltaSeconds) override;
-	void UpdateFacingDirection();
 
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
 
 	void ToggleMenu();
 
+	UFUNCTION(BlueprintCallable)
 	void DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop);
+
+	UFUNCTION()
+	void PrepDropItem();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlayDropSound();

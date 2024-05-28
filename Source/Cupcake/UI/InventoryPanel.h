@@ -20,6 +20,10 @@ class CUPCAKE_API UInventoryPanel : public UUserWidget
 	GENERATED_BODY()
 
 public:
+
+	UFUNCTION()
+	const TArray<UInventoryItemSlot*>& GetItemSlots() const { return ItemSlots; }
+	
 	UFUNCTION()
 	void RefreshInventory();
 
@@ -44,4 +48,6 @@ protected:
 	virtual void NativeOnInitialized() override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
 		UDragDropOperation* InOperation) override;
+
+	TArray<UInventoryItemSlot*> ItemSlots;
 };

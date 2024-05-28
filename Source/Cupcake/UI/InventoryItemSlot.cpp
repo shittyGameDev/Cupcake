@@ -13,13 +13,19 @@
 #include "Cupcake/Actors/AttributeComponent.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
+#include "Kismet/KismetGuidLibrary.h"
+
 
 void UInventoryItemSlot::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+	InitToolTip();
+}
+void UInventoryItemSlot::InitToolTip()
+{
 	if(ToolTipClass)
 	{
-		UInventoryTooltip* ToolTip = CreateWidget<UInventoryTooltip>(this, ToolTipClass);
+		ToolTip = CreateWidget<UInventoryTooltip>(this, ToolTipClass);
 		ToolTip->InventorySlotBeingHovered = this;
 		SetToolTip(ToolTip);
 	}
@@ -125,4 +131,6 @@ void UInventoryItemSlot::NativeOnMouseEnter(const FGeometry& InGeometry, const F
 {
 	this->PlayHoverAnim();
 }
+
+
 

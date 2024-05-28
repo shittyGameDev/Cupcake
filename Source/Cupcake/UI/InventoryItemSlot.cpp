@@ -109,7 +109,7 @@ void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, co
 {
 	if(ItemReference)
 	{
-		if(ItemReference->ID.IsEqual("test_001"))
+		if(ItemReference->ID.IsEqual("test_001") || ItemReference->ID.IsEqual("mushroom"))
 		{
 			PlayerCharacter = Cast<ACupcakeCharacter>(ItemReference->OwningInventory->GetOwner());
 			if(PlayerCharacter->Attributes->RegenerateHealth(10.f))

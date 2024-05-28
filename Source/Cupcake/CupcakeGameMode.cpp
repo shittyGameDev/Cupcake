@@ -7,6 +7,7 @@
 #include "PlayerSystem/NewInventoryComponent.h"
 #include "PlayerSystem/SavePlayerProgress.h"
 #include "World/WorldSystem/DayCycleManager.h"
+#include "Actors/DamageableInterface.h"
 
 void ACupcakeGameMode::BeginPlay()
 {
@@ -70,6 +71,9 @@ void ACupcakeGameMode::SaveGame()
 		SaveGameInstance->DayNumber = DayCycleManager->GetCurrentDayNumber();
 		UE_LOG(LogTemp, Warning, TEXT("Day cycle number: %d"), DayCycleManager->GetCurrentDayNumber());
 	}
+
+	// Save Active actors in scene
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), );
 	
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("PlayerSaveSlot"), 0);
 	UE_LOG(LogTemp, Warning, TEXT("Saving Game"));

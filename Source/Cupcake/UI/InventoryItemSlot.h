@@ -32,6 +32,9 @@ public:
 	void PlayHoverLeaveAnim();
 	UPROPERTY(VisibleAnywhere, Category="Inventory Slot",meta=(BindWidget))
 	UImage* ItemIcon;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayEatSound();
 protected:
 
 	UPROPERTY()

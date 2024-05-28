@@ -33,8 +33,17 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="Inventory Slot",meta=(BindWidget))
 	UImage* ItemIcon;
 
+	UFUNCTION()
+	void InitToolTip();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlayEatSound();
+
+	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
+	TSubclassOf<UInventoryTooltip> ToolTipClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="InventorySlot")
+	UInventoryTooltip* ToolTip;
 protected:
 
 	UPROPERTY()
@@ -43,8 +52,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
 	TSubclassOf<UDragItemVisual> DragItemVisualClass;
 
-	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
-	TSubclassOf<UInventoryTooltip> ToolTipClass;
+
 
 	UPROPERTY(EditDefaultsOnly, Category="Inventory Slot")
 	TSubclassOf<USubMenu> SubMenuClass;
@@ -70,4 +78,5 @@ protected:
 		UDragDropOperation* InOperation) override;
 	void OnRightMouseButtonClick(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 };

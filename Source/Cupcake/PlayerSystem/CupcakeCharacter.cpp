@@ -14,9 +14,15 @@
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
 #include "EngineUtils.h"  
+#include "IDetailTreeNode.h"
 #include "SavePlayerProgress.h"
 #include "Components/BoxComponent.h"
+#include "Components/Image.h"
+#include "Components/WrapBox.h"
 #include "Cupcake/Actors/AttributeComponent.h"
+#include "Cupcake/UI/InventoryItemSlot.h"
+#include "Cupcake/UI/InventoryPanel.h"
+#include "Cupcake/UI/MainMenu.h"
 #include "Cupcake/World/WorldItems/Pickup.h"
 #include "Cupcake/World/WorldSystem/TheMapObject.h"
 #include "Kismet/GameplayStatics.h"
@@ -235,42 +241,6 @@ void ACupcakeCharacter::Dash()
 	}*/
 }
 
-void ACupcakeCharacter::UpdateFacingDirection()
-{
-	if (!GetController())
-		return;
-	
-	if (!PlayerController)
-		return;
-	
-	float MouseX, MouseY;
-	if (!PlayerController->GetMousePosition(MouseX, MouseY))
-		return;
-	
-	FVector WorldDirection;
-	FVector WorldLocation;
-	if (!UGameplayStatics::DeprojectScreenToWorld(PlayerController, FVector2D(MouseX, MouseY), OUT WorldLocation, OUT WorldDirection))
-		return;
-
-	FVector StartLocation = FollowCamera->GetComponentLocation();
-	FVector EndLocation = StartLocation + WorldDirection * 10000.0f; 
-
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-	GetWorld()->LineTraceSingleByChannel(OUT HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
-
-	FVector TargetPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : EndLocation;
-
-	FVector ToTarget = (TargetPoint - GetActorLocation()).GetSafeNormal();
-	FRotator TargetRotation = FRotationMatrix::MakeFromX(ToTarget).Rotator();
-
-	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), TargetRotation, GetWorld()->GetDeltaSeconds(), 10.0f);
-	NewRotation.Pitch = 0.0f; 
-	NewRotation.Roll = 0.0f; 
-	SetActorRotation(NewRotation);
-}
-
 
 
 void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -298,6 +268,71 @@ AActor* ACupcakeCharacter::GetCurrentInteractable() const
 {
 	return OverlappedInteractables.Num() > 0 ? OverlappedInteractables.Last() : nullptr;
 }
+
+void ACupcakeCharacter::CycleInventoryItems(int32 Direction)
+{
+	static int32 CurrentIndex = 0;
+	if (HUD && HUD->MainMenuWidget && HUD->MainMenuWidget->InventoryPanel)
+	{
+		const TArray<UWidget*>& InventorySlots = HUD->MainMenuWidget->InventoryPanel->InventoryPanel->GetAllChildren();
+
+		if (InventorySlots.Num() > 0)
+		{
+			CurrentIndex = (CurrentIndex + Direction + InventorySlots.Num()) % InventorySlots.Num();  // Adjust index based on direction
+            
+			UInventoryItemSlot* PreviousSlot = Cast<UInventoryItemSlot>(InventorySlots[CurrentIndex]);
+			if (PreviousSlot)
+			{
+				PreviousSlot->PlayHoverLeaveAnim();
+			}
+
+			int32 NewIndex = (CurrentIndex + Direction + InventorySlots.Num()) % InventorySlots.Num(); // Calculate new index based on direction
+
+			UInventoryItemSlot* NewSlot = Cast<UInventoryItemSlot>(InventorySlots[NewIndex]);
+			if (NewSlot)
+			{
+				NewSlot->PlayHoverAnim();
+				ItemBeingFocused = NewSlot->GetItemReference();
+				UE_LOG(LogTemp, Warning, TEXT("ItemRefQuantity: %d"), ItemBeingFocused->Quantity);
+				UE_LOG(LogTemp, Warning, TEXT("Focusing: %d"), NewIndex);
+			}
+            
+			CurrentIndex = NewIndex;  // Update the current index to the new index
+		}
+		else
+		{
+			CurrentIndex = 0;  // Reset index if no items
+		}
+	}
+}
+
+
+void ACupcakeCharacter::CycleInventoryLeft()
+{
+	CycleInventoryItems(-1);  // Move left in the inventory
+}
+
+void ACupcakeCharacter::CycleInventoryRight()
+{
+	CycleInventoryItems(1);   // Move right in the inventory
+}
+
+
+void ACupcakeCharacter::UseItem()
+{
+	if(ItemBeingFocused)
+	{
+		if(ItemBeingFocused->ID.IsEqual("test_001") || ItemBeingFocused->ID.IsEqual("mushroom"))
+		{
+			if(Attributes->RegenerateHealth(10.f))
+			{
+				RemoveItemFromInventory(ItemBeingFocused, 1);
+				PlayEatSound();
+			}
+		}
+	}
+}
+
 
 void ACupcakeCharacter::FoundInteractable(AActor* NewInteractable)
 {
@@ -493,6 +528,75 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	}
 }
 
+void ACupcakeCharacter::BindGameplayInputs(UInputComponent* PlayerInputComponent)
+{
+	if (PlayerInputComponent != nullptr)
+	{
+		PlayerInputComponent->ClearActionBindings();
+		// Binding gameplay specific actions
+		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+		
+			/* Jumping
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+			*/
+
+			// Moving
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
+			PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ACupcakeCharacter::Dash);
+
+			//Interact
+			PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
+			PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
+
+			//UI
+			PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
+			PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
+
+			// Combat
+			PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACupcakeCharacter::Attack);
+		}
+		else
+		{
+			UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+		}
+	}
+}
+
+void ACupcakeCharacter::BindMenuInputs(UInputComponent* PlayerInputComponent)
+{
+	if (PlayerInputComponent != nullptr)
+	{
+		PlayerInputComponent->ClearActionBindings();
+
+		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+
+			// Moving
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
+			PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ACupcakeCharacter::Dash);
+
+			//Use
+			PlayerInputComponent->BindAction("UseItem", IE_Pressed, this, &ACupcakeCharacter::UseItem);
+			//Interact
+			PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
+			PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
+
+			//UI
+			PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
+			PlayerInputComponent->BindAction("ToggleMap", IE_Pressed, this, &ACupcakeCharacter::ToggleMapViaKey);
+			PlayerInputComponent->BindAction("CycleInventoryLeft", IE_Pressed, this, &ACupcakeCharacter::CycleInventoryRight);
+			PlayerInputComponent->BindAction("CycleInventoryRight", IE_Pressed, this, &ACupcakeCharacter::CycleInventoryLeft);
+
+			// Combat
+			PlayerInputComponent->BindAction("Drop", IE_Pressed, this, &ACupcakeCharacter::PrepDropItem);
+		}
+		else
+		{
+			UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+		}
+	}
+}
+
 void ACupcakeCharacter::DisableMovement()
 {
 	GetCharacterMovement()->StopMovementImmediately();
@@ -513,6 +617,14 @@ void ACupcakeCharacter::EnableMovement()
 void ACupcakeCharacter::ToggleMenu()
 {
 	HUD->ToggleMenu();
+	if(HUD->bIsMenuVisible)
+	{
+		BindMenuInputs(CreatePlayerInputComponent());
+	}
+	else
+	{
+		BindGameplayInputs(CreatePlayerInputComponent());
+	}
 }
 
 void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDrop)
@@ -538,6 +650,15 @@ void ACupcakeCharacter::DropItem(UBaseItem* ItemToDrop, const int32 QuantityToDr
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Item to drop was somehow null!"));
+	}
+}
+
+void ACupcakeCharacter::PrepDropItem()
+{
+	if(ItemBeingFocused)
+	{
+		DropItem(ItemBeingFocused, ItemBeingFocused->Quantity);
+		ItemBeingFocused = nullptr;
 	}
 }
 
@@ -645,3 +766,31 @@ void ACupcakeCharacter::ToggleMapViaKey()
 		MapObject->ToggleMapVisibility();
 	}
 }
+
+//SAVE SYSTEM
+//------------------------------------------------------------------
+
+FItemSaveData ConvertToSaveData(UBaseItem* Item)
+{
+	FItemSaveData SaveData;
+	SaveData.ID = Item->ID;
+	SaveData.Quantity = Item->Quantity;
+	SaveData.ItemType = Item->ItemType;
+	SaveData.TextData = Item->TextData;
+	SaveData.NumericData = Item->NumericData;
+	SaveData.AssetData = Item->AssetData;
+	return SaveData;
+}
+
+UBaseItem* ConvertToBaseItem(UObject* Outer, const FItemSaveData& SaveData)
+{
+	UBaseItem* Item = NewObject<UBaseItem>(Outer);
+	Item->ID = SaveData.ID;
+	Item->Quantity = SaveData.Quantity;
+	Item->ItemType = SaveData.ItemType;
+	Item->TextData = SaveData.TextData;
+	Item->NumericData = SaveData.NumericData;
+	Item->AssetData = SaveData.AssetData;
+	return Item;
+}
+

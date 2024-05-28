@@ -115,6 +115,7 @@ void UInventoryItemSlot::OnRightMouseButtonClick(const FGeometry& InGeometry, co
 			if(PlayerCharacter->Attributes->RegenerateHealth(10.f))
 			{
 				PlayerCharacter->RemoveItemFromInventory(ItemReference, 1);
+				PlayEatSound();
 			}
 		}
 	}

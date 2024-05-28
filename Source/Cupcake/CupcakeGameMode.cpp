@@ -73,7 +73,10 @@ void ACupcakeGameMode::SaveGame()
 	}
 
 	// Save Active actors in scene
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), );
+	TArray<AActor*> LivingEnemies;
+	LivingEnemies.Empty();
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UDamageableInterface::StaticClass(), LivingEnemies);
+	
 	
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("PlayerSaveSlot"), 0);
 	UE_LOG(LogTemp, Warning, TEXT("Saving Game"));

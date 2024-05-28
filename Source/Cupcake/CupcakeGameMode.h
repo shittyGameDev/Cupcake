@@ -21,6 +21,8 @@ public:
 
 	ACupcakeCharacter* PlayerCharacter;
 	UNewInventoryComponent* PlayerInventory;
+
+	TArray<AActor*> DamageableActors;
 	
 	UFUNCTION(BlueprintCallable)
 	void SaveGame();

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Cupcake/Items/BaseItem.h"
 #include "InventoryTooltip.generated.h"
 
 class UTextBlock;
@@ -17,6 +18,9 @@ class CUPCAKE_API UInventoryTooltip : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UFUNCTION()
+	void UpdateTooltip(UBaseItem* Item);
+	
 	UPROPERTY(VisibleAnywhere)
 	UInventoryItemSlot* InventorySlotBeingHovered;
 
@@ -40,5 +44,5 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
-	
+
 };

@@ -4,10 +4,12 @@
 #include "BaseHUD.h"
 #include "MainMenu.h"
 #include "InteractionWidget.h"
+#include "InventoryPanel.h"
 #include "PickupWidget.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/WrapBox.h"
 #include "Cupcake/Items/BaseItem.h"
 #include "Cupcake/PlayerSystem/NewInventoryComponent.h"
 
@@ -51,9 +53,7 @@ void ABaseHUD::DisplayMenu()
 	if (MainMenuWidget)
 	{
 		bIsMenuVisible = true;
-		//OpenMenu.Broadcast();
 		AnimateOpenMenu();
-		//MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -61,10 +61,8 @@ void ABaseHUD::HideMenu()
 {
 	if (MainMenuWidget)
 	{
-		//OpenMenu.Broadcast();
 		bIsMenuVisible = false;
 		AnimateCloseMenu();
-		//MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 

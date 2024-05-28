@@ -92,6 +92,9 @@
 		<property name="length">
 			<value>0.30383219954648527</value>
 		</property>
+		<property name="pitch">
+			<value>-7</value>
+		</property>
 		<property name="playlistMode">
 			<value>1</value>
 		</property>
@@ -139,7 +142,7 @@
 			<value>pitch</value>
 		</property>
 		<property name="amount">
-			<value>11.5</value>
+			<value>18.5</value>
 		</property>
 	</object>
 	<object class="SingleSound" id="{b944943b-7abe-46e4-aa28-2edb8a9f1932}">

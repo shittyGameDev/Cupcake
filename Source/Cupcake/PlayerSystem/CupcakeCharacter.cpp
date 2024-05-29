@@ -500,7 +500,7 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		//Jumping
-		EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Started, this, &ACupcakeCharacter::Pause);
+		EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Completed, this, &ACupcakeCharacter::Pause);
 		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		
 
@@ -535,7 +535,9 @@ void ACupcakeCharacter::BindGameplayInputs(UInputComponent* PlayerInputComponent
 		PlayerInputComponent->ClearActionBindings();
 		// Binding gameplay specific actions
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
+
+			EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Completed, this, &ACupcakeCharacter::Pause);
+
 			/* Jumping
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -570,6 +572,8 @@ void ACupcakeCharacter::BindMenuInputs(UInputComponent* PlayerInputComponent)
 		PlayerInputComponent->ClearActionBindings();
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+
+			EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Completed, this, &ACupcakeCharacter::Pause);
 
 			// Moving
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);

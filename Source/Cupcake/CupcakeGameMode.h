@@ -19,7 +19,9 @@ protected:
 public:
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
 	ACupcakeCharacter* PlayerCharacter;
+	UPROPERTY()
 	UNewInventoryComponent* PlayerInventory;
 	
 	UFUNCTION(BlueprintCallable)

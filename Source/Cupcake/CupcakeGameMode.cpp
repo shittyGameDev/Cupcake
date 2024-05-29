@@ -7,6 +7,7 @@
 #include "PlayerSystem/NewInventoryComponent.h"
 #include "PlayerSystem/SavePlayerProgress.h"
 #include "World/WorldSystem/DayCycleManager.h"
+#include "Actors/DamageableInterface.h"
 
 void ACupcakeGameMode::BeginPlay()
 {
@@ -70,6 +71,24 @@ void ACupcakeGameMode::SaveGame()
 		SaveGameInstance->DayNumber = DayCycleManager->GetCurrentDayNumber();
 		UE_LOG(LogTemp, Warning, TEXT("Day cycle number: %d"), DayCycleManager->GetCurrentDayNumber());
 	}
+
+	// Save Active damageable actors in scene
+	TArray<AActor*> LivingEnemies;
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UDamageableInterface::StaticClass(), LivingEnemies);
+
+	for (auto LivingEnemy : LivingEnemies)
+	{
+		SaveGameInstance->LivingEnemies.Add(LivingEnemy->GetName());
+	}
+
+	// Save Active collectables in scene
+	TArray<AActor*> Collectables;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("KeyItem"), Collectables);
+
+	for (auto Collectable : Collectables)
+	{
+		SaveGameInstance->Collectables.Add(Collectable->GetName());
+	}
 	
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("PlayerSaveSlot"), 0);
 	UE_LOG(LogTemp, Warning, TEXT("Saving Game"));
@@ -100,7 +119,7 @@ void ACupcakeGameMode::LoadGame()
 			}
 		}
 
-		// Load day
+		// Load day (William)
 		ADayCycleManager* DayCycleManager = Cast<ADayCycleManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ADayCycleManager::StaticClass()));
 		if (DayCycleManager)
 		{
@@ -118,6 +137,31 @@ void ACupcakeGameMode::LoadGame()
 			}
 			UE_LOG(LogTemp, Warning, TEXT("Target Day cycle: %d"), LoadGameInstance->DayNumber);
 			UE_LOG(LogTemp, Warning, TEXT("Curent day: %d"), DayCycleManager->GetCurrentDayNumber());
+		}
+
+		// Remove enemies and collectables not in lists
+		// Get enemies in scene
+		TArray<AActor*> LivingEnemies;
+		UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UDamageableInterface::StaticClass(), LivingEnemies);
+
+		for (auto LivingEnemy : LivingEnemies)
+		{
+			if (!LoadGameInstance->LivingEnemies.Contains(LivingEnemy->GetName()))
+			{
+				LivingEnemy->Destroy();
+			}
+		}
+
+		// Save Active collectables in scene
+		TArray<AActor*> Collectables;
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("KeyItem"), Collectables);
+
+		for (auto Collectable : Collectables)
+		{
+			if (!LoadGameInstance->Collectables.Contains(Collectable->GetName()))
+			{
+				Collectable->Destroy();
+			}
 		}
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Loaded Save"));

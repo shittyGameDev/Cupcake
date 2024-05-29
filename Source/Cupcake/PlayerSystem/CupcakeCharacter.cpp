@@ -14,10 +14,7 @@
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
 #include "EngineUtils.h"  
-#include "IDetailTreeNode.h"
-#include "SavePlayerProgress.h"
 #include "Components/BoxComponent.h"
-#include "Components/Image.h"
 #include "Components/WrapBox.h"
 #include "Cupcake/Actors/AttributeComponent.h"
 #include "Cupcake/UI/InventoryItemSlot.h"
@@ -475,6 +472,7 @@ void ACupcakeCharacter::Interact()
 		if (InteractableInterface)
 		{
 			InteractableInterface->Interact(this);
+			OnInteract();
 		}
 	}
 }

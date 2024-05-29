@@ -24,6 +24,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="TriggerBox")
 	UBoxComponent* MushroomTrigger;
+
+	UPROPERTY(EditAnywhere, Category="Niagra system")
+	UNiagaraComponent* Particles;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -33,7 +36,9 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere)
-	TArray<AActor*> DoorParts;
+	AActor* Door;
+
+	FVector InitialDoorLocation;
 	
 	UPROPERTY(EditAnywhere, Category="Movement")
 	float MoveDuration = 2.0f; // Duration to move down

@@ -400,6 +400,7 @@ void ACupcakeCharacter::UpdateInteraction() const
 {
 	if(TargetInteractable && InteractionData.CurrentInteractable)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Progress me bby"));
 		float TotalDuration = TargetInteractable->InteractableData.InteractionDuration;
 		float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(TimerHandle_Interaction);
 		float Progress = ElapsedTime / TotalDuration;
@@ -408,6 +409,11 @@ void ACupcakeCharacter::UpdateInteraction() const
 		if(HUD)
 		{
 			HUD->UpdateInteractionProgress(Progress);
+			UE_LOG(LogTemp, Warning, TEXT("Progress"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HUD somehow null"));
 		}
 	}
 }

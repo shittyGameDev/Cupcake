@@ -768,6 +768,3 @@ void ACupcakeCharacter::ToggleMapViaKey()
 		MapObject->ToggleMapVisibility();
 	}
 }
-
-//SAVE SYSTEM
-//------------------------------------------------------------------

@@ -475,6 +475,7 @@ void ACupcakeCharacter::Interact()
 		if (InteractableInterface)
 		{
 			InteractableInterface->Interact(this);
+			OnInteract();
 		}
 	}
 }

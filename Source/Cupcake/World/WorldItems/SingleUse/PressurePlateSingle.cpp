@@ -3,6 +3,7 @@
 
 #include "PressurePlateSingle.h"
 
+#include "NiagaraComponent.h"
 #include "Components/BoxComponent.h"
 
 
@@ -18,6 +19,9 @@ APressurePlateSingle::APressurePlateSingle()
 	MushroomTriggerMesh->SetupAttachment(RootComponent);
 	MushroomTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("MushroomTrigger"));
 	MushroomTrigger->SetupAttachment(MushroomTriggerMesh);
+
+	Particles = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Particles"));
+	Particles->SetupAttachment(RootComponent);
 }
 
 void APressurePlateSingle::BeginPlay()
@@ -25,6 +29,12 @@ void APressurePlateSingle::BeginPlay()
 	Super::BeginPlay();
 
 	MushroomTrigger->OnComponentBeginOverlap.AddDynamic(this, &APressurePlateSingle::OnOverlapMushroomBegin);
+
+	if (Door)
+	{
+		InitialDoorLocation = Door->GetActorLocation();
+	}
+	Particles->SetActive(false);
 }
 
 void APressurePlateSingle::Tick(float DeltaTime)
@@ -36,17 +46,20 @@ void APressurePlateSingle::Tick(float DeltaTime)
 		ElapsedTime += DeltaTime;
 		float Alpha = ElapsedTime / MoveDuration;
 
-		for (AActor* Part : DoorParts)
+		if (Door)
 		{
-			if (Part)
-			{
-				Part->SetActorLocation(Part->GetActorLocation() + MovementOffset);
-			}
+			FVector StartLocation = InitialDoorLocation;
+			FVector EndLocation = InitialDoorLocation + MovementOffset;
+
+			FVector NewLocation = FMath::Lerp(StartLocation, EndLocation, Alpha);
+			Door->SetActorLocation(NewLocation);
 		}
 
 		if (ElapsedTime >= MoveDuration)
 		{
 			bIsMoving = false;
+			Door->SetActorLocation(InitialDoorLocation + MovementOffset);
+			Particles->SetActive(false);
 		}
 	}
 }
@@ -54,18 +67,15 @@ void APressurePlateSingle::Tick(float DeltaTime)
 void APressurePlateSingle::OnOverlapMushroomBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	for (AActor* Part : DoorParts)
+	if (Door)
 	{
-		if (Part)
+		UPrimitiveComponent* RootComp = Cast<UPrimitiveComponent>(Door->GetRootComponent());
+		if (RootComp && RootComp->Mobility == EComponentMobility::Static)
 		{
-			UPrimitiveComponent* RootComp = Cast<UPrimitiveComponent>(Part->GetRootComponent());
-			if (RootComp && RootComp->Mobility == EComponentMobility::Static)
-			{
-				RootComp->SetMobility(EComponentMobility::Movable);
-				UE_LOG(LogTemp, Warning, TEXT("Set mobility to movable for %s"), *Part->GetName());
-			}
+			RootComp->SetMobility(EComponentMobility::Movable);
+			UE_LOG(LogTemp, Warning, TEXT("Set mobility to movable for %s"), *Door->GetName());
 		}
 	}
-
 	bIsMoving = true;
+	Particles->SetActive(true);
 }

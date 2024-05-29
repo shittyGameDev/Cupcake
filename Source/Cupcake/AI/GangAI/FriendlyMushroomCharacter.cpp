@@ -37,6 +37,8 @@ void AFriendlyMushroomCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	InitMushroomItem(UBaseItem::StaticClass(), ItemQuantity);
+
+	InteractableData = InstanceInteractableData;
 }
 
 void AFriendlyMushroomCharacter::MoveTrigger()

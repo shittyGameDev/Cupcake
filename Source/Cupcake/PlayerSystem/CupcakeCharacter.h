@@ -67,6 +67,9 @@ class ACupcakeCharacter : public ACharacter, public IDamageableInterface
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PauseGameAction;
 	
 	//Look Input Action 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -147,6 +150,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Pause();
 
 	// APawn interface
 	UFUNCTION()
@@ -230,6 +236,9 @@ private:
 	float DashImpulseStrength = 2000.f;
 	float DashDuration = 0.15f; 
 	float DashCooldown = 1.0f;
+
+	UPROPERTY()
+	int32 CurrentIndex = 0;
 
 	UPROPERTY()
 	TArray<AActor*> OverlappedInteractables;

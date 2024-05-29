@@ -271,7 +271,6 @@ AActor* ACupcakeCharacter::GetCurrentInteractable() const
 
 void ACupcakeCharacter::CycleInventoryItems(int32 Direction)
 {
-	static int32 CurrentIndex = 0;
 	if (HUD && HUD->MainMenuWidget && HUD->MainMenuWidget->InventoryPanel)
 	{
 		const TArray<UWidget*>& InventorySlots = HUD->MainMenuWidget->InventoryPanel->InventoryPanel->GetAllChildren();
@@ -294,14 +293,15 @@ void ACupcakeCharacter::CycleInventoryItems(int32 Direction)
 				NewSlot->PlayHoverAnim();
 				ItemBeingFocused = NewSlot->GetItemReference();
 				UE_LOG(LogTemp, Warning, TEXT("ItemRefQuantity: %d"), ItemBeingFocused->Quantity);
-				UE_LOG(LogTemp, Warning, TEXT("Focusing: %d"), NewIndex);
+				UE_LOG(LogTemp, Warning, TEXT("Focusing: %d"), CurrentIndex);
 			}
             
-			CurrentIndex = NewIndex;  // Update the current index to the new index
+			//CurrentIndex = NewIndex;  // Update the current index to the new index
 		}
 		else
 		{
 			CurrentIndex = 0;  // Reset index if no items
+			UE_LOG(LogTemp, Warning, TEXT("Resetting index"));
 		}
 	}
 }
@@ -499,10 +499,10 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
-		/* Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-		*/
+		//Jumping
+		EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Started, this, &ACupcakeCharacter::Pause);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
@@ -619,6 +619,8 @@ void ACupcakeCharacter::ToggleMenu()
 	HUD->ToggleMenu();
 	if(HUD->bIsMenuVisible)
 	{
+		CurrentIndex = 0;
+		CycleInventoryItems(0);
 		BindMenuInputs(CreatePlayerInputComponent());
 	}
 	else
@@ -769,28 +771,3 @@ void ACupcakeCharacter::ToggleMapViaKey()
 
 //SAVE SYSTEM
 //------------------------------------------------------------------
-
-FItemSaveData ConvertToSaveData(UBaseItem* Item)
-{
-	FItemSaveData SaveData;
-	SaveData.ID = Item->ID;
-	SaveData.Quantity = Item->Quantity;
-	SaveData.ItemType = Item->ItemType;
-	SaveData.TextData = Item->TextData;
-	SaveData.NumericData = Item->NumericData;
-	SaveData.AssetData = Item->AssetData;
-	return SaveData;
-}
-
-UBaseItem* ConvertToBaseItem(UObject* Outer, const FItemSaveData& SaveData)
-{
-	UBaseItem* Item = NewObject<UBaseItem>(Outer);
-	Item->ID = SaveData.ID;
-	Item->Quantity = SaveData.Quantity;
-	Item->ItemType = SaveData.ItemType;
-	Item->TextData = SaveData.TextData;
-	Item->NumericData = SaveData.NumericData;
-	Item->AssetData = SaveData.AssetData;
-	return Item;
-}
-

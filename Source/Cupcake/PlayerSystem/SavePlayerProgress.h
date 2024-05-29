@@ -49,6 +49,14 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
 	TArray<FItemSaveData> InventoryItems;
 
+	// Living enemies
+	UPROPERTY(VisibleAnywhere, Category="SaveData")
+	TArray<FString> LivingEnemies;
+
+	// Living enemies
+	UPROPERTY(VisibleAnywhere, Category="SaveData")
+	TArray<FString> Collectables;
+
 	// Current Day
 	UPROPERTY(VisibleAnywhere, Category="SaveData")
 	int DayNumber;

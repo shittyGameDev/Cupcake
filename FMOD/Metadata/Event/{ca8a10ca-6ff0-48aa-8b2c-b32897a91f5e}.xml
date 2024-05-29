@@ -8,7 +8,7 @@
 			<value>1</value>
 		</property>
 		<relationship name="folder">
-			<destination>{2f406469-5c39-42fd-bc9a-2752602293dd}</destination>
+			<destination>{56676ffa-76c2-4dc2-8ab3-c507be18a231}</destination>
 		</relationship>
 		<relationship name="mixer">
 			<destination>{d357d9ff-101d-4048-bdfc-15f3d23f1411}</destination>
@@ -96,7 +96,7 @@
 			<value>5</value>
 		</property>
 		<property name="pitch">
-			<value>-6.5</value>
+			<value>-0.900000036</value>
 		</property>
 		<relationship name="modulators">
 			<destination>{997fb321-b3b6-40b0-b3bf-7fadd286539e}</destination>

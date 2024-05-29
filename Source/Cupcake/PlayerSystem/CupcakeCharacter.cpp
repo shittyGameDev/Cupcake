@@ -766,31 +766,3 @@ void ACupcakeCharacter::ToggleMapViaKey()
 		MapObject->ToggleMapVisibility();
 	}
 }
-
-//SAVE SYSTEM
-//------------------------------------------------------------------
-
-FItemSaveData ConvertToSaveData(UBaseItem* Item)
-{
-	FItemSaveData SaveData;
-	SaveData.ID = Item->ID;
-	SaveData.Quantity = Item->Quantity;
-	SaveData.ItemType = Item->ItemType;
-	SaveData.TextData = Item->TextData;
-	SaveData.NumericData = Item->NumericData;
-	SaveData.AssetData = Item->AssetData;
-	return SaveData;
-}
-
-UBaseItem* ConvertToBaseItem(UObject* Outer, const FItemSaveData& SaveData)
-{
-	UBaseItem* Item = NewObject<UBaseItem>(Outer);
-	Item->ID = SaveData.ID;
-	Item->Quantity = SaveData.Quantity;
-	Item->ItemType = SaveData.ItemType;
-	Item->TextData = SaveData.TextData;
-	Item->NumericData = SaveData.NumericData;
-	Item->AssetData = SaveData.AssetData;
-	return Item;
-}
-

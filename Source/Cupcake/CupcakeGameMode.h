@@ -19,10 +19,10 @@ protected:
 public:
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
 	ACupcakeCharacter* PlayerCharacter;
+	UPROPERTY()
 	UNewInventoryComponent* PlayerInventory;
-
-	TArray<AActor*> DamageableActors;
 	
 	UFUNCTION(BlueprintCallable)
 	void SaveGame();

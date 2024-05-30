@@ -293,7 +293,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{a5969b0b-b7d8-4606-a65b-595870d3c89a}">
 		<property name="name">
-			<value>Sand</value>
+			<value>Wood</value>
 		</property>
 		<relationship name="automators">
 			<destination>{9cc52121-93f8-4da8-8b77-bccb4ca3a88c}</destination>

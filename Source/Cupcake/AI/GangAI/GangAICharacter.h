@@ -55,6 +55,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void InitiateAttack(AActor* Actor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayHurtSound();
 	
 	bool IsChasing() const { return bIsChasing; }
 

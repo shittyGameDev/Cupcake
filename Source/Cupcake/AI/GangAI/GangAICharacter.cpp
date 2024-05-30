@@ -152,7 +152,7 @@ void AGangAICharacter::OnDamage_Implementation()
 	FTimerHandle TimerHandle_ResetMaterial;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ResetMaterial, [this]()
 	{
-		PlayRandomizedDamageSounds();
+		PlayHurtSound();
 		GetMesh()->SetMaterial(0, NormalMaterial);
 	}, 0.1f, false);
 	if (!bIsChasing)

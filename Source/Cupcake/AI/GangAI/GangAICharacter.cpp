@@ -152,7 +152,6 @@ void AGangAICharacter::OnDamage_Implementation()
 	FTimerHandle TimerHandle_ResetMaterial;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ResetMaterial, [this]()
 	{
-		PlayHurtSound();
 		GetMesh()->SetMaterial(0, NormalMaterial);
 	}, 0.1f, false);
 	if (!bIsChasing)
@@ -225,25 +224,6 @@ void AGangAICharacter::DoAttack()
 	NiagaraComponent->SetActive(false);
 	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackFinished, this, &AGangAICharacter::OnAttackFinished, 1.0f, false);
-}
-
-void AGangAICharacter::PlayRandomizedDamageSounds()
-{
-	TArray<USoundBase*> Sounds = { DamageSound1, DamageSound2 };
-	Shuffle(Sounds); // Blanda ordningen på ljuden
-
-	for (USoundBase* Sound : Sounds)
-	{
-		if (Sound)
-		{
-			float RandomPitch = FMath::RandRange(0.8f, 1.2f); // Slumpmässig pitch mellan 0.8 och 1.2
-			UAudioComponent* AudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, Sound, GetActorLocation(), FRotator::ZeroRotator, 1.0f, RandomPitch);
-			if (AudioComponent)
-			{
-				AudioComponent->Play();
-			}
-		}
-	}
 }
 
 FVector AGangAICharacter::GetRandomPatrolPoint()

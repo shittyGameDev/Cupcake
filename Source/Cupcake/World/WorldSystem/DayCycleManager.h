@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Cupcake/AI/GangAI/FriendlyMushroomCharacter.h"
 #include "Engine/DirectionalLight.h"
 #include "GameFramework/Actor.h"
 #include "Engine/SkyLight.h"
@@ -77,6 +78,8 @@ protected:
 	TArray<FTimeEvent> TimeEvents;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor Barrier")
 	TArray<AActor*> ActorsBarrier;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FriendlyMushroom")
+	AFriendlyMushroomCharacter* Polyephemus;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -115,6 +118,9 @@ public:
 	void ApplyInsanity();
 	UFUNCTION()
 	void RemoveTutorialBarrier();
+
+	UFUNCTION()
+	void Polyphemus();
 	
 	UFUNCTION(BlueprintCallable)
 	float GetElapsedTime() const;

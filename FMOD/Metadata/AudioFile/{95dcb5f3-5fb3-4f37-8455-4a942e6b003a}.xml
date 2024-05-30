@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{95dcb5f3-5fb3-4f37-8455-4a942e6b003a}">
+		<property name="assetPath">
+			<value>WaterLake L2WATER_61.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>30.186666666666667</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{5124e802-e417-4b78-a9a1-61e615bbc550}</destination>
+		</relationship>
+	</object>
+</objects>

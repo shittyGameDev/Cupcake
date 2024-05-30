@@ -76,6 +76,7 @@ void APressurePlateSingle::OnOverlapMushroomBegin(UPrimitiveComponent* Overlappe
 			UE_LOG(LogTemp, Warning, TEXT("Set mobility to movable for %s"), *Door->GetName());
 		}
 	}
+	PlayAudio();
 	bIsMoving = true;
 	Particles->SetActive(true);
 }

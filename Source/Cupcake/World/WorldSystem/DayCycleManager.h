@@ -111,16 +111,18 @@ public:
 	void ShiftDay(int DayTransistionZIndex = 1000);
 	
 	void RegisterTimeEvent(FTimeEvent& NewEvent);
-	//void RestoreLightIntensity();
 	UFUNCTION()
 	void SpawnTreeEvent();
 	UFUNCTION()
 	void ApplyInsanity();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void RemoveTutorialBarrier();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void Polyphemus();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayDayTwo();
 	
 	UFUNCTION(BlueprintCallable)
 	float GetElapsedTime() const;

@@ -120,7 +120,7 @@ void ACupcakeGameMode::LoadGame()
 		}
 
 		// Load day (William)
-		ADayCycleManager* DayCycleManager = Cast<ADayCycleManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ADayCycleManager::StaticClass()));
+		/*ADayCycleManager* DayCycleManager = Cast<ADayCycleManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ADayCycleManager::StaticClass()));
 		if (DayCycleManager)
 		{
 			for (int i = 0; i < LoadGameInstance->DayNumber - 1; i++)
@@ -139,7 +139,7 @@ void ACupcakeGameMode::LoadGame()
 			}
 			UE_LOG(LogTemp, Warning, TEXT("Target Day cycle: %d"), LoadGameInstance->DayNumber);
 			UE_LOG(LogTemp, Warning, TEXT("Curent day: %d"), DayCycleManager->GetCurrentDayNumber());
-		}
+		}*/
 
 		// Remove enemies and collectables not in lists
 		// Get enemies in scene

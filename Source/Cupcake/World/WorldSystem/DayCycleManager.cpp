@@ -36,12 +36,6 @@ void ADayCycleManager::BeginPlay()
 	{
 		BindTimeEvent(Event);
 	}
-
-	UNewInventoryComponent* InventoryComponent = PlayerCharacter->GetInventory();
-	if (InventoryComponent)
-	{
-		InventoryComponent->OnKeyItemAdded.AddUObject(this, &ADayCycleManager::ShiftDayBind);
-	}
 }
 
 // Called every frame
@@ -224,47 +218,16 @@ void ADayCycleManager::DayTransistion(int ZIndex)
 				PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 				//bDayTransitionTriggered = false;
 			}, 3.5f, false);
-			RestoreLightIntensity();
 			if (DayCycle == 2)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("DayTransition incremented DayCycle to 2, calling RemoveTutorialBarrier"));
-				RemoveTutorialBarrier();
-				Polyphemus();
+				PlayDayTwo();
 			}
 
 		}
 	}
 }
 
-void ADayCycleManager::RestoreLightIntensity()
-{
-	if (DirectionalLight && DirectionalLight->GetLightComponent())
-	{
-		float TargetIntensity = 3.0f; // Use the defined OriginalIntensity
-		float IncreaseRate = 50.f; // Adjust this value as needed for how quickly the light should restore.
-		float UpdateInterval = 0.01f; // Timer tick interval
-
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, TargetIntensity, IncreaseRate, UpdateInterval, TimerHandle]() mutable
-		{
-			float CurrentIntensity = DirectionalLight->GetLightComponent()->Intensity;
-			float NewIntensity = FMath::FInterpTo(CurrentIntensity, TargetIntensity, UpdateInterval, IncreaseRate);
-
-			DirectionalLight->GetLightComponent()->SetIntensity(NewIntensity);
-
-			// Log current and new intensity values for debugging
-			//UE_LOG(LogTemp, Warning, TEXT("CurrentIntensity: %f, NewIntensity: %f"), CurrentIntensity, NewIntensity);
-
-			// Stop the timer when the light intensity is close to the original value
-			if (FMath::Abs(NewIntensity - TargetIntensity) < 0.f) // Use a smaller tolerance for more precision
-			{
-				DirectionalLight->GetLightComponent()->SetIntensity(TargetIntensity);
-				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-				UE_LOG(LogTemp, Warning, TEXT("Light intensity restored to original value."));
-			}
-		}, UpdateInterval, true);
-	}
-}
 
 void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
 {

@@ -89,7 +89,7 @@ void ACupcakeCharacter::BeginPlay()
 {
 	// Call the base class
 	Super::BeginPlay();
-
+	bPolyphemus = true;
 	InteractionBox->OnComponentBeginOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapBegin);
 	InteractionBox->OnComponentEndOverlap.AddDynamic(this, &ACupcakeCharacter::OnOverlapEnd);
 	PlayerInventory->OnInventoryAdd.AddUObject(this, &ACupcakeCharacter::PlayAddSound);

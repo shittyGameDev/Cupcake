@@ -35,7 +35,7 @@
 			<destination>{7ad8db04-33e3-41f1-acc7-eed3f4d0f428}</destination>
 		</relationship>
 		<relationship name="parameters">
-			<destination>{4a04a4ec-b5df-481a-a7b8-6dbe13298550}</destination>
+			<destination>{31b6e588-99b8-4492-a58c-9b4030c0f03d}</destination>
 		</relationship>
 		<relationship name="banks">
 			<destination>{16572a01-ef73-4938-9a5e-039d29abfc89}</destination>
@@ -122,12 +122,15 @@
 			<destination>{e8823c47-998d-411c-9f00-aca50344055c}</destination>
 		</relationship>
 	</object>
-	<object class="ParameterProxy" id="{4a04a4ec-b5df-481a-a7b8-6dbe13298550}">
+	<object class="ParameterProxy" id="{31b6e588-99b8-4492-a58c-9b4030c0f03d}">
 		<relationship name="preset">
 			<destination>{67dc6da5-2b04-463a-9cb0-2610a4a93b7b}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{08440b69-9f58-4489-98f7-262ac0d19f20}">
+		<property name="volume">
+			<value>-15</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{209b1c74-19b1-453b-adf8-ac248760907f}</destination>
 		</relationship>
@@ -428,7 +431,7 @@
 			<value>250</value>
 		</property>
 		<property name="value">
-			<value>-80</value>
+			<value>0</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{004ce203-a100-4575-8d0c-38334a6b6356}">
@@ -452,7 +455,7 @@
 			<value>600</value>
 		</property>
 		<property name="value">
-			<value>-80</value>
+			<value>0</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{b08e9654-86c0-4dc3-8b6b-95f1f22817e8}">
@@ -468,7 +471,7 @@
 			<value>600.3937007874016</value>
 		</property>
 		<property name="value">
-			<value>-80</value>
+			<value>0</value>
 		</property>
 	</object>
 </objects>

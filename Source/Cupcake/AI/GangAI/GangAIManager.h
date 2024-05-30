@@ -15,6 +15,7 @@ public:
 	
 	void InitiateGroupChase();
 
+	UPROPERTY(BlueprintReadWrite, Category="Enemies")
 	TArray<class AGangAICharacter*> RegisteredAICharacters;
 
 	void RegisterAICharacter(AGangAICharacter* AICharacter);

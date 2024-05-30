@@ -109,7 +109,7 @@ void AForageableActor::StartForagingTimer()
 	// Set the timer for 5 seconds duration
 	bIsForageable = false;
 	NiagaraComponent->SetVisibility(false);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AForageableActor::HandleTimerFinished, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AForageableActor::HandleTimerFinished, 60.0f, false);
 }
 
 FTransform AForageableActor::CalculateSpawnPoint() const

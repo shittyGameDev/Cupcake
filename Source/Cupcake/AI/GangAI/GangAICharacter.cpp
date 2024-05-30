@@ -252,14 +252,19 @@ void AGangAICharacter::EnableChasing()
 
 void AGangAICharacter::InitiateAttack(AActor* Actor)
 {
-	bIsAttacking = true;
-	UE_LOG(LogTemp, Warning, TEXT("Preparing to attack - AI is standing still"));
-	GetCharacterMovement()->StopMovementImmediately();
-	GetCharacterMovement()->DisableMovement();
-	TargetAttackPosition = Actor->GetActorLocation();
-	NiagaraComponent->SetActive(true);
-	StartAttack();
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 1.f, false);
+
+	if(this != nullptr)
+	{	bIsAttacking = true;
+		UE_LOG(LogTemp, Warning, TEXT("Preparing to attack - AI is standing still"));
+		GetCharacterMovement()->StopMovementImmediately();
+		GetCharacterMovement()->DisableMovement();
+		TargetAttackPosition = Actor->GetActorLocation();
+		NiagaraComponent->SetActive(true);
+		StartAttack();
+	
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 1.f, false);
+	}
+
 }
 
 

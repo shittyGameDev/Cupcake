@@ -148,6 +148,7 @@ void ACupcakeCharacter::PlayAddSound() const
 float ACupcakeCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Damage from: %s"), *DamageCauser->GetName());
 	if (!bCanTakeDamage) {
 		// Actor can't take damage currently
 		return 0.0f;

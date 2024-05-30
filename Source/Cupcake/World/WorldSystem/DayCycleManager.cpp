@@ -23,8 +23,11 @@ ADayCycleManager::ADayCycleManager()
 void ADayCycleManager::BeginPlay()
 {
 	Super::BeginPlay();
-	Polyephemus->SetActorHiddenInGame(true);
-	Polyephemus->SetActorEnableCollision(false);
+	if(Polyephemus)
+	{
+		Polyephemus->SetActorHiddenInGame(true);
+		Polyephemus->SetActorEnableCollision(false);
+	}
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	PlayerCharacter = Cast<ACupcakeCharacter>(PlayerPawn);	

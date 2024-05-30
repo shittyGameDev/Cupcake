@@ -48,6 +48,11 @@ float UAttributeComponent::GetHealth() const
 	return Health;
 }
 
+void UAttributeComponent::SetHealth(float NewHealth) 
+{
+	Health = NewHealth;
+}
+
 void UAttributeComponent::SetMaxHealth(float NewHealth) 
 {
 	MaxHealth = NewHealth;

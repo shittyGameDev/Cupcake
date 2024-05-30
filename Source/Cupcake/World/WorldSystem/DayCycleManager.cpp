@@ -354,6 +354,7 @@ void ADayCycleManager::RemoveTutorialBarrier()
 	{
 		Actor->Destroy();
 	}
+	PlayStoneSound();
 }
 
 void ADayCycleManager::Polyphemus()

@@ -45,6 +45,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category="SaveData")
 	FRotator PlayerRotation;
 
+	// Player Health
+	float PlayerHealth;
+
 	// Inventory contents
 	UPROPERTY(VisibleAnywhere, Category = "SaveData")
 	TArray<FItemSaveData> InventoryItems;

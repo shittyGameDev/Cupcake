@@ -92,6 +92,9 @@
 		<property name="length">
 			<value>0.8794557823129252</value>
 		</property>
+		<property name="volume">
+			<value>5.5</value>
+		</property>
 		<property name="playlistMode">
 			<value>1</value>
 		</property>
@@ -131,7 +134,7 @@
 			<value>volume</value>
 		</property>
 		<property name="amount">
-			<value>8</value>
+			<value>9</value>
 		</property>
 	</object>
 	<object class="RandomizerModulator" id="{a4837650-2c72-44d6-85ea-25adbb54b814}">

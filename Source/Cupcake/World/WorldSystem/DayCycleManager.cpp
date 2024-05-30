@@ -224,7 +224,7 @@ void ADayCycleManager::DayTransistion(int ZIndex)
 				PlayerCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 				//bDayTransitionTriggered = false;
 			}, 3.5f, false);
-			RestoreLightIntensity();
+			//RestoreLightIntensity();
 			if (DayCycle == 2)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("DayTransition incremented DayCycle to 2, calling RemoveTutorialBarrier"));
@@ -235,7 +235,7 @@ void ADayCycleManager::DayTransistion(int ZIndex)
 		}
 	}
 }
-
+/*
 void ADayCycleManager::RestoreLightIntensity()
 {
 	if (DirectionalLight && DirectionalLight->GetLightComponent())
@@ -264,7 +264,7 @@ void ADayCycleManager::RestoreLightIntensity()
 			}
 		}, UpdateInterval, true);
 	}
-}
+}*/
 
 void ADayCycleManager::BindTimeEvent(FTimeEvent& Event)
 {

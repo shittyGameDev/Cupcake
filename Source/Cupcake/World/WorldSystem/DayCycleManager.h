@@ -111,7 +111,7 @@ public:
 	void ShiftDay(int DayTransistionZIndex = 1000);
 	
 	void RegisterTimeEvent(FTimeEvent& NewEvent);
-	void RestoreLightIntensity();
+	//void RestoreLightIntensity();
 	UFUNCTION()
 	void SpawnTreeEvent();
 	UFUNCTION()

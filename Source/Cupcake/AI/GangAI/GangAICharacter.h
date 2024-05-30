@@ -60,6 +60,11 @@ public:
 
 	bool IsAttacking() const { return bIsAttacking; }
 
+	void PlayRandomizedDamageSounds();
+
+	template<typename T>
+	void Shuffle(TArray<T>& Array);
+
 	FVector GetRandomPatrolPoint();
 
 	UPROPERTY(EditAnywhere)
@@ -85,7 +90,11 @@ public:
 	UMaterialInterface* HitMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "DamageEffects")
 	UMaterialInterface* NormalMaterial;
-	
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* DamageSound1;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* DamageSound2;
 	FTimerHandle TimerHandle_PreAttack; 
 	FTimerHandle TimerHandle_AttackFinished;
 	FTimerHandle TimerHandle_Cooldown;
@@ -107,3 +116,15 @@ protected:
 	AGangAIManager* AIManager;
 	
 };
+
+template <typename T>
+void AGangAICharacter::Shuffle(TArray<T>& Array)
+{
+	for (int32 Index = 0; Index < Array.Num(); ++Index)
+	{
+		int32 SwapIndex = FMath::RandRange(0, Array.Num() - 1);
+		Array.Swap(Index, SwapIndex);
+	}
+}
+
+

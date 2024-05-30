@@ -93,10 +93,10 @@
 			<value>0.59374149659863951</value>
 		</property>
 		<property name="volume">
-			<value>-2</value>
+			<value>2</value>
 		</property>
 		<property name="pitch">
-			<value>1.20000005</value>
+			<value>0.300000012</value>
 		</property>
 		<property name="playlistMode">
 			<value>1</value>
@@ -111,6 +111,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{1da3f954-d358-4e47-86fa-af0f8fe68433}">
+		<property name="volume">
+			<value>3</value>
+		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>
@@ -145,7 +148,7 @@
 			<value>pitch</value>
 		</property>
 		<property name="amount">
-			<value>10.5</value>
+			<value>12.5</value>
 		</property>
 	</object>
 	<object class="SingleSound" id="{5ecd9b12-5cd4-469b-a9ee-d595e3f38b95}">

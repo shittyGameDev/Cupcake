@@ -647,13 +647,13 @@ void ACupcakeCharacter::ToggleMenu()
 	HUD->ToggleMenu();
 	if(HUD->bIsMenuVisible)
 	{
-		CurrentIndex = 0;
 		CycleInventoryItems(0);
 		BindMenuInputs(CreatePlayerInputComponent());
 	}
 	else
 	{
 		BindGameplayInputs(CreatePlayerInputComponent());
+		CurrentIndex = 0;
 	}
 }
 

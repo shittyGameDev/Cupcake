@@ -125,10 +125,12 @@ void ACupcakeGameMode::LoadGame()
 		{
 			for (int i = 0; i < LoadGameInstance->DayNumber - 1; i++)
 			{
+				// Shift day (default 1000 widget zindex)
 				if (i != LoadGameInstance->DayNumber - 1)
 				{
 					DayCycleManager->ShiftDay();
 				}
+				// Shift day with higher zindex to out infront of others
 				else
 				{
 					DayCycleManager->ShiftDay(1001);
@@ -144,11 +146,22 @@ void ACupcakeGameMode::LoadGame()
 		TArray<AActor*> LivingEnemies;
 		UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UDamageableInterface::StaticClass(), LivingEnemies);
 
+		AActor* Player = nullptr;
+		if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+		{
+			Player = PlayerController->GetPawn();
+		}
+		
 		for (auto LivingEnemy : LivingEnemies)
 		{
-			if (!LoadGameInstance->LivingEnemies.Contains(LivingEnemy->GetName()))
+			// Dont destroy player actor
+			if (LivingEnemy != Player)
 			{
-				LivingEnemy->Destroy();
+				// Destroy if actor name is not in list
+				if (!LoadGameInstance->LivingEnemies.Contains(LivingEnemy->GetName()))
+				{
+					LivingEnemy->Destroy();
+				}
 			}
 		}
 
@@ -158,6 +171,7 @@ void ACupcakeGameMode::LoadGame()
 
 		for (auto Collectable : Collectables)
 		{
+			// Destroy keyitem if not in saved list
 			if (!LoadGameInstance->Collectables.Contains(Collectable->GetName()))
 			{
 				Collectable->Destroy();

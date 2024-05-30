@@ -96,6 +96,9 @@ public:
 	void Dash();
 
 	UFUNCTION(BlueprintCallable)
+	void StopDash();
+
+	UFUNCTION(BlueprintCallable)
 	void EnableMovement();
 
 	UFUNCTION(BlueprintCallable)
@@ -209,6 +212,12 @@ protected:
 public:
 	
 	virtual void Tick(float DeltaSeconds) override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnInteract();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartSpeak();
 
 	FORCEINLINE bool IsInteracting() const { return GetWorldTimerManager().IsTimerActive(TimerHandle_Interaction);};
 

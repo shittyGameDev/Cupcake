@@ -14,10 +14,7 @@
 #include "NewInventoryComponent.h"
 #include "Cupcake/UI/BaseHUD.h"
 #include "EngineUtils.h"  
-#include "IDetailTreeNode.h"
-#include "SavePlayerProgress.h"
 #include "Components/BoxComponent.h"
-#include "Components/Image.h"
 #include "Components/WrapBox.h"
 #include "Cupcake/Actors/AttributeComponent.h"
 #include "Cupcake/UI/InventoryItemSlot.h"
@@ -201,12 +198,8 @@ void ACupcakeCharacter::Dash()
 {
 	if(!bIsDashing)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 800.f;
+		GetCharacterMovement()->MaxWalkSpeed = 700.f;
 		bIsDashing = true;
-	}else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
-		bIsDashing = false;
 	}
 	/*
 	if (!bIsDashing && bCanDash)
@@ -241,6 +234,11 @@ void ACupcakeCharacter::Dash()
 	}*/
 }
 
+void ACupcakeCharacter::StopDash()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	bIsDashing = false;
+}
 
 
 void ACupcakeCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -401,19 +399,35 @@ void ACupcakeCharacter::NoInteractableFound()
 
 void ACupcakeCharacter::UpdateInteraction() const
 {
-	if(TargetInteractable && InteractionData.CurrentInteractable)
+	// Check if there is a current interactable
+	if (InteractionData.CurrentInteractable)
 	{
-		float TotalDuration = TargetInteractable->InteractableData.InteractionDuration;
-		float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(TimerHandle_Interaction);
-		float Progress = ElapsedTime / TotalDuration;
-		Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
-		
-		if(HUD)
+		IInteractionInterface* CurrentInteractableInterface = Cast<IInteractionInterface>(InteractionData.CurrentInteractable);
+		if (CurrentInteractableInterface)
 		{
-			HUD->UpdateInteractionProgress(Progress);
+			// Log progress
+			UE_LOG(LogTemp, Warning, TEXT("Progress me bby"));
+
+			// Calculate the progress of the interaction
+			float TotalDuration = CurrentInteractableInterface->InteractableData.InteractionDuration;
+			float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(TimerHandle_Interaction);
+			float Progress = ElapsedTime / TotalDuration;
+			Progress = FMath::Clamp(Progress, 0.0f, 1.0f);
+
+			// Update the HUD with the progress
+			if (HUD)
+			{
+				HUD->UpdateInteractionProgress(Progress);
+				UE_LOG(LogTemp, Warning, TEXT("Progress"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("HUD somehow null"));
+			}
 		}
 	}
 }
+
 
 void ACupcakeCharacter::BeginInteract()
 {
@@ -475,6 +489,7 @@ void ACupcakeCharacter::Interact()
 		if (InteractableInterface)
 		{
 			InteractableInterface->Interact(this);
+			OnInteract();
 		}
 	}
 }
@@ -500,17 +515,20 @@ void ACupcakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		//Jumping
-		EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Started, this, &ACupcakeCharacter::Pause);
+		EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Completed, this, &ACupcakeCharacter::Pause);
 		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 		PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ACupcakeCharacter::Dash);
+		PlayerInputComponent->BindAction("Dash", IE_Released, this, &ACupcakeCharacter::StopDash);
 
 		//Interact
 		PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
 		PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
+
+		PlayerInputComponent->BindAction("Speaking", IE_Pressed, this, &ACupcakeCharacter::StartSpeak);
 
 		//UI
 		PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
@@ -535,7 +553,9 @@ void ACupcakeCharacter::BindGameplayInputs(UInputComponent* PlayerInputComponent
 		PlayerInputComponent->ClearActionBindings();
 		// Binding gameplay specific actions
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
+
+			EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Completed, this, &ACupcakeCharacter::Pause);
+
 			/* Jumping
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -544,10 +564,13 @@ void ACupcakeCharacter::BindGameplayInputs(UInputComponent* PlayerInputComponent
 			// Moving
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 			PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ACupcakeCharacter::Dash);
+			PlayerInputComponent->BindAction("Dash", IE_Released, this, &ACupcakeCharacter::StopDash);
 
 			//Interact
 			PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
 			PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
+
+			PlayerInputComponent->BindAction("Speaking", IE_Pressed, this, &ACupcakeCharacter::StartSpeak);
 
 			//UI
 			PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);
@@ -571,15 +594,20 @@ void ACupcakeCharacter::BindMenuInputs(UInputComponent* PlayerInputComponent)
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 
+			EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Completed, this, &ACupcakeCharacter::Pause);
+
 			// Moving
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACupcakeCharacter::Move);
 			PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ACupcakeCharacter::Dash);
+			PlayerInputComponent->BindAction("Dash", IE_Released, this, &ACupcakeCharacter::StopDash);
 
 			//Use
 			PlayerInputComponent->BindAction("UseItem", IE_Pressed, this, &ACupcakeCharacter::UseItem);
 			//Interact
 			PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACupcakeCharacter::BeginInteract);
 			PlayerInputComponent->BindAction("Interact", IE_Released, this, &ACupcakeCharacter::EndInteract);
+
+			PlayerInputComponent->BindAction("Speaking", IE_Pressed, this, &ACupcakeCharacter::StartSpeak);
 
 			//UI
 			PlayerInputComponent->BindAction("ToggleMenu", IE_Pressed, this, &ACupcakeCharacter::ToggleMenu);

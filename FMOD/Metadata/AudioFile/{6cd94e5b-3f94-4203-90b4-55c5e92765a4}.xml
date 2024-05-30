@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{6cd94e5b-3f94-4203-90b4-55c5e92765a4}">
 		<property name="assetPath">
-			<value>AxeSwing/AxeSwing-01.wav</value>
+			<value>Foley/AxeSwing/AxeSwing-01.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>

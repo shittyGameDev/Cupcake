@@ -8,6 +8,7 @@
 #include "PlayerSystem/SavePlayerProgress.h"
 #include "World/WorldSystem/DayCycleManager.h"
 #include "Actors/DamageableInterface.h"
+#include "UI/VolumeSave.h"
 
 void ACupcakeGameMode::BeginPlay()
 {
@@ -179,4 +180,36 @@ void ACupcakeGameMode::LoadGame()
 		}
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Loaded Save"));
+}
+
+// Audio
+void ACupcakeGameMode::SaveAudioSettings(float Master, float SFX, float Music)
+{
+	UVolumeSave* SaveVolumeInstance = Cast<UVolumeSave>(UGameplayStatics::CreateSaveGameObject(UVolumeSave::StaticClass()));
+	
+	SaveVolumeInstance->MasterVolume = Master;
+	SaveVolumeInstance->MusicVolume = Music;
+	SaveVolumeInstance->SFXVolume = SFX;
+
+	UE_LOG(LogTemp, Warning, TEXT("Saved Aduio"));
+	
+	UGameplayStatics::SaveGameToSlot(SaveVolumeInstance, TEXT("AudioSettings"), 0);
+}
+
+float ACupcakeGameMode::GetMasterVolume()
+{
+	UVolumeSave* LoadAudioInstance = Cast<UVolumeSave>(UGameplayStatics::LoadGameFromSlot(TEXT("AudioSettings"), 0));
+	return LoadAudioInstance->MasterVolume;
+}
+
+float ACupcakeGameMode::GetSFXVolume()
+{
+	UVolumeSave* LoadAudioInstance = Cast<UVolumeSave>(UGameplayStatics::LoadGameFromSlot(TEXT("AudioSettings"), 0));
+	return LoadAudioInstance->SFXVolume;
+}
+
+float ACupcakeGameMode::GetMusicVolume()
+{
+	UVolumeSave* LoadAudioInstance = Cast<UVolumeSave>(UGameplayStatics::LoadGameFromSlot(TEXT("AudioSettings"), 0));
+	return LoadAudioInstance->MusicVolume;
 }

@@ -29,4 +29,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LoadGame();
+
+	// Audio
+	UFUNCTION(BlueprintCallable)
+	void SaveAudioSettings(float Master, float SFX, float Music);
+
+	UFUNCTION(BlueprintCallable)
+	float GetMasterVolume();
+	UFUNCTION(BlueprintCallable)
+	float GetSFXVolume();
+	UFUNCTION(BlueprintCallable)
+	float GetMusicVolume();
 };

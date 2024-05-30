@@ -2,13 +2,13 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{eff90828-ab46-4187-af3e-4f19b63f8a92}">
 		<property name="name">
-			<value>MushroomWalk_Fel</value>
+			<value>MushroomTalk</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
 		</property>
 		<relationship name="folder">
-			<destination>{2f406469-5c39-42fd-bc9a-2752602293dd}</destination>
+			<destination>{b9b1922e-08cf-4b6a-838b-972ce4f1df01}</destination>
 		</relationship>
 		<relationship name="mixer">
 			<destination>{98c783b6-fbb0-431b-970e-b8d80c9f3355}</destination>

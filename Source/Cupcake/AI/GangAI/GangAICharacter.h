@@ -63,10 +63,7 @@ public:
 
 	bool IsAttacking() const { return bIsAttacking; }
 
-	void PlayRandomizedDamageSounds();
-
-	template<typename T>
-	void Shuffle(TArray<T>& Array);
+	
 
 	FVector GetRandomPatrolPoint();
 

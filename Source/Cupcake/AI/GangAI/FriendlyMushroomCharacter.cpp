@@ -91,7 +91,7 @@ void AFriendlyMushroomCharacter::Interact(ACupcakeCharacter* PlayerCharacter)
 
 	// Get item from player
 	UBaseItem* ItemToTake = PlayerCharacter->GetInventory()->FindMatchingItem(ItemReference);
-	if (ItemToTake)
+	if (ItemToTake && !PlayerCharacter->bPolyphemus)
 	{
 		RunRemoveComponent();
 		

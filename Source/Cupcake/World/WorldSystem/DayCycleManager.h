@@ -49,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector GetPlayerSpawnLocation() { return PlayerSpawnPoint; };
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayStoneSound();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

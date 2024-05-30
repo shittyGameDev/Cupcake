@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="EncodableAsset" id="{137d8328-575e-4d0f-b43c-24ca065f21dd}">
 		<property name="assetPath">
-			<value>AxeSwing/</value>
+			<value>Foley/AxeSwing/</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{5124e802-e417-4b78-a9a1-61e615bbc550}</destination>

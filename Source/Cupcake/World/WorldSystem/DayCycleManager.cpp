@@ -23,7 +23,7 @@ ADayCycleManager::ADayCycleManager()
 void ADayCycleManager::BeginPlay()
 {
 	Super::BeginPlay();
-	Polyephemus->SetHidden(true);
+	Polyephemus->SetActorHiddenInGame(true);
 	Polyephemus->SetActorEnableCollision(false);
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -226,7 +226,9 @@ void ADayCycleManager::DayTransistion(int ZIndex)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("DayTransition incremented DayCycle to 2, calling RemoveTutorialBarrier"));
 				RemoveTutorialBarrier();
+				Polyphemus();
 			}
+
 		}
 	}
 }
@@ -390,7 +392,7 @@ void ADayCycleManager::RemoveTutorialBarrier()
 
 void ADayCycleManager::Polyphemus()
 {
-	Polyephemus->SetHidden(false);
+	Polyephemus->SetActorHiddenInGame(false);
 	Polyephemus->SetActorEnableCollision(true);
 }
 

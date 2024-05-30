@@ -27,6 +27,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void RunRemoveComponent();
 
+	UPROPERTY()
+	bool bRecievedBerry = false;
+
 protected:
 	virtual void BeginPlay() override;
 	void MoveTrigger();

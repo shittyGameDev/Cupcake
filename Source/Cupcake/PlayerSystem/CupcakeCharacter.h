@@ -130,6 +130,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category="Weapon")
 	TSubclassOf<AWeaponBase> WeaponBlueprint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bPolyphemus;
 	
 	FTimerHandle TimerHandle_AttackFinished;
 

@@ -91,12 +91,12 @@ void AFriendlyMushroomCharacter::Interact(ACupcakeCharacter* PlayerCharacter)
 
 	// Get item from player
 	UBaseItem* ItemToTake = PlayerCharacter->GetInventory()->FindMatchingItem(ItemReference);
-	if (ItemToTake)
+	if (ItemToTake && !PlayerCharacter->bPolyphemus && !bRecievedBerry)
 	{
 		RunRemoveComponent();
 		
 		PlayerCharacter->GetInventory()->RemoveAmountOfItem(ItemToTake, ItemReference->Quantity);
-
+		bRecievedBerry = true;
 		if (MoveLocations.IsEmpty())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("No move locations"));

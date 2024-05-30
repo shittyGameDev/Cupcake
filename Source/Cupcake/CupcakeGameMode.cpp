@@ -144,11 +144,20 @@ void ACupcakeGameMode::LoadGame()
 		TArray<AActor*> LivingEnemies;
 		UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UDamageableInterface::StaticClass(), LivingEnemies);
 
+		AActor* Player = nullptr;
+		if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+		{
+			Player = PlayerController->GetPawn();
+		}
+		
 		for (auto LivingEnemy : LivingEnemies)
 		{
 			if (!LoadGameInstance->LivingEnemies.Contains(LivingEnemy->GetName()))
 			{
-				LivingEnemy->Destroy();
+				if (LivingEnemy != Player)
+				{
+					LivingEnemy->Destroy();
+				}
 			}
 		}
 

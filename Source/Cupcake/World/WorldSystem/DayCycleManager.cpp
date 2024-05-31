@@ -359,8 +359,11 @@ void ADayCycleManager::RemoveTutorialBarrier()
 
 void ADayCycleManager::Polyphemus()
 {
-	Polyephemus->SetActorHiddenInGame(false);
-	Polyephemus->SetActorEnableCollision(true);
+	if(Polyephemus != nullptr)
+	{
+		Polyephemus->SetActorHiddenInGame(false);
+		Polyephemus->SetActorEnableCollision(true);
+	}
 }
 
 float ADayCycleManager::GetElapsedTime() const

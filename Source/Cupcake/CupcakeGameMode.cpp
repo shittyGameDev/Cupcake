@@ -199,17 +199,32 @@ void ACupcakeGameMode::SaveAudioSettings(float Master, float SFX, float Music)
 float ACupcakeGameMode::GetMasterVolume()
 {
 	UVolumeSave* LoadAudioInstance = Cast<UVolumeSave>(UGameplayStatics::LoadGameFromSlot(TEXT("AudioSettings"), 0));
+	if (LoadAudioInstance == nullptr)
+	{
+		SaveAudioSettings(1.f, 1.f, 1.f);
+		return 1.f;
+	}
 	return LoadAudioInstance->MasterVolume;
 }
 
 float ACupcakeGameMode::GetSFXVolume()
 {
 	UVolumeSave* LoadAudioInstance = Cast<UVolumeSave>(UGameplayStatics::LoadGameFromSlot(TEXT("AudioSettings"), 0));
+	if (LoadAudioInstance == nullptr)
+	{
+		SaveAudioSettings(1.f, 1.f, 1.f);
+		return 1.f;
+	}
 	return LoadAudioInstance->SFXVolume;
 }
 
 float ACupcakeGameMode::GetMusicVolume()
 {
 	UVolumeSave* LoadAudioInstance = Cast<UVolumeSave>(UGameplayStatics::LoadGameFromSlot(TEXT("AudioSettings"), 0));
+	if (LoadAudioInstance == nullptr)
+	{
+		SaveAudioSettings(1.f, 1.f, 1.f);
+		return 1.f;
+	}
 	return LoadAudioInstance->MusicVolume;
 }

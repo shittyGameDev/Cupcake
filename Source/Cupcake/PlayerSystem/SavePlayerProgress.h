@@ -46,6 +46,7 @@ public:
 	FRotator PlayerRotation;
 
 	// Player Health
+	UPROPERTY(VisibleAnywhere, Category="SaveData")
 	float PlayerHealth;
 
 	// Inventory contents
@@ -63,4 +64,15 @@ public:
 	// Current Day
 	UPROPERTY(VisibleAnywhere, Category="SaveData")
 	int DayNumber;
+
+	UPROPERTY(VisibleAnywhere, Category="SaveData")
+	int WoodDonated;
+
+	UPROPERTY(VisibleAnywhere, Category="SaveData")
+	int SailDonated;
+
+	UPROPERTY(VisibleAnywhere, Category="SaveData")
+	int RudderDonated;
+
+	
 };

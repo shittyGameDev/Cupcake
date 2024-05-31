@@ -30,6 +30,15 @@ public:
 	UPROPERTY(EditAnywhere, Category="Donation")
 	int32 RequiredWoodItems;
 
+	UPROPERTY(VisibleAnywhere, Category="Donation")
+	int32 NumberOfWoodItemsDonated;
+
+	UPROPERTY(VisibleAnywhere, Category="Donation")
+	int32 NumberOfStoneItemsDonated;
+
+	UPROPERTY(VisibleAnywhere, Category="Donation")
+	int32 NumberOfIronItemsDonated;
+
 
 	// Sets default values for this actor's properties
 	AObeliskActor();
@@ -82,14 +91,7 @@ protected:
 	UPROPERTY(EditInstanceOnly , Category="Donation")
 	int32 DonationGoal = 1;
 	
-	UPROPERTY(VisibleAnywhere, Category="Donation")
-	int32 NumberOfWoodItemsDonated;
-
-	UPROPERTY(VisibleAnywhere, Category="Donation")
-	int32 NumberOfStoneItemsDonated;
-
-	UPROPERTY(VisibleAnywhere, Category="Donation")
-	int32 NumberOfIronItemsDonated;
+	
 
 	UPROPERTY(EditAnywhere, Category= "Forage | Visual")
 	UNiagaraComponent* NiagaraComponent;

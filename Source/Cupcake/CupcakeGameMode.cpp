@@ -2,6 +2,7 @@
 
 #include "CupcakeGameMode.h"
 
+#include "Actors/AttributeComponent.h"
 #include "Items/BaseItem.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerSystem/NewInventoryComponent.h"
@@ -9,6 +10,7 @@
 #include "World/WorldSystem/DayCycleManager.h"
 #include "Actors/DamageableInterface.h"
 #include "UI/VolumeSave.h"
+#include "World/WorldItems/ObeliskActor.h"
 
 void ACupcakeGameMode::BeginPlay()
 {
@@ -59,10 +61,19 @@ void ACupcakeGameMode::SaveGame()
 	//Can be called in BP
 	if (PlayerInventory)
 	{
+		SaveGameInstance->PlayerHealth = PlayerCharacter->Attributes->GetHealth();
 		for (UBaseItem* Item : PlayerInventory->GetInventoryContents())
 		{
 			SaveGameInstance->InventoryItems.Add(ConvertToSaveData(Item));
 		}
+	}
+
+	AObeliskActor* Boat = Cast<AObeliskActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AObeliskActor::StaticClass()));
+	if(Boat)
+	{
+		SaveGameInstance->WoodDonated = Boat->NumberOfWoodItemsDonated;
+		SaveGameInstance->SailDonated = Boat->NumberOfIronItemsDonated;
+		SaveGameInstance->RudderDonated = Boat->NumberOfStoneItemsDonated;
 	}
 
 	// Get current Day (William)
@@ -109,6 +120,7 @@ void ACupcakeGameMode::LoadGame()
 		// Load inventory
 		if (PlayerInventory)
 		{
+			PlayerCharacter->Attributes->SetHealth(LoadGameInstance->PlayerHealth);
 			// Clear the inventory first
 			PlayerInventory->ClearInventory();
 
@@ -178,6 +190,15 @@ void ACupcakeGameMode::LoadGame()
 				Collectable->Destroy();
 			}
 		}
+
+		AObeliskActor* Boat = Cast<AObeliskActor>(UGameplayStatics::GetActorOfClass(GetWorld(), AObeliskActor::StaticClass()));
+		if (Boat)
+		{
+			Boat->NumberOfWoodItemsDonated = LoadGameInstance->WoodDonated;
+			Boat->NumberOfIronItemsDonated = LoadGameInstance->SailDonated;
+			Boat->NumberOfStoneItemsDonated = LoadGameInstance->RudderDonated;
+		}
+		
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Loaded Save"));
 }

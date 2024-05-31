@@ -41,9 +41,15 @@ AGangAICharacter::AGangAICharacter()
 void AGangAICharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
 	SpawnLocation = GetActorLocation();
 	NiagaraComponent->SetActive(false);
 	Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (!Player)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Player pawn is not available"));
+	}
 	TArray<AActor*> FoundManagers;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AGangAIManager::StaticClass(), FoundManagers);
 	
@@ -86,6 +92,12 @@ void AGangAICharacter::Tick(float DeltaTime)
 	{
 		return;
 	}
+
+	if (!AIManager)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIManager is not valid"));
+		return; // Early return if AIManager is not valid
+	}
 	float DistanceToPlayer = FVector::Dist(Player->GetActorLocation(), GetActorLocation());
 	if (bIsChasing && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_Cooldown))
 	{
@@ -105,7 +117,14 @@ void AGangAICharacter::Tick(float DeltaTime)
 			// If not within attack range and not preparing an attack, continue chasing
 			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 			GetCharacterMovement()->MaxWalkSpeed = 300.f;
-			Cast<AGangAIController>(GetController())->MoveToActor(Player, 5.0f, true);
+			if (Cast<AGangAIController>(GetController()))
+			{
+				Cast<AGangAIController>(GetController())->MoveToActor(Player, 5.0f, true);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Controller is not of type AGangAIController"));
+			}
 		}
 	}
 	else

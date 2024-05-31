@@ -35,6 +35,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MovingDoorEffect")
 	UNiagaraComponent* MovingDoorEffect;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	AActor* MushroomActor;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

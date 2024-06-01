@@ -59,7 +59,11 @@
 			<destination>{6786ebc8-5077-474c-95b9-447d75687a55}</destination>
 		</relationship>
 	</object>
-	<object class="EventAutomatableProperties" id="{df9e797e-ed04-4763-a2a2-4ea28239eb79}" />
+	<object class="EventAutomatableProperties" id="{df9e797e-ed04-4763-a2a2-4ea28239eb79}">
+		<property name="maximumDistance">
+			<value>30</value>
+		</property>
+	</object>
 	<object class="MarkerTrack" id="{d4186e0b-d001-45e4-ade5-8d14657d67a4}" />
 	<object class="Timeline" id="{0510faf1-07b9-4a2e-b7a3-e43e214d140c}">
 		<property name="isProxyEnabled">
@@ -104,6 +108,9 @@
 	</object>
 	<object class="MixerBusPanner" id="{0b297d7f-951f-4716-b938-842662afe2a7}" />
 	<object class="SingleSound" id="{6a7c22bd-ef5c-4bbf-bb5a-8f95b7b4b046}">
+		<property name="pitch">
+			<value>-2.79999995</value>
+		</property>
 		<relationship name="modulators">
 			<destination>{7381a564-094a-43bc-a0f8-38b62afd0a49}</destination>
 			<destination>{15c5595a-ca53-4749-aa91-52772c2c7e1d}</destination>
@@ -128,7 +135,7 @@
 			<value>pitch</value>
 		</property>
 		<property name="amount">
-			<value>11</value>
+			<value>5</value>
 		</property>
 	</object>
 </objects>

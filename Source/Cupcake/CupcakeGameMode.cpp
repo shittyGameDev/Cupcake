@@ -182,12 +182,19 @@ void ACupcakeGameMode::LoadGame()
 		TArray<AActor*> Collectables;
 		UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("KeyItem"), Collectables);
 
-		for (auto Collectable : Collectables)
+		for (AActor* Collectable : Collectables)
 		{
 			// Destroy keyitem if not in saved list
 			if (!LoadGameInstance->Collectables.Contains(Collectable->GetName()))
 			{
-				Collectable->Destroy();
+				if (Collectable->ActorHasTag(TEXT("Map")))
+				{
+					Collectable->SetActorLocation(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation());
+				}
+				else
+				{
+					Collectable->Destroy();
+				}
 			}
 		}
 

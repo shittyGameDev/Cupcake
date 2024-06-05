@@ -21,13 +21,19 @@ void UInventoryTooltip::NativeConstruct()
 		UsageText->SetVisibility(ESlateVisibility::Visible);
 		break;
 	case EItemType::Stone:
+		ItemType->SetText(FText::FromString("Stone"));
+		UsageText->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 	case EItemType::Key:
+		ItemType->SetText(FText::FromString("Key"));
+		UsageText->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 	case EItemType::Quest:
+		ItemType->SetText(FText::FromString("Quest Item"));
+		UsageText->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 	case EItemType::Misc:
-		ItemType->SetText(FText::FromString("Consumable"));
+		ItemType->SetText(FText::FromString("Object"));
 		UsageText->SetVisibility(ESlateVisibility::Collapsed);
 		break;
 	default:

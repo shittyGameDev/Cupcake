@@ -21,6 +21,8 @@ AGangAICharacter::AGangAICharacter()
     // Enable Tick() function
     PrimaryActorTick.bCanEverTick = true;
 
+    bUseControllerRotationYaw = false;
+    
     // Initialize patrol and attack parameters
     PatrolRadius = 500.0f;
     AttackDistance = 200.0f;
@@ -30,25 +32,24 @@ AGangAICharacter::AGangAICharacter()
     // Create attribute component
     Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
 
-    // Initialize state flags
-    bIsChasing = false;
-    bIsAttacking = false;
-
     // Configure character movement
     GetCharacterMovement()->bOrientRotationToMovement = true;
-    GetCharacterMovement()->RotationRate = FRotator(0.f, 360.f, 0.f);
+    GetCharacterMovement()->RotationRate = FRotator(0.f, 90.f, 0.f);
     GetCharacterMovement()->MaxWalkSpeed = 200.f;
 
     // Create and attach Niagara component for visual effects
     NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ChargeFX"));
     NiagaraComponent->SetupAttachment(RootComponent);
+
+    // Initialize state
+    CurrentState = EAIState::Patrolling;
 }
 
 // Called when the game starts or when spawned
 void AGangAICharacter::BeginPlay()
 {
     Super::BeginPlay();
-
+    
     // Store initial spawn location
     SpawnLocation = GetActorLocation();
 
@@ -102,58 +103,36 @@ void AGangAICharacter::BeginPlay()
 void AGangAICharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
-    if (!Player) return;
-
-    if (!AIManager)
+    UE_LOG(LogTemp, Warning, TEXT("AGangAICharacter::Tick is being called"));
+    if (!Player || !AIManager)
     {
-        UE_LOG(LogTemp, Warning, TEXT("AIManager is not valid"));
         return;
     }
 
-    // Calculate distance to the player
-    float DistanceToPlayer = FVector::Dist(GetActorLocation(), Player->GetActorLocation());
-
-    // If AI is chasing and not in cooldown
-    if (bIsChasing && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_Cooldown))
+    switch (CurrentState)
     {
-        if (DistanceToPlayer > ChaseDistance)
-        {
-            // If player is too far, return to patrol
-            ReturnToPatrol();
-        }
-        else if (DistanceToPlayer <= AttackDistance && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack) && !bIsAttacking)
-        {
-            // If within attack range and can attack
-            if (AIManager->CanAttack(this))
-            {
-                InitiateAttack(Player);
-            }
-        }
-        else if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack) && !bIsAttacking)
-        {
-            // Continue chasing the player
-            GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-            GetCharacterMovement()->MaxWalkSpeed = 300.f;
+        case EAIState::Patrolling:
+            HandlePatrolling();
+            break;
 
-            AGangAIController* AIController = Cast<AGangAIController>(GetController());
-            if (AIController)
-            {
-                AIController->MoveToActor(Player, 5.0f, true);
-            }
-            else
-            {
-                UE_LOG(LogTemp, Warning, TEXT("Controller is not of type AGangAIController"));
-            }
-        }
-    }
-    else
-    {
-        // If not chasing, continue patrolling
-        if (FVector::Dist(GetActorLocation(), CurrentPatrolPoint) < 100.0f)
-        {
-            Patrol(); // Update to a new patrol point
-        }
+        case EAIState::Chasing:
+            HandleChasing();
+            break;
+
+        case EAIState::Attacking:
+            HandleAttacking();
+            break;
+
+        case EAIState::Returning:
+            HandleReturning();
+            break;
+
+        case EAIState::Dead:
+            // Dead state logic (if any)
+            break;
+
+        default:
+            break;
     }
 
     // Debug visualization: Draw a line to the player
@@ -163,14 +142,114 @@ void AGangAICharacter::Tick(float DeltaTime)
     DrawDebugSphere(GetWorld(), GetActorLocation(), AttackDistance, 12, FColor::Red, false, -1.f, 0, 1.f);
 
     // Debug visualization: Display current state above the AI character
-    FString StateText = bIsChasing ? (bIsAttacking ? TEXT("Attacking") : TEXT("Chasing")) : TEXT("Patrolling");
+    FString StateText;
+    switch (CurrentState)
+    {
+        case EAIState::Patrolling:
+            StateText = TEXT("Patrolling");
+            break;
+        case EAIState::Chasing:
+            StateText = TEXT("Chasing");
+            break;
+        case EAIState::Attacking:
+            StateText = TEXT("Attacking");
+            break;
+        case EAIState::Returning:
+            StateText = TEXT("Returning");
+            break;
+        case EAIState::Dead:
+            StateText = TEXT("Dead");
+            break;
+        default:
+            StateText = TEXT("Unknown");
+            break;
+    }
     DrawDebugString(GetWorld(), GetActorLocation() + FVector(0, 0, 100), StateText, nullptr, FColor::White, 0.f, true);
+}
+
+// Handles patrolling behavior
+void AGangAICharacter::HandlePatrolling()
+{
+    if (FVector::Dist(GetActorLocation(), CurrentPatrolPoint) < 100.0f)
+    {
+        Patrol(); // Get a new patrol point
+    }
+}
+
+// Handles chasing behavior
+void AGangAICharacter::HandleChasing()
+{
+    float DistanceToPlayer = FVector::Dist(GetActorLocation(), Player->GetActorLocation());
+
+    if (DistanceToPlayer > ChaseDistance)
+    {
+        // Player is too far; return to patrol
+        CurrentState = EAIState::Returning;
+        ReturnToPatrol();
+    }
+    else if (DistanceToPlayer <= AttackDistance && !GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack) && !bIsAttacking)
+    {
+        // If within attack range and can attack
+        if (AIManager->CanAttack(this))
+        {
+            InitiateAttack(Player);
+        }
+    }
+    else if (!GetWorld()->GetTimerManager().IsTimerActive(TimerHandle_PreAttack) && !bIsAttacking)
+    {
+        // Continue chasing the player
+        GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+        GetCharacterMovement()->MaxWalkSpeed = 300.f;
+
+        AGangAIController* AIController = Cast<AGangAIController>(GetController());
+        if (AIController)
+        {
+            AIController->MoveToActor(Player, 5.0f, true);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Controller is not of type AGangAIController"));
+        }
+    }
+}
+
+// Handles attacking behavior
+void AGangAICharacter::HandleAttacking()
+{
+    // Attack logic is handled by timers and callbacks
+}
+
+// Handles returning to patrol behavior
+void AGangAICharacter::HandleReturning()
+{
+    if (FVector::Dist(GetActorLocation(), SpawnLocation) < 100.0f)
+    {
+        // Reached spawn location, start patrolling again
+        CurrentState = EAIState::Patrolling;
+        Patrol();
+    }
+    else
+    {
+        AGangAIController* AIController = Cast<AGangAIController>(GetController());
+        if (AIController)
+        {
+            // Move back to spawn location
+            AIController->MoveToLocation(SpawnLocation, 5.0f, true);
+        }
+    }
+}
+
+// Checks if the player is within chase range
+bool AGangAICharacter::IsPlayerInChaseRange()
+{
+    float DistanceToPlayer = FVector::Dist(GetActorLocation(), Player->GetActorLocation());
+    return DistanceToPlayer <= ChaseDistance;
 }
 
 // Starts chasing the target
 void AGangAICharacter::StartChasing(AActor* Target)
 {
-    bIsChasing = true;
+    CurrentState = EAIState::Chasing;
 }
 
 // Handles taking damage
@@ -190,6 +269,7 @@ float AGangAICharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 void AGangAICharacter::OnDeath_Implementation()
 {
     IDamageableInterface::OnDeath_Implementation();
+    CurrentState = EAIState::Dead;
     Destroy();
 }
 
@@ -206,51 +286,47 @@ void AGangAICharacter::OnDamage_Implementation()
         GetMesh()->SetMaterial(0, NormalMaterial);
     }, 0.1f, false);
 
-    // If not already chasing, start chasing
-    if (!bIsChasing)
+    // If not already chasing or attacking, start chasing
+    if (CurrentState != EAIState::Chasing && CurrentState != EAIState::Attacking)
     {
-        bIsChasing = true;
-        UE_LOG(LogTemp, Warning, TEXT("Starting to chase the player"));
+        UE_LOG(LogTemp, Warning, TEXT("Starting to chase the player after being attacked"));
 
         if (AIManager)
         {
             UE_LOG(LogTemp, Warning, TEXT("Group attack initiated"));
             AIManager->InitiateGroupChase();
         }
+
+        CurrentState = EAIState::Chasing;
     }
 }
 
 // Patrols to a random point
 void AGangAICharacter::Patrol()
 {
-    if (!bIsChasing)
+    AGangAIController* AIController = Cast<AGangAIController>(GetController());
+    if (AIController)
     {
-        AGangAIController* AIController = Cast<AGangAIController>(GetController());
-        if (AIController)
-        {
-            // Set patrol speed
-            GetCharacterMovement()->MaxWalkSpeed = 100.f;
+        // Set patrol speed
+        GetCharacterMovement()->MaxWalkSpeed = 100.f;
 
-            // Get a random patrol point
-            FVector PatrolPoint = GetRandomPatrolPoint();
-            CurrentPatrolPoint = PatrolPoint;
+        // Get a random patrol point
+        FVector PatrolPoint = GetRandomPatrolPoint();
+        CurrentPatrolPoint = PatrolPoint;
 
-            // Move to the patrol point
-            AIController->MoveToLocation(PatrolPoint, 1.0f, true, true, false, true, nullptr, true);
-        }
+        // Move to the patrol point
+        AIController->MoveToLocation(PatrolPoint, 1.0f, true, true, false, false, nullptr, true);
     }
 }
 
 // Returns to patrol behavior
 void AGangAICharacter::ReturnToPatrol()
 {
-    bIsChasing = false;
     AGangAIController* AIController = Cast<AGangAIController>(GetController());
     if (AIController)
     {
         // Move back to spawn location
         AIController->MoveToLocation(SpawnLocation, 5.0f, true);
-        Patrol();
     }
 }
 
@@ -314,7 +390,8 @@ void AGangAICharacter::OnAttackFinished()
 // Enables chasing after cooldown
 void AGangAICharacter::EnableChasing()
 {
-    bIsChasing = true;
+    // Resume chasing after cooldown
+    CurrentState = EAIState::Chasing;
 }
 
 // Initiates attack sequence
@@ -335,10 +412,12 @@ void AGangAICharacter::InitiateAttack(AActor* Actor)
         // Activate Niagara effect
         NiagaraComponent->SetActive(true);
 
+        // Change state to Attacking
+        CurrentState = EAIState::Attacking;
+
         // Start attack after delay
         GetWorld()->GetTimerManager().SetTimer(TimerHandle_PreAttack, this, &AGangAICharacter::DoAttack, 1.f, false);
     }
 }
-
 
 

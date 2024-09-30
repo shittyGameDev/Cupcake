@@ -11,106 +11,133 @@
 class AWeaponBase;
 class UAIPerceptionComponent;
 class UNiagaraComponent;
-UCLASS()
-class AGangAICharacter : public ACharacter,  public IDamageableInterface
+
+// Define the EAIState enumeration
+UENUM(BlueprintType)
+enum class EAIState : uint8
 {
-	GENERATED_BODY()
+    Patrolling UMETA(DisplayName = "Patrolling"),
+    Chasing UMETA(DisplayName = "Chasing"),
+    Attacking UMETA(DisplayName = "Attacking"),
+    Returning UMETA(DisplayName = "Returning"),
+    Dead UMETA(DisplayName = "Dead")
+};
+
+UCLASS()
+class AGangAICharacter : public ACharacter, public IDamageableInterface
+{
+    GENERATED_BODY()
 
 public:
-	AGangAICharacter();
+    AGangAICharacter();
 
-	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser);
+    virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+                             AActor* DamageCauser) override;
 
+    UFUNCTION(BlueprintImplementableEvent)
+    void StartAttack();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void StartAttack();
-	
-	UFUNCTION()
-	virtual void OnDeath_Implementation();
+    UFUNCTION()
+    virtual void OnDeath_Implementation() override;
 
-	UFUNCTION()
-	void OnDamage_Implementation();
-	
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+    UFUNCTION()
+    virtual void OnDamage_Implementation() override;
 
-	UFUNCTION(BlueprintCallable)
-	void StartChasing(AActor* Target);
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-	void Patrol();
+    UFUNCTION(BlueprintCallable)
+    void StartChasing(AActor* Target);
 
-	UFUNCTION(BlueprintCallable)
-	void ReturnToPatrol();
+    UFUNCTION(BlueprintCallable)
+    void Patrol();
 
-	UFUNCTION(BlueprintCallable)
-	void DoAttack();
+    UFUNCTION(BlueprintCallable)
+    void ReturnToPatrol();
 
-	UFUNCTION(BlueprintCallable)
-	void OnAttackFinished();
+    UFUNCTION(BlueprintCallable)
+    void DoAttack();
 
-	UFUNCTION(BlueprintCallable)
-	void EnableChasing();
+    UFUNCTION(BlueprintCallable)
+    void OnAttackFinished();
 
-	UFUNCTION(BlueprintCallable)
-	void InitiateAttack(AActor* Actor);
+    UFUNCTION(BlueprintCallable)
+    void EnableChasing();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void PlayHurtSound();
-	
-	bool IsChasing() const { return bIsChasing; }
+    UFUNCTION(BlueprintCallable)
+    void InitiateAttack(AActor* Actor);
 
-	bool IsAttacking() const { return bIsAttacking; }
+    UFUNCTION(BlueprintImplementableEvent)
+    void PlayHurtSound();
 
-	
+    bool IsChasing() const { return bIsChasing; }
+    bool IsAttacking() const { return bIsAttacking; }
 
-	FVector GetRandomPatrolPoint();
+    // Getter for CurrentState
+    EAIState GetCurrentState() const { return CurrentState; }
 
-	UPROPERTY(EditAnywhere)
-	FVector SpawnLocation;
-	UPROPERTY(EditAnywhere)
-	float PatrolRadius;
-	UPROPERTY(EditAnywhere)
-	float ChaseDistance;
-	UPROPERTY(EditAnywhere, Category= "AI")
-	float AttackDistance;
-	UPROPERTY(EditAnywhere, Category= "AI")
-	float DashDistance;
-	UPROPERTY(VisibleAnywhere, Category = "AI")
-	FVector CurrentPatrolPoint;
-	UPROPERTY(Blueprintable, BlueprintGetter=GetWeapon)
-	AWeaponBase* Weapon;
+    FVector GetRandomPatrolPoint();
 
-	UFUNCTION(BlueprintGetter)
-	AWeaponBase* GetWeapon() const { return Weapon; }
-	UPROPERTY(EditAnywhere, Category="Weapon")
-	TSubclassOf<AWeaponBase> WeaponBlueprint;
-	UPROPERTY(EditDefaultsOnly, Category = "DamageEffects")
-	UMaterialInterface* HitMaterial;
-	UPROPERTY(EditDefaultsOnly, Category = "DamageEffects")
-	UMaterialInterface* NormalMaterial;
-	
-	FTimerHandle TimerHandle_PreAttack; 
-	FTimerHandle TimerHandle_AttackFinished;
-	FTimerHandle TimerHandle_Cooldown;
+    // AI properties
+    UPROPERTY(EditAnywhere)
+    FVector SpawnLocation;
 
-	FVector TargetAttackPosition;
-	
-	UPROPERTY(EditAnywhere)
-	UNiagaraComponent* NiagaraComponent; 
+    UPROPERTY(EditAnywhere)
+    float PatrolRadius;
+
+    UPROPERTY(EditAnywhere)
+    float ChaseDistance;
+
+    UPROPERTY(EditAnywhere, Category = "AI")
+    float AttackDistance;
+
+    UPROPERTY(EditAnywhere, Category = "AI")
+    float DashDistance;
+
+    UPROPERTY(VisibleAnywhere, Category = "AI")
+    FVector CurrentPatrolPoint;
+
+    UPROPERTY(Blueprintable, BlueprintGetter = GetWeapon)
+    AWeaponBase* Weapon;
+
+    UFUNCTION(BlueprintGetter)
+    AWeaponBase* GetWeapon() const { return Weapon; }
+
+    UPROPERTY(EditAnywhere, Category = "Weapon")
+    TSubclassOf<AWeaponBase> WeaponBlueprint;
+
+    UPROPERTY(EditDefaultsOnly, Category = "DamageEffects")
+    UMaterialInterface* HitMaterial;
+
+    UPROPERTY(EditDefaultsOnly, Category = "DamageEffects")
+    UMaterialInterface* NormalMaterial;
+
+    FTimerHandle TimerHandle_PreAttack;
+    FTimerHandle TimerHandle_AttackFinished;
+    FTimerHandle TimerHandle_Cooldown;
+
+    FVector TargetAttackPosition;
+
+    UPROPERTY(EditAnywhere)
+    UNiagaraComponent* NiagaraComponent;
 
 protected:
-	//AAIController* AIController;
-	bool bIsChasing;
-	bool bIsPatrolling = false; 
-	bool bIsAttacking;
-	AActor* Player;
-	//PROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI")
-	//UAIPerceptionComponent* PerceptionComponent;
+    // AI State
+    EAIState CurrentState;
 
-	AGangAIManager* AIManager;
-	
+    bool bIsChasing;
+    bool bIsPatrolling = false;
+    bool bIsAttacking;
+
+    AActor* Player;
+    AGangAIManager* AIManager;
+
+    // Missing method declarations added
+    void HandlePatrolling();
+    void HandleChasing();
+    void HandleAttacking();
+    void HandleReturning();
+    bool IsPlayerInChaseRange();
 };
 
 

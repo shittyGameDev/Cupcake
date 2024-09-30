@@ -7,6 +7,7 @@
 AGangAIController::AGangAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
 }
 
 void AGangAIController::OnPossess(APawn* InPawn)
